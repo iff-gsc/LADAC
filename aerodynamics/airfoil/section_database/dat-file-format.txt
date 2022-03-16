@@ -1,0 +1,39 @@
+REVISION 1 as of 20/03/02 regarding nonlin V2.0.3 beta
+------------------------------------------------------
+
+file name format:
+
+<section name>/<section name>_<segment type>_<deflection angle>.dat
+
+<section name>     : string (identifying section)
+<segment type>     : integer (to distinguish between different local properties, e.g. flapped/unflapped sections)
+<deflection angle> : number with sign, no decimals (giving flap deflection angle, 0 if unflapped)
+
+example file name  : "NACA 23018/NACA 23018_3_-20.dat"
+
+
+file content format:
+
+four columns (no header):
+alpha Cl Cd Cm
+
+example file content:
+
+-4	-0.487	0.00661	 0.007
+-3	-0.366	0.00580	 0.005
+-2	-0.244	0.00563	 0.003
+-1	-0.122	0.00509	 0.002
+ 0	 0.000	0.00531	 0.000
+ 1	 0.122	0.00509	-0.002
+ 2	 0.244	0.00563	-0.003
+ 3	 0.366	0.00580	-0.005
+ 4	 0.487	0.00661	-0.007
+ 5	 0.607	0.00706	-0.008
+ 6	 0.725	0.00712	-0.010
+ 7	 0.842	0.00800	-0.012
+ 8	 0.955	0.00828	-0.014
+ 9	 1.064	0.00923	-0.016
+10	 1.166	0.01003	-0.018
+
+
+Tobias Bauer 20/03/02

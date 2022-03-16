@@ -1,0 +1,959 @@
+diff --git a/ArduCopter/Copter.cpp b/ArduCopter/Copter.cpp
+index 35a6688a55..f631bd9eb1 100644
+--- a/ArduCopter/Copter.cpp
++++ b/ArduCopter/Copter.cpp
+@@ -224,11 +224,18 @@ void Copter::fast_loop()
+     // update INS immediately to get current gyro data populated
+     ins.update();
+ 
+-    // run low level rate controllers that only require IMU data
+-    attitude_control->rate_controller_run();
+-
+-    // send outputs to the motors library immediately
+-    motors_output();
++    // if custom mode is enabled, call custom output method
++    const char *fm_name_pointer = flightmode->name4();
++    //std::string fm_name(fm_name_pointer, 4);  // string not supported for build
++    char comparison_char = 'X';
++    bool is_custom_mode = *fm_name_pointer == comparison_char;
++    //bool is_custom_mode = fm_name.compare("XXXX") == 0;   // string not supported for build
++    if(!is_custom_mode) { 
++        // run low level rate controllers that only require IMU data
++        attitude_control->rate_controller_run();
++        // send outputs to the motors library immediately
++        motors_output();
++    }
+ 
+     // run EKF state estimator (expensive)
+     // --------------------
+@@ -251,6 +258,10 @@ void Copter::fast_loop()
+     // run the attitude controllers
+     update_flight_mode();
+ 
++    if(is_custom_mode) {
++        motors_output();
++    }
++
+     // update home from EKF if necessary
+     update_home_from_EKF();
+ 
+diff --git a/ArduCopter/Copter.h b/ArduCopter/Copter.h
+index c1688f636a..e119cbfa61 100644
+--- a/ArduCopter/Copter.h
++++ b/ArduCopter/Copter.h
+@@ -216,6 +216,7 @@ public:
+     friend class ModeSmartRTL;
+     friend class ModeSport;
+     friend class ModeStabilize;
++    friend class ModeCustom;
+     friend class ModeStabilize_Heli;
+     friend class ModeSystemId;
+     friend class ModeThrow;
+@@ -938,6 +939,9 @@ private:
+ #if MODE_DRIFT_ENABLED == ENABLED
+     ModeDrift mode_drift;
+ #endif
++#if MODE_CUSTOM_ENABLED == ENABLED
++    ModeCustom mode_custom;
++#endif
+ #if MODE_FLIP_ENABLED == ENABLED
+     ModeFlip mode_flip;
+ #endif
+diff --git a/ArduCopter/Parameters.cpp b/ArduCopter/Parameters.cpp
+index 1aea518a26..f024286e86 100644
+--- a/ArduCopter/Parameters.cpp
++++ b/ArduCopter/Parameters.cpp
+@@ -259,42 +259,42 @@ const AP_Param::Info Copter::var_info[] = {
+     // @Param: FLTMODE1
+     // @DisplayName: Flight Mode 1
+     // @Description: Flight mode when Channel 5 pwm is <= 1230
+-    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS,21:Smart_RTL,22:FlowHold,23:Follow,24:ZigZag,25:SystemID,26:Heli_Autorotate,27:Auto RTL
++    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS,21:Smart_RTL,22:FlowHold,23:Follow,24:ZigZag,25:SystemID,26:Heli_Autorotate,27:Auto RTL,29:Custom
+     // @User: Standard
+     GSCALAR(flight_mode1, "FLTMODE1",               (uint8_t)FLIGHT_MODE_1),
+ 
+     // @Param: FLTMODE2
+     // @DisplayName: Flight Mode 2
+     // @Description: Flight mode when Channel 5 pwm is >1230, <= 1360
+-    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS,21:Smart_RTL,22:FlowHold,23:Follow,24:ZigZag,25:SystemID,26:Heli_Autorotate,27:Auto RTL
++    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS,21:Smart_RTL,22:FlowHold,23:Follow,24:ZigZag,25:SystemID,26:Heli_Autorotate,27:Auto RTL,29:Custom
+     // @User: Standard
+     GSCALAR(flight_mode2, "FLTMODE2",               (uint8_t)FLIGHT_MODE_2),
+ 
+     // @Param: FLTMODE3
+     // @DisplayName: Flight Mode 3
+     // @Description: Flight mode when Channel 5 pwm is >1360, <= 1490
+-    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS,21:Smart_RTL,22:FlowHold,23:Follow,24:ZigZag,25:SystemID,26:Heli_Autorotate,27:Auto RTL
++    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS,21:Smart_RTL,22:FlowHold,23:Follow,24:ZigZag,25:SystemID,26:Heli_Autorotate,27:Auto RTL,29:Custom
+     // @User: Standard
+     GSCALAR(flight_mode3, "FLTMODE3",               (uint8_t)FLIGHT_MODE_3),
+ 
+     // @Param: FLTMODE4
+     // @DisplayName: Flight Mode 4
+     // @Description: Flight mode when Channel 5 pwm is >1490, <= 1620
+-    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS,21:Smart_RTL,22:FlowHold,23:Follow,24:ZigZag,25:SystemID,26:Heli_Autorotate,27:Auto RTL
++    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS,21:Smart_RTL,22:FlowHold,23:Follow,24:ZigZag,25:SystemID,26:Heli_Autorotate,27:Auto RTL,29:Custom
+     // @User: Standard
+     GSCALAR(flight_mode4, "FLTMODE4",               (uint8_t)FLIGHT_MODE_4),
+ 
+     // @Param: FLTMODE5
+     // @DisplayName: Flight Mode 5
+     // @Description: Flight mode when Channel 5 pwm is >1620, <= 1749
+-    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS,21:Smart_RTL,22:FlowHold,23:Follow,24:ZigZag,25:SystemID,26:Heli_Autorotate,27:Auto RTL
++    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS,21:Smart_RTL,22:FlowHold,23:Follow,24:ZigZag,25:SystemID,26:Heli_Autorotate,27:Auto RTL,29:Custom
+     // @User: Standard
+     GSCALAR(flight_mode5, "FLTMODE5",               (uint8_t)FLIGHT_MODE_5),
+ 
+     // @Param: FLTMODE6
+     // @DisplayName: Flight Mode 6
+     // @Description: Flight mode when Channel 5 pwm is >=1750
+-    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS,21:Smart_RTL,22:FlowHold,23:Follow,24:ZigZag,25:SystemID,26:Heli_Autorotate,27:Auto RTL
++    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS,21:Smart_RTL,22:FlowHold,23:Follow,24:ZigZag,25:SystemID,26:Heli_Autorotate,27:Auto RTL,29:Custom
+     // @User: Standard
+     GSCALAR(flight_mode6, "FLTMODE6",               (uint8_t)FLIGHT_MODE_6),
+ 
+diff --git a/ArduCopter/config.h b/ArduCopter/config.h
+index ffb333c1cc..6fa2982856 100644
+--- a/ArduCopter/config.h
++++ b/ArduCopter/config.h
+@@ -252,6 +252,12 @@
+ # define MODE_DRIFT_ENABLED ENABLED
+ #endif
+ 
++//////////////////////////////////////////////////////////////////////////////
++// Custom - custom flight mode by MATLAB/Simulink
++#ifndef MODE_CUSTOM_ENABLED
++# define MODE_CUSTOM_ENABLED ENABLED
++#endif
++
+ //////////////////////////////////////////////////////////////////////////////
+ // flip - fly vehicle in flip in pitch and roll direction mode
+ #ifndef MODE_FLIP_ENABLED
+diff --git a/ArduCopter/mode.cpp b/ArduCopter/mode.cpp
+index 1e18b0ab8d..58f102d2dd 100644
+--- a/ArduCopter/mode.cpp
++++ b/ArduCopter/mode.cpp
+@@ -23,6 +23,9 @@ Mode::Mode(void) :
+     channel_throttle(copter.channel_throttle),
+     channel_yaw(copter.channel_yaw),
+     G_Dt(copter.G_Dt)
++    #ifdef Custom_Matlab_Output
++    ,socket_debug(true)
++    #endif
+ { };
+ 
+ // return the static controller object corresponding to supplied mode
+@@ -41,6 +44,10 @@ Mode *Copter::mode_from_mode_num(const Mode::Number mode)
+             ret = &mode_stabilize;
+             break;
+ 
++        case Mode::Number::CUSTOM:
++            ret = &mode_custom;
++            break;
++
+         case Mode::Number::ALT_HOLD:
+             ret = &mode_althold;
+             break;
+diff --git a/ArduCopter/mode.h b/ArduCopter/mode.h
+index 1419ce1523..dbfe4da892 100644
+--- a/ArduCopter/mode.h
++++ b/ArduCopter/mode.h
+@@ -1,6 +1,13 @@
+ #pragma once
+ 
++//#define Custom_Matlab_Output //define for the custom simulink output
++
+ #include "Copter.h"
++#include <AC_AttitudeControl/MatlabController.h>    // new
++#ifdef Custom_Matlab_Output
++    #include <AP_HAL/utility/Socket.h>
++#endif
++
+ class Parameters;
+ class ParametersG2;
+ 
+@@ -38,6 +45,7 @@ public:
+         AUTOROTATE =   26,  // Autonomous autorotation
+         AUTO_RTL =     27,  // Auto RTL, this is not a true mode, AUTO will report as this mode if entered to perform a DO_LAND_START Landing sequence
+         TURTLE =       28,  // Flip over after crash
++        CUSTOM    =    29,  // custom flight mode from MATLAB/Simulink
+     };
+ 
+     // constructor
+@@ -168,6 +176,13 @@ protected:
+     RC_Channel *&channel_yaw;
+     float &G_Dt;
+ 
++    MatlabControllerClass custom_controller;
++#ifdef Custom_Matlab_Output
++    SocketAPM socket_debug; //
++    const char *_debug_address = "127.0.0.1";
++    int _debug_port = 9004;
++#endif
++
+     // note that we support two entirely different automatic takeoffs:
+ 
+     // "user-takeoff", which is available in modes such as ALT_HOLD
+@@ -1378,6 +1393,34 @@ private:
+ 
+ };
+ 
++class ModeCustom : public Mode {
++
++public:
++    // inherit constructor
++    using Mode::Mode;
++    Number mode_number() const override { return Number::CUSTOM; }
++
++    bool init(bool ignore_checks) override;
++    virtual void run() override;
++
++    bool requires_GPS() const override { return true; }
++    bool has_manual_throttle() const override { return true; }
++    bool allows_arming(AP_Arming::Method method) const override { return true; };
++    bool is_autopilot() const override { return false; }
++    void output_to_motors() override { motors->output_custom(); }
++
++protected:
++
++    const char *name() const override { return "CUSTOM"; }
++    const char *name4() const override { return "XXXX"; }
++    float yawInit;
++    float sInit[3];
++    void override_cntrl_params();
++
++private:
++
++};
++
+ #if FRAME_CONFIG == HELI_FRAME
+ class ModeStabilize_Heli : public ModeStabilize {
+ 
+diff --git a/ArduCopter/mode_custom.cpp b/ArduCopter/mode_custom.cpp
+new file mode 100644
+index 0000000000..b8b0ed2e61
+--- /dev/null
++++ b/ArduCopter/mode_custom.cpp
+@@ -0,0 +1,221 @@
++#include "Copter.h"
++#include <AP_Motors/AP_MotorsMatrix.h>
++#include <GCS_MAVLink/GCS.h>
++
++// Function for hardcoding changes to MATLABs cntrl struct.
++// Values can be accessed in the same fashion as in MATLAB, e.g.:
++//     cntrl.sample_time = 42;
++void ModeCustom::override_cntrl_params()
++{
++
++}
++
++/*
++ * Init and run calls for stabilize flight mode
++ */
++bool ModeCustom::init(bool ignore_checks)
++{
++    override_cntrl_params();
++    // initialize yaw to measured value
++    const AP_AHRS_View &ahrs_ = attitude_control->get_ahrs();
++    Quaternion attitude_vehicle_quat;
++    ahrs_.get_quat_body_to_ned(attitude_vehicle_quat);
++    yawInit = attitude_vehicle_quat.get_euler_yaw();
++
++    // initialize position to measured value
++    Vector3f position_NED;
++    if (!ahrs_.get_relative_position_NED_home(position_NED)){
++        position_NED[0] = 0;
++        position_NED[1] = 0;
++        position_NED[2] = 0; 
++    }
++    sInit[0] = position_NED[0];
++    sInit[1] = position_NED[1];
++    sInit[2] = position_NED[2];
++
++    // tell the controller to use the initial conditions on the first time step
++    custom_controller.initialize();
++
++    return true;
++}
++
++// stabilize_run - runs the main stabilize controller
++// should be called at 100hz or more
++void ModeCustom::run()
++{
++    // apply simple mode transform to pilot inputs
++    update_simple_mode();
++
++
++    // Begin custom code
++
++    // Get stick inputs, -1 ... 1
++    int16_t tr_max = 4500;
++    // fetch roll and pitch inputs
++    float roll_out_high = channel_roll->get_control_in();
++    float roll_out = roll_out_high / tr_max;
++    float pitch_out_high = channel_pitch->get_control_in();
++    float pitch_out = pitch_out_high / tr_max;
++    float throttle_control_high = channel_throttle->get_control_in();
++    float throttle_control = throttle_control_high / 1000 * 2 - 1;
++    // get pilot's desired yaw rate
++    float yaw_out_high = channel_yaw->get_control_in();
++    float yaw_out = yaw_out_high / tr_max;
++
++    // Get measured values
++    // Retrieve quaternion vehicle attitude
++    const AP_AHRS_View& ahrs_ = attitude_control->get_ahrs();
++    Quaternion attitude_vehicle_quat;
++    ahrs_.get_quat_body_to_ned(attitude_vehicle_quat);
++    // Get velocity relative to the ground in NED
++    //bool check = ahrs_.have_inertial_nav(void);
++    Vector3f velocity_NED;
++    if (!ahrs_.get_velocity_NED(velocity_NED)) {
++        velocity_NED[0] = 0;
++        velocity_NED[1] = 0;
++        velocity_NED[2] = 0;
++    }
++    // gcs().send_text(MAV_SEVERITY_DEBUG, "u %5.3f", (double)velocity[0]);
++
++    Vector3f angular_velocity_Kb = ahrs_.get_gyro_latest();
++
++    // gcs().send_text(MAV_SEVERITY_DEBUG, "q %5.3f", (double)rates[0]);
++    float roll_angle = attitude_vehicle_quat.get_euler_roll();
++    float pitch_angle = attitude_vehicle_quat.get_euler_pitch();
++    float yaw_angle = attitude_vehicle_quat.get_euler_yaw();
++    // Get position relative to the ground in NED
++    Vector3f position_NED;
++    if (!ahrs_.get_relative_position_NED_home(position_NED)) {
++        position_NED[0] = 0;
++        position_NED[1] = 0;
++        position_NED[2] = 0;
++    }
++    // end custom code
++
++    // convert pilot input to lean angles
++    // float target_roll, target_pitch;
++    // get_pilot_desired_lean_angles(target_roll, target_pitch, copter.aparm.angle_max, copter.aparm.angle_max);
++    // get pilot's desired yaw rate
++    // float target_yaw_rate = get_pilot_desired_yaw_rate(channel_yaw->get_control_in());
++
++    if (!motors->armed()) {
++        // Motors should be Stopped
++        motors->set_desired_spool_state(AP_Motors::DesiredSpoolState::SHUT_DOWN);
++    } else if (copter.ap.throttle_zero) {
++        // Attempting to Land
++        motors->set_desired_spool_state(AP_Motors::DesiredSpoolState::GROUND_IDLE);
++    } else {
++        motors->set_desired_spool_state(AP_Motors::DesiredSpoolState::THROTTLE_UNLIMITED);
++    }
++
++    switch (motors->get_spool_state()) {
++    case AP_Motors::SpoolState::SHUT_DOWN:
++        // Motors Stopped
++        attitude_control->reset_yaw_target_and_rate();
++        attitude_control->reset_rate_controller_I_terms();
++        break;
++    case AP_Motors::SpoolState::GROUND_IDLE:
++        // Landed
++        attitude_control->reset_yaw_target_and_rate();
++        attitude_control->reset_rate_controller_I_terms();
++        break;
++    case AP_Motors::SpoolState::THROTTLE_UNLIMITED:
++        // clear landing flag above zero throttle
++        if (!motors->limit.throttle_lower) {
++            set_land_complete(false);
++        }
++        break;
++    case AP_Motors::SpoolState::SPOOLING_UP:
++    case AP_Motors::SpoolState::SPOOLING_DOWN:
++        // do nothing
++        break;
++    }
++
++    // call attitude controller
++    //attitude_control->input_euler_angle_roll_pitch_euler_rate_yaw(target_roll, target_pitch, target_yaw_rate);
++
++    // output pilot's throttle
++    //attitude_control->set_throttle_out(get_pilot_desired_throttle(),
++    //                                   true,
++    //                                   g.throttle_filt);
++
++
++    // BEGIN NEW CODE
++
++    ExtU rtU_;
++    ExtY rtY_;
++
++    rtU_.cmd.roll = roll_out;
++    rtU_.cmd.pitch = pitch_out;
++    rtU_.cmd.yaw = yaw_out;
++    rtU_.cmd.thr = -throttle_control;
++    rtU_.cmd.s_Kg_init[0] = sInit[0];
++    rtU_.cmd.s_Kg_init[1] = sInit[1];
++    rtU_.cmd.s_Kg_init[2] = sInit[2];
++    rtU_.cmd.yaw_init = yawInit;
++    for (int i=0;i<16;i++) {
++        rtU_.cmd.RC_pwm[i] = g2.rc_channels.channel(i)->get_radio_in();
++    }
++    
++    // real32_T debug_var = throttle_control;
++    // gcs().send_text(MAV_SEVERITY_DEBUG, "debug var %5.3f", (float)debug_var);
++
++    rtU_.measure.omega_Kb[0] = angular_velocity_Kb[0];
++    rtU_.measure.omega_Kb[1] = angular_velocity_Kb[1];
++    rtU_.measure.omega_Kb[2] = angular_velocity_Kb[2];
++    rtU_.measure.q_bg[0] = attitude_vehicle_quat.q1;
++    rtU_.measure.q_bg[1] = attitude_vehicle_quat.q2;
++    rtU_.measure.q_bg[2] = attitude_vehicle_quat.q3;
++    rtU_.measure.q_bg[3] = attitude_vehicle_quat.q4;
++    rtU_.measure.EulerAngles[0] = roll_angle;
++    rtU_.measure.EulerAngles[1] = pitch_angle;
++    rtU_.measure.EulerAngles[2] = yaw_angle;
++    rtU_.measure.a_Kg[0] = ahrs_.get_accel_ef_blended().x;
++    rtU_.measure.a_Kg[1] = ahrs_.get_accel_ef_blended().y;
++    rtU_.measure.a_Kg[2] = ahrs_.get_accel_ef_blended().z;
++    rtU_.measure.V_Kg[0] = velocity_NED[0];
++    rtU_.measure.V_Kg[1] = velocity_NED[1];
++    rtU_.measure.V_Kg[2] = velocity_NED[2];
++    rtU_.measure.s_Kg[0] = position_NED[0];
++    rtU_.measure.s_Kg[1] = position_NED[1];
++    rtU_.measure.s_Kg[2] = position_NED[2];
++    rtU_.measure.lla[0] = copter.current_loc.lat;
++    rtU_.measure.lla[1] = copter.current_loc.lng;
++    rtU_.measure.lla[2] = copter.current_loc.alt;
++
++    custom_controller.rtU = rtU_;
++    custom_controller.step();
++    rtY_ = custom_controller.rtY;
++
++    // real32_T u1 = rtY_.u[0];
++    // gcs().send_text(MAV_SEVERITY_DEBUG, "u1 %5.3f", u1);
++    
++    //Example of sending the rotation rates omega_Kb to simulink (uncomment the following line and define Custom_Matlab_Output in mode.h)
++    //socket_debug.sendto(&rtU_.measure, sizeof(rtU_.measure), _debug_address, _debug_port); 
++
++    // log data
++    AP::logger().Write(
++        "ML", "TimeUS,v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,v15",
++        "Qfffffffffffffff",
++        AP_HAL::micros64(),
++        (double)custom_controller.rtY.logs[0],
++        (double)custom_controller.rtY.logs[1],
++        (double)custom_controller.rtY.logs[2],
++        (double)custom_controller.rtY.logs[3],
++        (double)custom_controller.rtY.logs[4],
++        (double)custom_controller.rtY.logs[5],
++        (double)custom_controller.rtY.logs[6],
++        (double)custom_controller.rtY.logs[7],
++        (double)custom_controller.rtY.logs[8],
++        (double)custom_controller.rtY.logs[9],
++        (double)custom_controller.rtY.logs[10],
++        (double)custom_controller.rtY.logs[11],
++        (double)custom_controller.rtY.logs[12],
++        (double)custom_controller.rtY.logs[13],
++        (double)custom_controller.rtY.logs[14]);
++
++    // set outputs in the same order as Simulink
++    for (int i=0;i<8;i++) {
++        motors->set_custom_input( i, rtY_.u[i] );
++    }
++}
+diff --git a/ArduCopter/motors.cpp b/ArduCopter/motors.cpp
+index 634761be4c..4f60ced5d6 100644
+--- a/ArduCopter/motors.cpp
++++ b/ArduCopter/motors.cpp
+@@ -173,7 +173,6 @@ void Copter::motors_output()
+             motors->set_interlock(false);
+             AP::logger().Write_Event(LogEvent::MOTORS_INTERLOCK_DISABLED);
+         }
+-
+         // send output signals to motors
+         flightmode->output_to_motors();
+     }
+diff --git a/Tools/ardupilotwaf/boards.py b/Tools/ardupilotwaf/boards.py
+index d91045fced..f41f0ab061 100644
+--- a/Tools/ardupilotwaf/boards.py
++++ b/Tools/ardupilotwaf/boards.py
+@@ -142,7 +142,6 @@ class Board:
+             '-Werror=shadow',
+             '-Werror=return-type',
+             '-Werror=unused-result',
+-            '-Werror=unused-variable',
+             '-Werror=narrowing',
+             '-Werror=attributes',
+             '-Werror=overflow',
+@@ -253,8 +252,6 @@ class Board:
+             '-Werror=undef',
+             '-Werror=unused-result',
+             '-Werror=shadow',
+-            '-Werror=unused-value',
+-            '-Werror=unused-variable',
+             '-Werror=delete-non-virtual-dtor',
+             '-Wfatal-errors',
+             '-Wno-trigraphs',
+@@ -505,7 +502,7 @@ class sitl(Board):
+             cfg.define('UAVCAN_EXCEPTIONS', 0)
+ 
+         env.CXXFLAGS += [
+-            '-Werror=float-equal'
++            #'-Werror=float-equal'
+         ]
+ 
+         if not cfg.env.DEBUG:
+diff --git a/libraries/AC_AttitudeControl/AC_AttitudeControl.h b/libraries/AC_AttitudeControl/AC_AttitudeControl.h
+index d6f875422e..d928c19347 100644
+--- a/libraries/AC_AttitudeControl/AC_AttitudeControl.h
++++ b/libraries/AC_AttitudeControl/AC_AttitudeControl.h
+@@ -67,6 +67,9 @@ public:
+     // Empty destructor to suppress compiler warning
+     virtual ~AC_AttitudeControl() {}
+ 
++    // Get _ahrs object
++    const AP_AHRS_View& get_ahrs() { return _ahrs; };
++
+     // pid accessors
+     AC_P& get_angle_roll_p() { return _p_angle_roll; }
+     AC_P& get_angle_pitch_p() { return _p_angle_pitch; }
+diff --git a/libraries/AC_AttitudeControl/MatlabController.cpp b/libraries/AC_AttitudeControl/MatlabController.cpp
+new file mode 100644
+index 0000000000..db5aa4a9a9
+--- /dev/null
++++ b/libraries/AC_AttitudeControl/MatlabController.cpp
+@@ -0,0 +1,80 @@
++//
++// Sponsored License - for use in support of a program or activity
++// sponsored by MathWorks.  Not for government, commercial or other
++// non-sponsored organizational use.
++//
++// File: MatlabController.cpp
++//
++// Code generated for Simulink model 'MatlabController'.
++//
++// Model version                  : 1.378
++// Simulink Coder version         : 9.0 (R2018b) 24-May-2018
++// C/C++ source code generated on : Thu Mar 18 16:08:05 2021
++//
++// Target selection: ert.tlc
++// Embedded hardware selection: Intel->x86-64 (Linux 64)
++// Code generation objectives:
++//    1. Execution efficiency
++//    2. RAM efficiency
++// Validation result: Not run
++//
++#include "MatlabController.h"
++
++// Model step function
++void MatlabControllerClass::step()
++{
++  // Outport: '<Root>/logs' incorporates:
++  //   Inport: '<Root>/cmd'
++  //   Inport: '<Root>/measure'
++
++  rtY.logs[0] = rtU.cmd.roll;
++  rtY.logs[1] = rtU.cmd.pitch;
++  rtY.logs[2] = rtU.cmd.yaw;
++  rtY.logs[3] = rtU.cmd.thr;
++  rtY.logs[4] = rtU.measure.omega_Kb[0];
++  rtY.logs[7] = rtU.measure.EulerAngles[0];
++  rtY.logs[10] = rtU.measure.V_Kg[0];
++  rtY.logs[5] = rtU.measure.omega_Kb[1];
++  rtY.logs[8] = rtU.measure.EulerAngles[1];
++  rtY.logs[11] = rtU.measure.V_Kg[1];
++  rtY.logs[6] = rtU.measure.omega_Kb[2];
++  rtY.logs[9] = rtU.measure.EulerAngles[2];
++  rtY.logs[12] = rtU.measure.V_Kg[2];
++  rtY.logs[13] = 0.0F;
++  rtY.logs[14] = 0.0F;
++}
++
++// Model initialize function
++void MatlabControllerClass::initialize()
++{
++  {
++    int32_T i;
++
++    // ConstCode for Outport: '<Root>/u' incorporates:
++    //   Constant: '<S2>/Constant'
++
++    for (i = 0; i < 8; i++) {
++      rtY.u[i] = rtConstP.Constant_Value[i];
++    }
++
++    // End of ConstCode for Outport: '<Root>/u'
++  }
++}
++
++// Constructor
++MatlabControllerClass::MatlabControllerClass()
++{
++  // Currently there is no constructor body generated.
++}
++
++// Destructor
++MatlabControllerClass::~MatlabControllerClass()
++{
++  // Currently there is no destructor body generated.
++}
++
++//
++// File trailer for generated code.
++//
++// [EOF]
++//
+diff --git a/libraries/AC_AttitudeControl/MatlabController.h b/libraries/AC_AttitudeControl/MatlabController.h
+new file mode 100644
+index 0000000000..1d028debf2
+--- /dev/null
++++ b/libraries/AC_AttitudeControl/MatlabController.h
+@@ -0,0 +1,134 @@
++//
++// Sponsored License - for use in support of a program or activity
++// sponsored by MathWorks.  Not for government, commercial or other
++// non-sponsored organizational use.
++//
++// File: MatlabController.h
++//
++// Code generated for Simulink model 'MatlabController'.
++//
++// Model version                  : 1.378
++// Simulink Coder version         : 9.0 (R2018b) 24-May-2018
++// C/C++ source code generated on : Thu Mar 18 16:08:05 2021
++//
++// Target selection: ert.tlc
++// Embedded hardware selection: Intel->x86-64 (Linux 64)
++// Code generation objectives:
++//    1. Execution efficiency
++//    2. RAM efficiency
++// Validation result: Not run
++//
++#ifndef RTW_HEADER_MatlabController_h_
++#define RTW_HEADER_MatlabController_h_
++#include "rtwtypes.h"
++#ifndef MatlabController_COMMON_INCLUDES_
++# define MatlabController_COMMON_INCLUDES_
++#include "rtwtypes.h"
++#endif                                 // MatlabController_COMMON_INCLUDES_
++
++// Macros for accessing real-time model data structure
++#ifndef DEFINED_TYPEDEF_FOR_cmdBus_
++#define DEFINED_TYPEDEF_FOR_cmdBus_
++
++typedef struct {
++  real32_T roll;
++  real32_T pitch;
++  real32_T yaw;
++  real32_T thr;
++  real32_T s_Kg_init[3];
++  real32_T yaw_init;
++  real32_T RC_pwm[16];
++} cmdBus;
++
++#endif
++
++#ifndef DEFINED_TYPEDEF_FOR_measureBus_
++#define DEFINED_TYPEDEF_FOR_measureBus_
++
++typedef struct {
++  real32_T omega_Kb[3];
++  real32_T EulerAngles[3];
++  real32_T q_bg[4];
++  real32_T a_Kg[3];
++  real32_T V_Kg[3];
++  real32_T s_Kg[3];
++  real32_T lla[3];
++} measureBus;
++
++#endif
++
++// Constant parameters (default storage)
++typedef struct {
++  // Computed Parameter: Constant_Value
++  //  Referenced by: '<S2>/Constant'
++
++  real32_T Constant_Value[8];
++} ConstP;
++
++// External inputs (root inport signals with default storage)
++typedef struct {
++  cmdBus cmd;                          // '<Root>/cmd'
++  measureBus measure;                  // '<Root>/measure'
++} ExtU;
++
++// External outputs (root outports fed by signals with default storage)
++typedef struct {
++  real32_T u[8];                       // '<Root>/u'
++  real32_T logs[15];                   // '<Root>/logs'
++} ExtY;
++
++// Constant parameters (default storage)
++extern const ConstP rtConstP;
++
++// Class declaration for model MatlabController
++class MatlabControllerClass {
++  // public data and function members
++ public:
++  // External inputs
++  ExtU rtU;
++
++  // External outputs
++  ExtY rtY;
++
++  // model initialize function
++  void initialize();
++
++  // model step function
++  void step();
++
++  // Constructor
++  MatlabControllerClass();
++
++  // Destructor
++  ~MatlabControllerClass();
++
++  // private data and function members
++ private:
++};
++
++//-
++//  The generated code includes comments that allow you to trace directly
++//  back to the appropriate location in the model.  The basic format
++//  is <system>/block_name, where system is the system number (uniquely
++//  assigned by Simulink) and block_name is the name of the block.
++//
++//  Use the MATLAB hilite_system command to trace the generated code back
++//  to the model.  For example,
++//
++//  hilite_system('<S3>')    - opens system 3
++//  hilite_system('<S3>/Kp') - opens and selects block Kp which resides in S3
++//
++//  Here is the system hierarchy for this model
++//
++//  '<Root>' : 'MatlabController'
++//  '<S1>'   : 'MatlabController/Actuator muxer'
++//  '<S2>'   : 'MatlabController/dummy test controller'
++//  '<S3>'   : 'MatlabController/log muxer'
++
++#endif                                 // RTW_HEADER_MatlabController_h_
++
++//
++// File trailer for generated code.
++//
++// [EOF]
++//
+diff --git a/libraries/AC_AttitudeControl/MatlabController_data.cpp b/libraries/AC_AttitudeControl/MatlabController_data.cpp
+new file mode 100644
+index 0000000000..c10800c5e9
+--- /dev/null
++++ b/libraries/AC_AttitudeControl/MatlabController_data.cpp
+@@ -0,0 +1,35 @@
++//
++// Sponsored License - for use in support of a program or activity
++// sponsored by MathWorks.  Not for government, commercial or other
++// non-sponsored organizational use.
++//
++// File: MatlabController_data.cpp
++//
++// Code generated for Simulink model 'MatlabController'.
++//
++// Model version                  : 1.378
++// Simulink Coder version         : 9.0 (R2018b) 24-May-2018
++// C/C++ source code generated on : Thu Mar 18 16:08:05 2021
++//
++// Target selection: ert.tlc
++// Embedded hardware selection: Intel->x86-64 (Linux 64)
++// Code generation objectives:
++//    1. Execution efficiency
++//    2. RAM efficiency
++// Validation result: Not run
++//
++#include "MatlabController.h"
++
++// Constant parameters (default storage)
++const ConstP rtConstP = {
++  // Computed Parameter: Constant_Value
++  //  Referenced by: '<S2>/Constant'
++
++  { 0.11F, 0.12F, 0.13F, 0.14F, 0.15F, 0.16F, 0.17F, 0.18F }
++};
++
++//
++// File trailer for generated code.
++//
++// [EOF]
++//
+diff --git a/libraries/AC_AttitudeControl/rtwtypes.h b/libraries/AC_AttitudeControl/rtwtypes.h
+new file mode 100644
+index 0000000000..8c6225ced0
+--- /dev/null
++++ b/libraries/AC_AttitudeControl/rtwtypes.h
+@@ -0,0 +1,106 @@
++//
++// Sponsored License - for use in support of a program or activity
++// sponsored by MathWorks.  Not for government, commercial or other
++// non-sponsored organizational use.
++//
++// File: rtwtypes.h
++//
++// Code generated for Simulink model 'MatlabController'.
++//
++// Model version                  : 1.378
++// Simulink Coder version         : 9.0 (R2018b) 24-May-2018
++// C/C++ source code generated on : Thu Mar 18 16:08:05 2021
++//
++// Target selection: ert.tlc
++// Embedded hardware selection: Intel->x86-64 (Linux 64)
++// Code generation objectives:
++//    1. Execution efficiency
++//    2. RAM efficiency
++// Validation result: Not run
++//
++
++#ifndef RTWTYPES_H
++#define RTWTYPES_H
++
++// Logical type definitions
++#if (!defined(__cplusplus))
++#  ifndef false
++#   define false                       (0U)
++#  endif
++
++#  ifndef true
++#   define true                        (1U)
++#  endif
++#endif
++
++//=======================================================================*
++//  Target hardware information
++//    Device type: Intel->x86-64 (Linux 64)
++//    Number of bits:     char:   8    short:   16    int:  32
++//                        long:  64    long long:  64
++//                        native word size:  64
++//    Byte ordering: LittleEndian
++//    Signed integer division rounds to: Zero
++//    Shift right on a signed integer as arithmetic shift: on
++// =======================================================================
++
++//=======================================================================*
++//  Fixed width word size data types:                                     *
++//    int8_T, int16_T, int32_T     - signed 8, 16, or 32 bit integers     *
++//    uint8_T, uint16_T, uint32_T  - unsigned 8, 16, or 32 bit integers   *
++//    real32_T, real64_T           - 32 and 64 bit floating point numbers *
++// =======================================================================
++typedef signed char int8_T;
++typedef unsigned char uint8_T;
++typedef short int16_T;
++typedef unsigned short uint16_T;
++typedef int int32_T;
++typedef unsigned int uint32_T;
++typedef long int64_T;
++typedef unsigned long uint64_T;
++typedef float real32_T;
++typedef double real64_T;
++
++//===========================================================================*
++//  Generic type definitions: boolean_T, char_T, byte_T, int_T, uint_T,       *
++//                            real_T, time_T, ulong_T, ulonglong_T.           *
++// ===========================================================================
++typedef double real_T;
++typedef double time_T;
++typedef unsigned char boolean_T;
++typedef int int_T;
++typedef unsigned int uint_T;
++typedef unsigned long ulong_T;
++typedef unsigned long long ulonglong_T;
++typedef char char_T;
++typedef unsigned char uchar_T;
++typedef char_T byte_T;
++
++//=======================================================================*
++//  Min and Max:                                                          *
++//    int8_T, int16_T, int32_T     - signed 8, 16, or 32 bit integers     *
++//    uint8_T, uint16_T, uint32_T  - unsigned 8, 16, or 32 bit integers   *
++// =======================================================================
++#define MAX_int8_T                     ((int8_T)(127))
++#define MIN_int8_T                     ((int8_T)(-128))
++#define MAX_uint8_T                    ((uint8_T)(255U))
++#define MAX_int16_T                    ((int16_T)(32767))
++#define MIN_int16_T                    ((int16_T)(-32768))
++#define MAX_uint16_T                   ((uint16_T)(65535U))
++#define MAX_int32_T                    ((int32_T)(2147483647))
++#define MIN_int32_T                    ((int32_T)(-2147483647-1))
++#define MAX_uint32_T                   ((uint32_T)(0xFFFFFFFFU))
++#define MAX_int64_T                    ((int64_T)(9223372036854775807L))
++#define MIN_int64_T                    ((int64_T)(-9223372036854775807L-1L))
++#define MAX_uint64_T                   ((uint64_T)(0xFFFFFFFFFFFFFFFFUL))
++
++// Block D-Work pointer type
++typedef void * pointer_T;
++
++#endif                                 // RTWTYPES_H
++
++//
++// File trailer for generated code.
++//
++// [EOF]
++//
+diff --git a/libraries/AP_Motors/AP_Motors_Class.cpp b/libraries/AP_Motors/AP_Motors_Class.cpp
+index 91ac7e005e..5dd3f5792c 100644
+--- a/libraries/AP_Motors/AP_Motors_Class.cpp
++++ b/libraries/AP_Motors/AP_Motors_Class.cpp
+@@ -48,6 +48,27 @@ AP_Motors::AP_Motors(uint16_t loop_rate, uint16_t speed_hz) :
+     _thrust_balanced = true;
+ };
+ 
++// set a motor command to the desired index of the _custom_intput array
++void AP_Motors::set_custom_input(int index, float input)
++{
++    _custom_input[index] = input;
++}
++
++// output - sends commands to the motors
++void AP_Motors::output_custom()
++{
++    if (!armed()) {
++        for (int i = 0; i < 8; i++) {
++            _custom_input[i] = 0;
++        }
++    }
++
++    // convert output to PWM and send to each motor
++    for (int i = 0; i < 8; i++) {
++        rc_write(i, _custom_input[i]*1000 + 1000 );
++    }
++};
++
+ void AP_Motors::get_frame_and_type_string(char *buffer, uint8_t buflen) const
+ {
+     const char *frame_str = get_frame_string();
+diff --git a/libraries/AP_Motors/AP_Motors_Class.h b/libraries/AP_Motors/AP_Motors_Class.h
+index 08af747179..05c0d3d4d8 100644
+--- a/libraries/AP_Motors/AP_Motors_Class.h
++++ b/libraries/AP_Motors/AP_Motors_Class.h
+@@ -72,6 +72,9 @@ public:
+         MOTOR_FRAME_TYPE_BF_X_REV = 18, // X frame, betaflight ordering, reversed motors
+     };
+ 
++    // modified version of output() for custom controllers
++    void                output_custom();
++
+     // return string corresponding to frame_type
+     virtual const char* get_type_string() const { return ""; }
+ 
+@@ -235,6 +238,9 @@ public:
+     // direct motor write
+     virtual void        rc_write(uint8_t chan, uint16_t pwm);
+ 
++    // set a new custom motor input to the desired index of the array for custom controllers
++    void                set_custom_input(int index, float input);
++
+ protected:
+     // output functions that should be overloaded by child classes
+     virtual void        output_armed_stabilizing() = 0;
+@@ -300,6 +306,9 @@ protected:
+ 
+     MAV_TYPE _mav_type; // MAV_TYPE_GENERIC = 0;
+ 
++    // for mode_custom
++    float _custom_input[AP_MOTORS_MAX_NUM_MOTORS];
++
+ private:
+ 
+     bool _armed;             // 0 if disarmed, 1 if armed

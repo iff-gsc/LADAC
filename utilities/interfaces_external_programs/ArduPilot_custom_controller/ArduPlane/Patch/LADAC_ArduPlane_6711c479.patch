@@ -1,0 +1,1188 @@
+diff --git a/ArduPlane/ArduPlane.cpp b/ArduPlane/ArduPlane.cpp
+index fb720083d1..9677667948 100644
+--- a/ArduPlane/ArduPlane.cpp
++++ b/ArduPlane/ArduPlane.cpp
+@@ -1,6 +1,6 @@
+ /*
+    Lead developer: Andrew Tridgell
+- 
++
+    Authors:    Doug Weibel, Jose Julio, Jordi Munoz, Jason Short, Randy Mackay, Pat Hickey, John Arne Birkeland, Olivier Adler, Amilcar Lucas, Gregory Fletcher, Paul Riseborough, Brandon Jones, Jon Challinger, Tom Pittenger
+    Thanks to:  Chris Anderson, Michael Oborne, Paul Mather, Bill Premerlani, James Cohen, JB from rotorFX, Automatik, Fefenin, Peter Meister, Remzibi, Yury Smirnov, Sandro Benigno, Max Levine, Roberto Navoni, Lorenz Meier, Yury MonZon
+ 
+@@ -92,7 +92,7 @@ const AP_Scheduler::Task Plane::scheduler_tasks[] = {
+     SCHED_TASK_CLASS(AP_Logger, &plane.logger, periodic_tasks, 50, 400),
+ #endif
+     SCHED_TASK_CLASS(AP_InertialSensor, &plane.ins, periodic, 50, 50),
+-#if HAL_ADSB_ENABLED    
++#if HAL_ADSB_ENABLED
+     SCHED_TASK(avoidance_adsb_update,  10,    100),
+ #endif
+     SCHED_TASK_CLASS(RC_Channels,       (RC_Channels*)&plane.g2.rc_channels, read_aux_all,           10,    200),
+@@ -226,7 +226,7 @@ void Plane::update_logging2(void)
+         write_notch_log_messages();
+ #endif
+     }
+-    
++
+     if (should_log(MASK_LOG_NTUN)) {
+         Log_Write_Nav_Tuning();
+         Log_Write_Guided();
+@@ -296,7 +296,7 @@ void Plane::one_second_loop()
+         gps.status() >= AP_GPS::GPS_OK_FIX_3D) {
+             last_home_update_ms = gps.last_message_time_ms();
+             update_home();
+-            
++
+             // reset the landing altitude correction
+             landing.alt_offset = 0;
+     }
+@@ -330,9 +330,9 @@ void Plane::airspeed_ratio_update(void)
+         gps.status() < AP_GPS::GPS_OK_FIX_3D ||
+         gps.ground_speed() < 4) {
+         // don't calibrate when not moving
+-        return;        
++        return;
+     }
+-    if (airspeed.get_airspeed() < aparm.airspeed_min && 
++    if (airspeed.get_airspeed() < aparm.airspeed_min &&
+         gps.ground_speed() < (uint32_t)aparm.airspeed_min) {
+         // don't calibrate when flying below the minimum airspeed. We
+         // check both airspeed and ground speed to catch cases where
+@@ -472,7 +472,7 @@ void Plane::update_alt()
+     } else if (gps.status() >= AP_GPS::GPS_OK_FIX_3D && gps.have_vertical_velocity()) {
+         sink_rate = gps.velocity().z;
+     } else {
+-        sink_rate = -barometer.get_climb_rate();        
++        sink_rate = -barometer.get_climb_rate();
+     }
+ 
+     // low pass the sink rate to take some of the noise out
+@@ -484,7 +484,7 @@ void Plane::update_alt()
+ 
+     update_flight_stage();
+ 
+-    if (auto_throttle_mode && !throttle_suppressed) {        
++    if (auto_throttle_mode && !throttle_suppressed) {
+ 
+         float distance_beyond_land_wp = 0;
+         if (flight_stage == AP_Vehicle::FixedWing::FLIGHT_LAND && current_loc.past_interval_finish_line(prev_WP_loc, next_WP_loc)) {
+@@ -517,7 +517,7 @@ void Plane::update_alt()
+ void Plane::update_flight_stage(void)
+ {
+     // Update the speed & height controller states
+-    if (auto_throttle_mode && !throttle_suppressed) {        
++    if (auto_throttle_mode && !throttle_suppressed) {
+         if (control_mode == &mode_auto) {
+             if (quadplane.in_vtol_auto()) {
+                 set_flight_stage(AP_Vehicle::FixedWing::FLIGHT_VTOL);
+diff --git a/ArduPlane/Attitude.cpp b/ArduPlane/Attitude.cpp
+index 2833488db9..9562028ba0 100644
+--- a/ArduPlane/Attitude.cpp
++++ b/ArduPlane/Attitude.cpp
+@@ -408,20 +408,23 @@ void Plane::stabilize()
+                !quadplane.in_tailsitter_vtol_transition()) {
+         quadplane.control_run();
+     } else {
+-        if (g.stick_mixing == STICK_MIXING_FBW && control_mode != &mode_stabilize) {
+-            stabilize_stick_mixing_fbw();
+-        }
+-        stabilize_roll(speed_scaler);
+-        stabilize_pitch(speed_scaler);
+-        if (g.stick_mixing == STICK_MIXING_DIRECT || control_mode == &mode_stabilize) {
+-            stabilize_stick_mixing_direct();
++        if (control_mode != &mode_custom) {
++            if (g.stick_mixing == STICK_MIXING_FBW && control_mode != &mode_stabilize) {
++                stabilize_stick_mixing_fbw();
++            }
++            stabilize_roll(speed_scaler);
++            stabilize_pitch(speed_scaler);
++            if (g.stick_mixing == STICK_MIXING_DIRECT || control_mode == &mode_stabilize) {
++                stabilize_stick_mixing_direct();
++            }
++            stabilize_yaw(speed_scaler);
+         }
+-        stabilize_yaw(speed_scaler);
+     }
+ 
+     /*
+       see if we should zero the attitude controller integrators. 
+      */
++    /*
+     if (get_throttle_input() == 0 &&
+         fabsf(relative_altitude) < 5.0f && 
+         fabsf(barometer.get_climb_rate()) < 0.5f &&
+@@ -438,6 +441,7 @@ void Plane::stabilize()
+             steerController.reset_I();            
+         }
+     }
++    */
+ }
+ 
+ 
+diff --git a/ArduPlane/GCS_Mavlink.cpp b/ArduPlane/GCS_Mavlink.cpp
+index 93b1204a0e..cb5ace6317 100644
+--- a/ArduPlane/GCS_Mavlink.cpp
++++ b/ArduPlane/GCS_Mavlink.cpp
+@@ -24,6 +24,7 @@ MAV_MODE GCS_MAVLINK_Plane::base_mode() const
+     case Mode::Number::TRAINING:
+     case Mode::Number::ACRO:
+     case Mode::Number::QACRO:
++    case Mode::Number::CUSTOM: //added here because the manual input-flag is enabled.
+         _base_mode = MAV_MODE_FLAG_MANUAL_INPUT_ENABLED;
+         break;
+     case Mode::Number::STABILIZE:
+diff --git a/ArduPlane/GCS_Plane.cpp b/ArduPlane/GCS_Plane.cpp
+index a933195450..77e1956e19 100644
+--- a/ArduPlane/GCS_Plane.cpp
++++ b/ArduPlane/GCS_Plane.cpp
+@@ -47,6 +47,7 @@ void GCS_Plane::update_vehicle_sensor_status_flags(void)
+     bool attitude_stabilized = false;
+     switch (plane.control_mode->mode_number()) {
+     case Mode::Number::MANUAL:
++    case Mode::Number::CUSTOM: //added because no stabilization by AP will be required since the MATLAB-Controller has this task.
+         break;
+ 
+     case Mode::Number::ACRO:
+diff --git a/ArduPlane/Plane.h b/ArduPlane/Plane.h
+index 3587799722..4eba603c60 100644
+--- a/ArduPlane/Plane.h
++++ b/ArduPlane/Plane.h
+@@ -160,6 +160,7 @@ public:
+     friend class ModeQAutotune;
+     friend class ModeTakeoff;
+     friend class ModeThermal;
++    friend class ModeCustom; //added friend class for new mode
+ 
+     Plane(void);
+ 
+@@ -282,6 +283,7 @@ private:
+     ModeQAcro mode_qacro;
+     ModeQAutotune mode_qautotune;
+     ModeTakeoff mode_takeoff;
++    ModeCustom mode_custom; //added
+ #if HAL_SOARING_ENABLED
+     ModeThermal mode_thermal;
+ #endif
+diff --git a/ArduPlane/control_modes.cpp b/ArduPlane/control_modes.cpp
+index 9a21bd0935..e0e9707117 100644
+--- a/ArduPlane/control_modes.cpp
++++ b/ArduPlane/control_modes.cpp
+@@ -76,6 +76,9 @@ Mode *Plane::mode_from_mode_num(const enum Mode::Number num)
+     case Mode::Number::TAKEOFF:
+         ret = &mode_takeoff;
+         break;
++    case Mode::Number::CUSTOM:
++        ret = &mode_custom;
++        break;
+     case Mode::Number::THERMAL:
+ #if HAL_SOARING_ENABLED
+         ret = &mode_thermal;
+diff --git a/ArduPlane/events.cpp b/ArduPlane/events.cpp
+index 3970e28cd4..3eef840433 100644
+--- a/ArduPlane/events.cpp
++++ b/ArduPlane/events.cpp
+@@ -61,6 +61,7 @@ void Plane::failsafe_short_on_event(enum failsafe_state fstype, ModeReason reaso
+     case Mode::Number::QLAND:
+     case Mode::Number::QRTL:
+     case Mode::Number::INITIALISING:
++    case Mode::Number::CUSTOM: //added. might change this later because of failsafe-settings
+         break;
+     }
+     gcs().send_text(MAV_SEVERITY_INFO, "Flight mode = %u", (unsigned)control_mode->mode_number());
+@@ -128,6 +129,7 @@ void Plane::failsafe_long_on_event(enum failsafe_state fstype, ModeReason reason
+     case Mode::Number::QRTL:
+     case Mode::Number::TAKEOFF:
+     case Mode::Number::INITIALISING:
++    case Mode::Number::CUSTOM:
+         break;
+     }
+     gcs().send_text(MAV_SEVERITY_INFO, "Flight mode = %u", (unsigned)control_mode->mode_number());
+diff --git a/ArduPlane/mode.h b/ArduPlane/mode.h
+index 96b8605d82..b4368f9f19 100644
+--- a/ArduPlane/mode.h
++++ b/ArduPlane/mode.h
+@@ -6,6 +6,7 @@
+ #include <AP_Common/Location.h>
+ #include <AP_Soaring/AP_Soaring.h>
+ #include <AP_ADSB/AP_ADSB.h>
++#include <AP_Common/MatlabController.h>
+ 
+ class Mode
+ {
+@@ -42,6 +43,7 @@ public:
+         QAUTOTUNE     = 22,
+         QACRO         = 23,
+         THERMAL       = 24,
++        CUSTOM        = 25, //add mode 
+     };
+ 
+     // Constructor
+@@ -89,6 +91,8 @@ protected:
+ 
+     // subclasses override this to perform any required cleanup when exiting the mode
+     virtual void _exit() { return; }
++
++    MatlabControllerClass custom_controller;
+ };
+ 
+ 
+@@ -219,6 +223,22 @@ protected:
+     void _exit() override;
+ };
+ 
++class ModeCustom : public Mode //added
++{
++public:
++
++    Number mode_number() const override { return Number::CUSTOM; }
++    const char* name() const override { return "CUSTOM"; }
++    const char* name4() const override { return "CUSTOM"; }
++
++    // methods that affect movement of the vehicle in this mode
++    void update() override;
++
++protected:
++
++    bool _enter() override;
++  
++};
+ 
+ class ModeRTL : public Mode
+ {
+diff --git a/ArduPlane/mode_custom.cpp b/ArduPlane/mode_custom.cpp
+new file mode 100644
+index 0000000000..61985d637d
+--- /dev/null
++++ b/ArduPlane/mode_custom.cpp
+@@ -0,0 +1,180 @@
++#include "mode.h"
++#include "Plane.h"
++#include <AP_Common/MatlabController.h>
++
++bool ModeCustom::_enter()
++{
++    custom_controller.initialize(); 
++    return true;
++}
++
++
++void ModeCustom::update()
++{
++
++    // get pilot inputs
++    float tr_max_inv = 1.0 / 4500;
++    float roll_out_high = plane.channel_roll->get_control_in();
++    float roll_out = roll_out_high * tr_max_inv;
++    float pitch_out_high = plane.channel_pitch->get_control_in();
++    float pitch_out = pitch_out_high * tr_max_inv;
++    float yaw_out_high = plane.channel_rudder->get_control_in();
++    float yaw_out = yaw_out_high * tr_max_inv;
++    float throttle_control_high = plane.channel_throttle->get_control_in();
++    float throttle_control = 0.01 * throttle_control_high;
++
++    // get rangefinder distance in cm (if sensor with orientation is avail.)
++
++    float rangefinder_dist[6];
++    rangefinder_dist[0] = plane.rangefinder.distance_cm_orient((Rotation)1);
++    rangefinder_dist[1] = plane.rangefinder.distance_cm_orient((Rotation)2);
++    rangefinder_dist[2] = plane.rangefinder.distance_cm_orient((Rotation)3);
++    rangefinder_dist[3] = plane.rangefinder.distance_cm_orient((Rotation)4);
++    rangefinder_dist[4] = plane.rangefinder.distance_cm_orient((Rotation)5);
++    rangefinder_dist[5] = plane.rangefinder.distance_cm_orient((Rotation)6);
++
++    int   RNGFND_num_sensors = plane.rangefinder.num_sensors();
++
++      // get measured inputs
++    Vector3f angular_velocity_Kb = plane.ahrs.get_gyro();
++
++    Quaternion attitude_vehicle_quat;
++    // bool a = plane.ahrs.get_quaternion(attitude_vehicle_quat);
++    // gcs().send_text(MAV_SEVERITY_DEBUG, "a %d", (int8_t)a);
++    // gcs().send_text(MAV_SEVERITY_DEBUG, "test %5.3f %5.3f %5.3f %5.3f", (double)attitude_vehicle_quat[0], (double)attitude_vehicle_quat[1], attitude_vehicle_quat[2], attitude_vehicle_quat[3]);
++
++    AP::logger().Write("QUAT", "TimeUS,q0,q1,q2,q3", "Qffff",
++                                        AP_HAL::micros64(),
++                                        (double)attitude_vehicle_quat[0],
++                                        (double)attitude_vehicle_quat[1],
++                                        (double)attitude_vehicle_quat[2],
++                                        (double)attitude_vehicle_quat[3]);
++
++    Vector3f acc_NED = plane.ahrs.get_accel_ef_blended();
++
++    Vector3f velocity_NED;
++    plane.ahrs.get_velocity_NED(velocity_NED);
++
++    Vector3f position_NED;
++    plane.ahrs.get_relative_position_NED_home(position_NED);
++
++
++    // assign commanded and measured values to controller inputs struct
++    ExtU rtU_;
++
++    rtU_.cmd.roll  = roll_out;
++    rtU_.cmd.pitch = pitch_out;
++    rtU_.cmd.yaw   = yaw_out;
++    rtU_.cmd.thr   = throttle_control;
++
++    rtU_.measure.omega_Kb[0] = angular_velocity_Kb[0];
++    rtU_.measure.omega_Kb[1] = angular_velocity_Kb[1];
++    rtU_.measure.omega_Kb[2] = angular_velocity_Kb[2];
++    rtU_.measure.q_bg[0] = attitude_vehicle_quat[0];
++    rtU_.measure.q_bg[1] = attitude_vehicle_quat[1];
++    rtU_.measure.q_bg[2] = attitude_vehicle_quat[2];
++    rtU_.measure.q_bg[3] = attitude_vehicle_quat[3];
++    rtU_.measure.EulerAngles[0] = plane.ahrs.roll;
++    rtU_.measure.EulerAngles[1] = plane.ahrs.pitch;
++    rtU_.measure.EulerAngles[2] = plane.ahrs.yaw;
++    rtU_.measure.a_Kg[0] = acc_NED.x;
++    rtU_.measure.a_Kg[1] = acc_NED.y;
++    rtU_.measure.a_Kg[2] = acc_NED.z;
++    rtU_.measure.V_Kg[0] = velocity_NED[0];
++    rtU_.measure.V_Kg[1] = velocity_NED[1];
++    rtU_.measure.V_Kg[2] = velocity_NED[2];
++    rtU_.measure.s_Kg[0] = position_NED[0];
++    rtU_.measure.s_Kg[1] = position_NED[1];
++    rtU_.measure.s_Kg[2] = position_NED[2];
++    rtU_.measure.lla[0] = plane.current_loc.lat;
++    rtU_.measure.lla[1] = plane.current_loc.lng;
++    rtU_.measure.lla[2] = plane.current_loc.alt;
++    rtU_.measure.rangefinder[0] = rangefinder_dist[0];
++    rtU_.measure.rangefinder[1] = rangefinder_dist[1];
++    rtU_.measure.rangefinder[2] = rangefinder_dist[2];
++    rtU_.measure.rangefinder[3] = rangefinder_dist[3];
++    rtU_.measure.rangefinder[4] = rangefinder_dist[4];
++    rtU_.measure.rangefinder[5] = rangefinder_dist[5];
++
++
++
++    // get controller outputs struct
++    custom_controller.rtU = rtU_;
++    custom_controller.step(); //run a step in controller.
++    ExtY rtY_ = custom_controller.rtY;
++
++    // log data
++    AP::logger().Write(
++        "ML", "TimeUS,v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,v15",
++        "Qfffffffffffffff",
++        AP_HAL::micros64(),
++        (double)custom_controller.rtY.logs[0],
++        (double)custom_controller.rtY.logs[1],
++        (double)custom_controller.rtY.logs[2],
++        (double)custom_controller.rtY.logs[3],
++        (double)custom_controller.rtY.logs[4],
++        (double)custom_controller.rtY.logs[5],
++        (double)custom_controller.rtY.logs[6],
++        (double)custom_controller.rtY.logs[7],
++        (double)custom_controller.rtY.logs[8],
++        (double)custom_controller.rtY.logs[9],
++        (double)custom_controller.rtY.logs[10],
++        (double)custom_controller.rtY.logs[11],
++        (double)custom_controller.rtY.logs[12],
++        (double)custom_controller.rtY.logs[13],
++        (double)custom_controller.rtY.logs[14]);
++
++    // send controller outputs to channels and set PWMs
++    for (uint8_t i=0; i<8; i++) {
++        SRV_Channel::Aux_servo_function_t function_i = (SRV_Channel::Aux_servo_function_t)rtY_.function_channels[i];
++
++        if(function_i == SRV_Channel::Aux_servo_function_t::k_none){
++            continue;  
++        }
++        if(function_i == SRV_Channel::Aux_servo_function_t::k_throttle) {
++            if (!hal.util->get_soft_armed()) {
++                if (plane.arming.arming_required() == AP_Arming::Required::YES_ZERO_PWM) {
++                    SRV_Channels::set_output_limit(function_i, SRV_Channel::Limit::ZERO_PWM);
++                } else {
++                    SRV_Channels::set_output_norm(function_i, 0);
++                }
++            }
++            else{
++                SRV_Channels::set_output_norm(function_i, rtY_.channels[i]);
++            }
++        }
++        else
++        {
++             SRV_Channels::set_output_norm(function_i, rtY_.channels[i]);
++        }
++    }
++    // plot rangefinder distance in cm for debugging
++
++    static uint16_t counter;
++    static uint32_t last_t, last_print;
++    uint32_t now = AP_HAL::micros();
++
++    if (last_t == 0) {
++        last_t = now;
++        return;
++    }
++    last_t = now;
++
++    counter++;
++
++    if (now - last_print >= 100000 /* 100ms : 10hz */) {
++
++       GCS_SEND_TEXT(MAV_SEVERITY_DEBUG, "%d: distance_cm %f %f %f %f %f %f \n",
++        RNGFND_num_sensors,
++        rangefinder_dist[0], rangefinder_dist[1], rangefinder_dist[2],
++        rangefinder_dist[3], rangefinder_dist[4], rangefinder_dist[5]);
++        GCS_SEND_TEXT(MAV_SEVERITY_DEBUG, "Servo PWM: %f %f %f %f %f %f %f %f \n",
++         rtY_.channels[0], rtY_.channels[1], rtY_.channels[2], rtY_.channels[3],
++         rtY_.channels[4], rtY_.channels[5], rtY_.channels[6], rtY_.channels[7]);
++
++        last_print = now;
++        counter = 0;
++    }
++
++
++}
+diff --git a/ArduPlane/servos.cpp b/ArduPlane/servos.cpp
+index c2b6862f12..46fd84a70c 100644
+--- a/ArduPlane/servos.cpp
++++ b/ArduPlane/servos.cpp
+@@ -895,28 +895,31 @@ void Plane::servos_output(void)
+ {
+     SRV_Channels::cork();
+ 
+-    // support twin-engine aircraft
+-    servos_twin_engine_mix();
++    if (control_mode != &mode_custom) {
++        // support twin-engine aircraft
++        servos_twin_engine_mix();
+ 
+-    // cope with tailsitters and bicopters
+-    quadplane.tailsitter_output();
+-    quadplane.tiltrotor_bicopter();
++        // cope with tailsitters and bicopters
++        quadplane.tailsitter_output();
++        quadplane.tiltrotor_bicopter();
+ 
+-    // run vtail and elevon mixers
+-    servo_output_mixers();
++        // run vtail and elevon mixers
++        servo_output_mixers();
+ 
+-    // support MANUAL_RCMASK
+-    if (g2.manual_rc_mask.get() != 0 && control_mode == &mode_manual) {
+-        SRV_Channels::copy_radio_in_out_mask(uint16_t(g2.manual_rc_mask.get()));
+-    }
++        // support MANUAL_RCMASK
++        if (g2.manual_rc_mask.get() != 0 && control_mode == &mode_manual) {
++            SRV_Channels::copy_radio_in_out_mask(uint16_t(g2.manual_rc_mask.get()));
++        }
+ 
+-    SRV_Channels::calc_pwm();
++        SRV_Channels::calc_pwm();
++
++    }
+ 
+     SRV_Channels::output_ch_all();
+ 
+     SRV_Channels::push();
+ 
+-    if (g2.servo_channels.auto_trim_enabled()) {
++    if (g2.servo_channels.auto_trim_enabled() && control_mode != &mode_custom) {
+         servos_auto_trim();
+     }
+ }
+diff --git a/libraries/AP_Common/MatlabController.cpp b/libraries/AP_Common/MatlabController.cpp
+new file mode 100644
+index 0000000000..2061147151
+--- /dev/null
++++ b/libraries/AP_Common/MatlabController.cpp
+@@ -0,0 +1,92 @@
++//
++// Sponsored License - for use in support of a program or activity
++// sponsored by MathWorks.  Not for government, commercial or other
++// non-sponsored organizational use.
++//
++// File: MatlabController.cpp
++//
++// Code generated for Simulink model 'MatlabController'.
++//
++// Model version                  : 1.398
++// Simulink Coder version         : 9.0 (R2018b) 24-May-2018
++// C/C++ source code generated on : Fri Apr 23 12:15:54 2021
++//
++// Target selection: ert.tlc
++// Embedded hardware selection: Intel->x86-64 (Linux 64)
++// Code generation objectives:
++//    1. Execution efficiency
++//    2. RAM efficiency
++// Validation result: Not run
++//
++#include "MatlabController.h"
++
++// Model step function
++void MatlabControllerClass::step()
++{
++  // MATLAB Function: '<S2>/MATLAB Function' incorporates:
++  //   Inport: '<Root>/cmd'
++  //   Inport: '<Root>/measure'
++  //   Outport: '<Root>/channels'
++
++  rtY.channels[0] = rtU.cmd.roll;
++  rtY.channels[1] = rtU.cmd.pitch;
++  rtY.channels[2] = rtU.cmd.thr;
++  rtY.channels[3] = rtU.cmd.yaw;
++  rtY.channels[4] = rtU.measure.rangefinder[0];
++  rtY.channels[5] = rtU.measure.rangefinder[1];
++  rtY.channels[6] = rtU.measure.rangefinder[2];
++  rtY.channels[7] = rtU.measure.rangefinder[3];
++
++  // Outport: '<Root>/logs' incorporates:
++  //   Inport: '<Root>/cmd'
++  //   Inport: '<Root>/measure'
++
++  rtY.logs[0] = rtU.cmd.roll;
++  rtY.logs[1] = rtU.cmd.pitch;
++  rtY.logs[2] = rtU.cmd.yaw;
++  rtY.logs[3] = rtU.cmd.thr;
++  rtY.logs[4] = rtU.measure.omega_Kb[0];
++  rtY.logs[7] = rtU.measure.EulerAngles[0];
++  rtY.logs[10] = rtU.measure.V_Kg[0];
++  rtY.logs[5] = rtU.measure.omega_Kb[1];
++  rtY.logs[8] = rtU.measure.EulerAngles[1];
++  rtY.logs[11] = rtU.measure.V_Kg[1];
++  rtY.logs[6] = rtU.measure.omega_Kb[2];
++  rtY.logs[9] = rtU.measure.EulerAngles[2];
++  rtY.logs[12] = rtU.measure.V_Kg[2];
++  rtY.logs[13] = 0.0F;
++  rtY.logs[14] = 0.0F;
++}
++
++// Model initialize function
++void MatlabControllerClass::initialize()
++{
++  {
++    int32_T i;
++
++    // ConstCode for Outport: '<Root>/function_channels'
++    for (i = 0; i < 8; i++) {
++      rtY.function_channels[i] = rtConstB.DataTypeConversion1[i];
++    }
++
++    // End of ConstCode for Outport: '<Root>/function_channels'
++  }
++}
++
++// Constructor
++MatlabControllerClass::MatlabControllerClass()
++{
++  // Currently there is no constructor body generated.
++}
++
++// Destructor
++MatlabControllerClass::~MatlabControllerClass()
++{
++  // Currently there is no destructor body generated.
++}
++
++//
++// File trailer for generated code.
++//
++// [EOF]
++//
+diff --git a/libraries/AP_Common/MatlabController.h b/libraries/AP_Common/MatlabController.h
+new file mode 100644
+index 0000000000..d7f667e9d9
+--- /dev/null
++++ b/libraries/AP_Common/MatlabController.h
+@@ -0,0 +1,139 @@
++//
++// Sponsored License - for use in support of a program or activity
++// sponsored by MathWorks.  Not for government, commercial or other
++// non-sponsored organizational use.
++//
++// File: MatlabController.h
++//
++// Code generated for Simulink model 'MatlabController'.
++//
++// Model version                  : 1.398
++// Simulink Coder version         : 9.0 (R2018b) 24-May-2018
++// C/C++ source code generated on : Fri Apr 23 12:15:54 2021
++//
++// Target selection: ert.tlc
++// Embedded hardware selection: Intel->x86-64 (Linux 64)
++// Code generation objectives:
++//    1. Execution efficiency
++//    2. RAM efficiency
++// Validation result: Not run
++//
++#ifndef RTW_HEADER_MatlabController_h_
++#define RTW_HEADER_MatlabController_h_
++#include "rtwtypes.h"
++#ifndef MatlabController_COMMON_INCLUDES_
++# define MatlabController_COMMON_INCLUDES_
++#include "rtwtypes.h"
++#endif                                 // MatlabController_COMMON_INCLUDES_
++
++// Macros for accessing real-time model data structure
++#ifndef DEFINED_TYPEDEF_FOR_cmdBus_
++#define DEFINED_TYPEDEF_FOR_cmdBus_
++
++typedef struct {
++  real32_T roll;
++  real32_T pitch;
++  real32_T yaw;
++  real32_T thr;
++  real32_T s_Kg_init[3];
++  real32_T yaw_init;
++  real32_T RC1_pwm;
++} cmdBus;
++
++#endif
++
++#ifndef DEFINED_TYPEDEF_FOR_measureBus_
++#define DEFINED_TYPEDEF_FOR_measureBus_
++
++typedef struct {
++  real32_T omega_Kb[3];
++  real32_T EulerAngles[3];
++  real32_T q_bg[4];
++  real32_T a_Kg[3];
++  real32_T V_Kg[3];
++  real32_T s_Kg[3];
++  real32_T lla[3];
++  real32_T rangefinder[6];
++} measureBus;
++
++#endif
++
++// Invariant block signals (default storage)
++typedef const struct tag_ConstB {
++  uint16_T DataTypeConversion1[8];     // '<S1>/Data Type Conversion1'
++} ConstB;
++
++// External inputs (root inport signals with default storage)
++typedef struct {
++  cmdBus cmd;                          // '<Root>/cmd'
++  measureBus measure;                  // '<Root>/measure'
++} ExtU;
++
++// External outputs (root outports fed by signals with default storage)
++typedef struct {
++  real32_T channels[8];                // '<Root>/channels'
++  real32_T logs[15];                   // '<Root>/logs'
++  uint16_T function_channels[8];       // '<Root>/function_channels'
++} ExtY;
++
++extern const ConstB rtConstB;          // constant block i/o
++
++// Class declaration for model MatlabController
++class MatlabControllerClass {
++  // public data and function members
++ public:
++  // External inputs
++  ExtU rtU;
++
++  // External outputs
++  ExtY rtY;
++
++  // model initialize function
++  void initialize();
++
++  // model step function
++  void step();
++
++  // Constructor
++  MatlabControllerClass();
++
++  // Destructor
++  ~MatlabControllerClass();
++
++  // private data and function members
++ private:
++};
++
++//-
++//  These blocks were eliminated from the model due to optimizations:
++//
++//  Block '<S1>/Data Type Conversion' : Eliminate redundant data type conversion
++
++
++//-
++//  The generated code includes comments that allow you to trace directly
++//  back to the appropriate location in the model.  The basic format
++//  is <system>/block_name, where system is the system number (uniquely
++//  assigned by Simulink) and block_name is the name of the block.
++//
++//  Use the MATLAB hilite_system command to trace the generated code back
++//  to the model.  For example,
++//
++//  hilite_system('<S3>')    - opens system 3
++//  hilite_system('<S3>/Kp') - opens and selects block Kp which resides in S3
++//
++//  Here is the system hierarchy for this model
++//
++//  '<Root>' : 'MatlabController'
++//  '<S1>'   : 'MatlabController/Actuator muxer'
++//  '<S2>'   : 'MatlabController/dummy test controller'
++//  '<S3>'   : 'MatlabController/log muxer'
++//  '<S4>'   : 'MatlabController/dummy test controller/MATLAB Function'
++
++#endif                                 // RTW_HEADER_MatlabController_h_
++
++//
++// File trailer for generated code.
++//
++// [EOF]
++//
+diff --git a/libraries/AP_Common/MatlabController_data.cpp b/libraries/AP_Common/MatlabController_data.cpp
+new file mode 100644
+index 0000000000..0a189a1a31
+--- /dev/null
++++ b/libraries/AP_Common/MatlabController_data.cpp
+@@ -0,0 +1,42 @@
++//
++// Sponsored License - for use in support of a program or activity
++// sponsored by MathWorks.  Not for government, commercial or other
++// non-sponsored organizational use.
++//
++// File: MatlabController_data.cpp
++//
++// Code generated for Simulink model 'MatlabController'.
++//
++// Model version                  : 1.398
++// Simulink Coder version         : 9.0 (R2018b) 24-May-2018
++// C/C++ source code generated on : Fri Apr 23 12:15:54 2021
++//
++// Target selection: ert.tlc
++// Embedded hardware selection: Intel->x86-64 (Linux 64)
++// Code generation objectives:
++//    1. Execution efficiency
++//    2. RAM efficiency
++// Validation result: Not run
++//
++#include "MatlabController.h"
++
++// Invariant block signals (default storage)
++const ConstB rtConstB = {
++  {
++    4U,
++    19U,
++    70U,
++    21U,
++    0U,
++    0U,
++    0U,
++    0U
++  }
++  // '<S1>/Data Type Conversion1'
++};
++
++//
++// File trailer for generated code.
++//
++// [EOF]
++//
+diff --git a/libraries/AP_Common/rtwtypes.h b/libraries/AP_Common/rtwtypes.h
+new file mode 100644
+index 0000000000..5369712409
+--- /dev/null
++++ b/libraries/AP_Common/rtwtypes.h
+@@ -0,0 +1,106 @@
++//
++// Sponsored License - for use in support of a program or activity
++// sponsored by MathWorks.  Not for government, commercial or other
++// non-sponsored organizational use.
++//
++// File: rtwtypes.h
++//
++// Code generated for Simulink model 'MatlabController'.
++//
++// Model version                  : 1.398
++// Simulink Coder version         : 9.0 (R2018b) 24-May-2018
++// C/C++ source code generated on : Fri Apr 23 12:15:54 2021
++//
++// Target selection: ert.tlc
++// Embedded hardware selection: Intel->x86-64 (Linux 64)
++// Code generation objectives:
++//    1. Execution efficiency
++//    2. RAM efficiency
++// Validation result: Not run
++//
++
++#ifndef RTWTYPES_H
++#define RTWTYPES_H
++
++// Logical type definitions
++#if (!defined(__cplusplus))
++#  ifndef false
++#   define false                       (0U)
++#  endif
++
++#  ifndef true
++#   define true                        (1U)
++#  endif
++#endif
++
++//=======================================================================*
++//  Target hardware information
++//    Device type: Intel->x86-64 (Linux 64)
++//    Number of bits:     char:   8    short:   16    int:  32
++//                        long:  64    long long:  64
++//                        native word size:  64
++//    Byte ordering: LittleEndian
++//    Signed integer division rounds to: Zero
++//    Shift right on a signed integer as arithmetic shift: on
++// =======================================================================
++
++//=======================================================================*
++//  Fixed width word size data types:                                     *
++//    int8_T, int16_T, int32_T     - signed 8, 16, or 32 bit integers     *
++//    uint8_T, uint16_T, uint32_T  - unsigned 8, 16, or 32 bit integers   *
++//    real32_T, real64_T           - 32 and 64 bit floating point numbers *
++// =======================================================================
++typedef signed char int8_T;
++typedef unsigned char uint8_T;
++typedef short int16_T;
++typedef unsigned short uint16_T;
++typedef int int32_T;
++typedef unsigned int uint32_T;
++typedef long int64_T;
++typedef unsigned long uint64_T;
++typedef float real32_T;
++typedef double real64_T;
++
++//===========================================================================*
++//  Generic type definitions: boolean_T, char_T, byte_T, int_T, uint_T,       *
++//                            real_T, time_T, ulong_T, ulonglong_T.           *
++// ===========================================================================
++typedef double real_T;
++typedef double time_T;
++typedef unsigned char boolean_T;
++typedef int int_T;
++typedef unsigned int uint_T;
++typedef unsigned long ulong_T;
++typedef unsigned long long ulonglong_T;
++typedef char char_T;
++typedef unsigned char uchar_T;
++typedef char_T byte_T;
++
++//=======================================================================*
++//  Min and Max:                                                          *
++//    int8_T, int16_T, int32_T     - signed 8, 16, or 32 bit integers     *
++//    uint8_T, uint16_T, uint32_T  - unsigned 8, 16, or 32 bit integers   *
++// =======================================================================
++#define MAX_int8_T                     ((int8_T)(127))
++#define MIN_int8_T                     ((int8_T)(-128))
++#define MAX_uint8_T                    ((uint8_T)(255U))
++#define MAX_int16_T                    ((int16_T)(32767))
++#define MIN_int16_T                    ((int16_T)(-32768))
++#define MAX_uint16_T                   ((uint16_T)(65535U))
++#define MAX_int32_T                    ((int32_T)(2147483647))
++#define MIN_int32_T                    ((int32_T)(-2147483647-1))
++#define MAX_uint32_T                   ((uint32_T)(0xFFFFFFFFU))
++#define MAX_int64_T                    ((int64_T)(9223372036854775807L))
++#define MIN_int64_T                    ((int64_T)(-9223372036854775807L-1L))
++#define MAX_uint64_T                   ((uint64_T)(0xFFFFFFFFFFFFFFFFUL))
++
++// Block D-Work pointer type
++typedef void * pointer_T;
++
++#endif                                 // RTWTYPES_H
++
++//
++// File trailer for generated code.
++//
++// [EOF]
++//
+diff --git a/libraries/AP_HAL_SITL/SITL_cmdline.cpp b/libraries/AP_HAL_SITL/SITL_cmdline.cpp
+index 052f87e1ea..6b3fa8d148 100644
+--- a/libraries/AP_HAL_SITL/SITL_cmdline.cpp
++++ b/libraries/AP_HAL_SITL/SITL_cmdline.cpp
+@@ -34,6 +34,7 @@
+ #include <SITL/SIM_Scrimmage.h>
+ #include <SITL/SIM_Webots.h>
+ #include <SITL/SIM_JSON.h>
++#include <SITL/SIM_Simulink.h>
+ 
+ #include <signal.h>
+ #include <stdio.h>
+@@ -151,6 +152,7 @@ static const struct {
+     { "scrimmage",          Scrimmage::create },
+     { "webots",             Webots::create },
+     { "JSON",               JSON::create },
++    { "simulink",           Simulink::create },
+ };
+ 
+ void SITL_State::_set_signal_handlers(void) const
+diff --git a/libraries/SITL/SIM_Simulink.cpp b/libraries/SITL/SIM_Simulink.cpp
+new file mode 100644
+index 0000000000..c7f89dc979
+--- /dev/null
++++ b/libraries/SITL/SIM_Simulink.cpp
+@@ -0,0 +1,183 @@
++/*
++   This program is free software: you can redistribute it and/or modify
++   it under the terms of the GNU General Public License as published by
++   the Free Software Foundation, either version 3 of the License, or
++   (at your option) any later version.
++
++   This program is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++   GNU General Public License for more details.
++
++   You should have received a copy of the GNU General Public License
++   along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++/*
++  simulator connector for ardupilot version of Simulink
++*/
++
++#include "SIM_Simulink.h"
++
++#include <stdio.h>
++#include <errno.h>
++
++#include <AP_HAL/AP_HAL.h>
++
++extern const AP_HAL::HAL& hal;
++
++namespace SITL {
++
++Simulink::Simulink(const char *frame_str) :
++    Aircraft(frame_str),
++    last_timestamp(0),
++    socket_sitl{true}
++{
++    fprintf(stdout, "Starting SITL Simulink\n");
++}
++
++/*
++  Create and set in/out socket
++*/
++void Simulink::set_interface_ports(const char* address, const int port_in, const int port_out)
++{
++    // try to bind to a specific port so that if we restart ArduPilot
++    // Simulink keeps sending us packets. Not strictly necessary but
++    // useful for debugging
++    if (!socket_sitl.bind("0.0.0.0", port_in)) {
++        fprintf(stderr, "SITL: socket in bind failed on sim in : %d  - %s\n", port_in, strerror(errno));
++        fprintf(stderr, "Aborting launch...\n");
++        exit(1);
++    }
++    printf("Bind %s:%d for SITL in\n", "127.0.0.1", port_in);
++    socket_sitl.reuseaddress();
++    socket_sitl.set_blocking(false);
++
++    _simulink_address = address;
++    _simulink_port = port_out;
++    printf("Setting Simulink interface to %s:%d \n", _simulink_address, _simulink_port);
++}
++
++/*
++  decode and send servos
++*/
++void Simulink::send_servos(const struct sitl_input &input)
++{
++    servo_packet pkt;
++    // should rename servo_command
++    // 16 because struct sitl_input.servos is 16 large in SIM_Aircraft.h
++    for (unsigned i = 0; i < 16; ++i)
++    {
++      pkt.servo_pwm[i] = input.servos[i];
++    }
++    pkt.wall_time_ms = get_wall_time_us();
++    pkt.sim_time_ms  = time_now_us ;
++    pkt.frame_rate   = rate_hz;
++    pkt.frame_count  = frame_counter;
++
++    socket_sitl.sendto(&pkt, sizeof(pkt), _simulink_address, _simulink_port);
++}
++
++/*
++  receive an update from the FDM
++  This is a blocking function
++ */
++void Simulink::recv_fdm(const struct sitl_input &input)
++{
++    fdm_packet pkt;
++
++    /*
++      we re-send the servo packet every 0.1 seconds until we get a
++      reply. This allows us to cope with some packet loss to the FDM
++     */
++    while (socket_sitl.recv(&pkt, sizeof(pkt), 100) != sizeof(pkt)) {
++        send_servos(input);
++        // Reset the timestamp after a long disconnection, also catch simulink reset
++        if (get_wall_time_us() > last_wall_time_us + SIMULINK_TIMEOUT_US) {
++            last_timestamp = 0;
++        }
++    }
++
++    const double deltat = pkt.timestamp - last_timestamp;  // in seconds
++    if (deltat < 0) {  // don't use old packet
++        time_now_us += 1;
++        return;
++    }
++    // get imu stuff
++    accel_body = Vector3f(static_cast<float>(pkt.imu_linear_acceleration_xyz[0]),
++                          static_cast<float>(pkt.imu_linear_acceleration_xyz[1]),
++                          static_cast<float>(pkt.imu_linear_acceleration_xyz[2]));
++
++    gyro = Vector3f(static_cast<float>(pkt.imu_angular_velocity_rpy[0]),
++                    static_cast<float>(pkt.imu_angular_velocity_rpy[1]),
++                    static_cast<float>(pkt.imu_angular_velocity_rpy[2]));
++
++    // compute dcm from imu orientation
++    Quaternion quat(static_cast<float>(pkt.imu_orientation_quat[0]),
++                    static_cast<float>(pkt.imu_orientation_quat[1]),
++                    static_cast<float>(pkt.imu_orientation_quat[2]),
++                    static_cast<float>(pkt.imu_orientation_quat[3]));
++    quat.rotation_matrix(dcm);
++
++    velocity_ef = Vector3f(static_cast<float>(pkt.velocity_xyz[0]),
++                           static_cast<float>(pkt.velocity_xyz[1]),
++                           static_cast<float>(pkt.velocity_xyz[2]));
++
++    position = Vector3f(static_cast<float>(pkt.position_xyz[0]),
++                        static_cast<float>(pkt.position_xyz[1]),
++                        static_cast<float>(pkt.position_xyz[2]));
++
++    for (uint8_t i=0; i<6; i++) {
++        rangefinder_m[i] = static_cast<float>(pkt.rangefinder_m[i]);
++    }
++
++    // auto-adjust to simulation frame rate
++    time_now_us += static_cast<uint64_t>(deltat * 1.0e6);
++
++    if (deltat < 0.02 && deltat > 0.0) {
++        adjust_frame_time(static_cast<float>(1.0/deltat));
++    }
++    last_timestamp = pkt.timestamp;
++
++    frame_counter++;
++
++}
++
++/*
++  Drain remaining data on the socket to prevent phase lag.
++ */
++void Simulink::drain_sockets()
++{
++    const uint16_t buflen = 1024;
++    char buf[buflen];
++    ssize_t received;
++    errno = 0;
++    do {
++        received = socket_sitl.recv(buf, buflen, 0);
++        if (received < 0) {
++            if (errno != EAGAIN && errno != EWOULDBLOCK && errno != 0) {
++                fprintf(stderr, "error recv on socket in: %s \n",
++                        strerror(errno));
++            }
++        } else {
++            // fprintf(stderr, "received from control socket: %s\n", buf);
++        }
++    } while (received > 0);
++
++}
++
++/*
++  update the Simulink simulation by one time step
++ */
++void Simulink::update(const struct sitl_input &input)
++{
++    send_servos(input);
++    recv_fdm(input);
++    update_position();
++
++    time_advance();
++    // update magnetic field
++    update_mag_field_bf();
++    drain_sockets();
++}
++
++}  // namespace SITL
+diff --git a/libraries/SITL/SIM_Simulink.h b/libraries/SITL/SIM_Simulink.h
+new file mode 100644
+index 0000000000..37fe4f093a
+--- /dev/null
++++ b/libraries/SITL/SIM_Simulink.h
+@@ -0,0 +1,83 @@
++/*
++   This program is free software: you can redistribute it and/or modify
++   it under the terms of the GNU General Public License as published by
++   the Free Software Foundation, either version 3 of the License, or
++   (at your option) any later version.
++
++   This program is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++   GNU General Public License for more details.
++
++   You should have received a copy of the GNU General Public License
++   along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++/*
++  simulator connection for ardupilot version of Simulink
++*/
++
++#pragma once
++
++#include "SIM_Aircraft.h"
++#include <AP_HAL/utility/Socket.h>
++
++namespace SITL {
++
++/*
++  Simulink simulator
++ */
++class Simulink : public Aircraft {
++public:
++    Simulink(const char *frame_str);
++
++    /* update model by one time step */
++    void update(const struct sitl_input &input) override;
++
++    /* static object creator */
++    static Aircraft *create(const char *frame_str) {
++        return new Simulink(frame_str);
++    }
++
++    /*  Create and set in/out socket for Simulink simulator */
++    void set_interface_ports(const char* address, const int port_in, const int port_out) override;
++
++private:
++    /*
++      packet sent to Simulink
++     */
++    struct servo_packet {
++      // size matches sitl_input upstream
++      double servo_pwm[16];
++      uint32_t wall_time_ms;
++      uint32_t sim_time_ms;
++      uint32_t frame_count;
++      uint16_t frame_rate;
++    };
++
++    /*
++      reply packet sent from Simulink to ArduPilot
++     */
++    struct fdm_packet {
++      double timestamp;  // in seconds
++      double imu_angular_velocity_rpy[3];
++      double imu_linear_acceleration_xyz[3];
++      double imu_orientation_quat[4];
++      double velocity_xyz[3];
++      double position_xyz[3];
++      double rangefinder_m[6];
++    };
++
++    void recv_fdm(const struct sitl_input &input);
++    void send_servos(const struct sitl_input &input);
++    void drain_sockets();
++
++    uint32_t frame_counter;
++    double last_timestamp;
++
++    SocketAPM socket_sitl;
++    const char *_simulink_address = "127.0.0.1";
++    int _simulink_port = 9002;
++    static const uint64_t SIMULINK_TIMEOUT_US = 5000000;
++};
++
++}  // namespace SITL
