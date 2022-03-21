@@ -31,7 +31,7 @@ function n_g_des = indiCopterAcc2LeanVector( nu_s_g_dt2, s_g_dt2, M_bg, g )
 %       116-130.
 % 
 % See also:
-% 	controlEffectiveness2G1G2
+% 	ndiCopterAcc2LeanVector, controlEffectiveness2G1G2
 
 % Disclamer:
 %   SPDX-License-Identifier: GPL-2.0-only
@@ -41,10 +41,10 @@ function n_g_des = indiCopterAcc2LeanVector( nu_s_g_dt2, s_g_dt2, M_bg, g )
 % *************************************************************************
 
 % initial desired lean vector, see [1], eq. (24)
-n_g_des_init = indiCopterAcc2LeanVectorSub( nu_s_g_dt2, g );
+n_g_des_init = ndiCopterAcc2LeanVector( nu_s_g_dt2, g );
 
 % estimated actual lean vector from measured acceleration
-n_g_est = indiCopterAcc2LeanVectorSub( s_g_dt2, g );
+n_g_est = ndiCopterAcc2LeanVector( s_g_dt2, g );
 
 % desired lean angle increment
 Delta_n_g_des = n_g_des_init - n_g_est;
@@ -56,10 +56,4 @@ n_g_mes = dcm2LeanVector( M_bg );
 n_g_des = n_g_mes + Delta_n_g_des;
 n_g_des =  divideFinite( n_g_des, norm( n_g_des, 2 ) );
 
-end
-
-function n_g = indiCopterAcc2LeanVectorSub( a_g, g )
-% convert acceleration to lean vector, see [1], eq. (24)
-g_g = [0;0;g];
-n_g = ( a_g - g_g ) / norm( a_g - g_g, 2 );
 end
