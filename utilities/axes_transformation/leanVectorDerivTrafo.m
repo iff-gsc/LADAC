@@ -22,7 +22,7 @@ function [ n_b, n_b_dt, n_b_dt2 ] = leanVectorDerivTrafo( n_g, n_g_dt, ...
 %   omega_Kb_dt     time derivative of input omega_Kb
 % 
 % Outputs:
-%   n_b             lean vector (3x1 array) represented in frame g,
+%   n_b             lean vector (3x1 array) represented in frame b,
 %                   dimensionless
 %   n_b_dt          time derivative of output n_b
 %   n_b_dt2         second time derivative of output n_b
@@ -44,13 +44,13 @@ function [ n_b, n_b_dt, n_b_dt2 ] = leanVectorDerivTrafo( n_g, n_g_dt, ...
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-% time derivative of rotation matrix
-M_bg_dt = dcmDerivFromOmega( M_bg', omega_Kb )';
-
 n_b = M_bg*n_g;
 
 % [1], eq. (7)
 n_b_dt = -cross(omega_Kb,n_b) + M_bg*n_g_dt;
+
+% time derivative of rotation matrix
+M_bg_dt = dcmDerivFromOmega( M_bg', omega_Kb )';
 
 % time derivative of [1], eq. (7)
 n_b_dt2 = - cross(omega_Kb_dt,n_b) - cross(omega_Kb,n_b_dt) ...
