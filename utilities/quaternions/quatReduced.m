@@ -48,6 +48,10 @@ q_yaw = quatMultiply( quatInv(q_red), q_bg );
 
 % [1], eq. (20) and eq. (1)
 q_yaw = quatNormalize(q_yaw);
-yaw = 2*acosReal( sign(q_yaw(4)) * q_yaw(1) );
+if sign(q_yaw(4)) >= 0
+    yaw = 2*acosReal( q_yaw(1) );
+else
+    yaw = 2*acosReal( -q_yaw(1) );
+end
 
 end
