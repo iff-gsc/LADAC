@@ -40,17 +40,11 @@ function n_g_des = indiCopterAcc2LeanVector( nu_s_g_dt2, s_g_dt2, M_bg, g )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-% initial desired lean vector, see [1], eq. (24)
-n_g_des_init = ndiCopterAcc2LeanVector( nu_s_g_dt2, g );
-
-% estimated actual lean vector from measured acceleration
-n_g_est = ndiCopterAcc2LeanVector( s_g_dt2, g );
-
-% desired lean angle increment
-Delta_n_g_des = n_g_des_init - n_g_est;
-
 % measured actual lean vector
 n_g_mes = dcm2LeanVector( M_bg );
+
+% desired lean angle increment
+Delta_n_g_des = (nu_s_g_dt2 - s_g_dt2) / norm( s_g_dt2 - [0;0;g], 2 ); 
 
 % increment desired lean angle and assure unit vector
 n_g_des = n_g_mes + Delta_n_g_des;
