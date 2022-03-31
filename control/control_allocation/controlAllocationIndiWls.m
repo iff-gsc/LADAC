@@ -1,19 +1,24 @@
 function [ Delta_u, W, iter ] = controlAllocationIndiWls( ca, ...
     B, Delta_nu, u, Delta_u_d, Delta_gamma )
+% controlAllocationIndiWls adapt WLS control allocation for INDI
+%   The adaption of WLS control allocation for INDI is described in [1].
 % 
 % Inputs:
 %   ca                  control allocation parameters struct, see
 %                       controlAllocationWlsLoadParams
-%   B                   control effectiveness matrix
-%   u                   current control input vector
-%   Delta_nu            
-%   Delta_u_d           
-%   Delta_gamma         
+%   B                   control effectiveness matrix (NxM array)
+%   Delta_nu            Incremental pseudo-control input vector (Nx1 array)
+%   u                   current control input vector (Mx1 array)
+%   Delta_u_d           online adjustment of desired u (scalar or Mx1
+%                       array); should be 0 if not needed.
+%   Delta_gamma         online adjustment of ca.gamma (scalar); should be 0
+%                       if not needed.
 %   
 % Outputs:
-%   Delta_u             optimal incremental control input vector
-%   W                   optimal active set
-%   iter                number of iterations
+%   Delta_u             optimal incremental control input vector (Mx1
+%                       array)
+%   W                   optimal active set (Mx1 array)
+%   iter                number of iterations (scalar)
 % 
 % Literature:
 %   [1] Smeur, E., Höppener, D., & Wagter, C. D. (2017). Prioritized
@@ -28,18 +33,21 @@ function [ Delta_u, W, iter ] = controlAllocationIndiWls( ca, ...
 % Disclamer:
 %   SPDX-License-Identifier: GPL-2.0-only
 % 
-%   Copyright (C) 2019-2022 First Author
-%   Copyright (C) 2022 Second Author
+%   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-gamma = ca.gamma + Delta_gamma;
+% adjustments according to [1]
+umin    = ca.u_min - u;
+umax    = ca.u_max - u;
+ud      = ca.u_d - u;
+u0      = 0.5 * (umin+umax);
 
-umin = ca.u_min - u;
-umax = ca.u_max - u;
-ud = ca.u_d - u + Delta_u_d;
-u0 = 0.5 * (umin+umax);
+% adjustments of online WLS parameter changes
+gamma   = ca.gamma + Delta_gamma;
+ud      = ud + Delta_u_d;
 
+% run WLS
 [ Delta_u, W, iter ] = wls_alloc( B, Delta_nu, umin, umax, ...
                     ca.W_v, ca.W_u, ud, gamma, u0, ca.W, ca.i_max );
 
