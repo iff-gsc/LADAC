@@ -9,48 +9,48 @@
 
 % angular velocity of FRD frame relative to the earth represented in FRD
 % frame, in rad/s
-measure.omega_Kb    = single(zeros(3,1));
+measure.omega_Kb    = zeros(3,1);
 % Euler angles of FRD frame relative to NED frame, in 1
-measure.EulerAngles = single(zeros(3,1));
+measure.EulerAngles = zeros(3,1);
 % quaternion from NED to FRD frame
-measure.q_bg        = single(euler2Quat(measure.EulerAngles));
+measure.q_bg        = euler2Quat(measure.EulerAngles);
 % measured acceleration represented in NED frame, in m/s^2
-measure.a_Kg        = single(zeros(3,1));
+measure.a_Kg        = zeros(3,1);
 % velocity of FRD frame relative to the earth represented in FRD frame, in
 % m/s
-measure.V_Kg        = single(zeros(3,1));
+measure.V_Kg        = zeros(3,1);
 % local position NED, in m
-measure.s_Kg        = single(zeros(3,1));
+measure.s_Kg        = zeros(3,1);
 % global position (latitude, longitude, altitude), in (?,?,m)
-measure.lla         = single(zeros(3,1));
+measure.lla         = zeros(3,1);
 % rangefinders in (m)
-measure.rangefinder = single(zeros(6,1));
+measure.rangefinder = zeros(6,1);
 
 %% commanded values
 % stick inputs:
 % roll command, -1 ... 1
-cmd.roll            = single(0);
+cmd.roll            = 0;
 % pitch command, -1 ... 1
-cmd.pitch           = single(0);
+cmd.pitch           = 0;
 % yaw command, -1 ... 1
-cmd.yaw             = single(0);
+cmd.yaw             = 0;
 % throttle, -1 ... 1
-cmd.thr             = single(0);
+cmd.thr             = 0;
 
 % initial values:
 % position (NED frame) for initializing integrator
-cmd.s_Kg_init       = single(zeros(3,1));
+cmd.s_Kg_init       = zeros(3,1);
 % yaw for initializing integrator
-cmd.yaw_init        = single(0);
+cmd.yaw_init        = 0;
 
 % Parameters for waypoint mission
 cmd.mission_change = uint16(0);
-cmd.waypoints      = single(zeros(4,10));
+cmd.waypoints      = zeros(4,10);
 %In this case the maximum number of waypoints is 10. 
 cmd.num_waypoints  = uint16(0);
 
 % RC PWM input
-cmd.RC_pwm         = single(zeros(16,1));
+cmd.RC_pwm         = zeros(16,1);
 
 %% SampleTime for ArduPilot (s)
 

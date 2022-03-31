@@ -1,4 +1,4 @@
-# Implement your MATLAB/Simulink controller in ArduCopter for flight tests
+# Implement your MATLAB/Simulink controller in ArduPilot for flight tests
 
 This is a toolchain which implements your MATLAB/Simulink controller in ArduPilot.
 Currently supported: ArduCopter and ArduPlane.  
@@ -117,6 +117,7 @@ Step 1-3 must be adjusted as follows. For the remaining steps please follow the 
   ```
   If you need interfaces that are not supported by the LADAC blocks, you have to adjust the `initInterfaceBuses.m` and the `mode_custom.cpp` in the ArduPilot patch and probably other files in the ArduPilot patch, see [Contribute](Contribure) section.
 - Generate C/C++ code from the Simulink file: https://de.mathworks.com/help/dsp/ug/generate-c-code-from-simulink-model.html
+Note that floating points should be 32-bit! This is assured in the Simulink template files because the following parameters were set: `set_param(gcs, 'DefaultUnderspecifiedDataType', 'single')` and `set_param(gcs, 'DataTypeOverride', 'Single','DataTypeOverrideAppliesTo','Floating-point')`
 - You need only four files of the generated code: `MatlabController.cpp`, `MatlabController.h`, `MatlabController_data.cpp` and `rtwtypes.h`. 
   If you used referenced systems, there might be additional files (the code generation report will tell you which files are needed).
   Store these files in one folder and copy the content into your local ArduPilot repository.  
