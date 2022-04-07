@@ -1,10 +1,10 @@
-function atti_cntrl = cntrlAttiRedIndiLoadParams( filename )
+function atc = cntrlAttiRedIndiLoadParams( filename )
 % cntrlAttiRedIndiLoadParams loads a reduced attitude controller for INDI
 %   struct
 % 
 % Example:
-%  atti_cntrl = cntrlAttiRedIndiLoadParams( ...
-%   'cntrl_atti_red_indi_params_default' );
+%  atc = cntrlAttiRedIndiLoadParams( ...
+%   'cntrlAttiRedIndi_params_default' );
 % 
 
 % Disclamer:

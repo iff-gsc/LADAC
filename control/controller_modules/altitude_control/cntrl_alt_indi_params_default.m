@@ -26,7 +26,3 @@ alt_cntrl.rm.w.dt_down = 4;
 alt_cntrl.K = [ ...
          5.0000    4.6607    0.0611 ...
     ];
-
-%% attitude controller
-
-alt_cntrl.atti_cntrl = cntrlAttiRedIndiLoadParams('cntrl_atti_red_indi_params_default');

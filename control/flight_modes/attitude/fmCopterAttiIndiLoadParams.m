@@ -4,7 +4,7 @@ function fm_atti = fmCopterAttiIndiLoadParams( filename )
 % 
 % Example:
 %  fm_atti = fmCopterAttiIndiLoadParams( ...
-%   'fm_copter_atti_indi_params_default' );
+%   'fmCopterAttiIndi_params_default' );
 % 
 
 % Disclamer:

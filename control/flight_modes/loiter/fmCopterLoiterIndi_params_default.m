@@ -8,12 +8,12 @@
 % *************************************************************************
 
 % attitude controller
-fm_loiter.atti_cntrl = cntrlAttiRedIndiLoadParams( ...
-    'cntrl_atti_red_indi_params_default');
+fm_loiter.atc = cntrlAttiRedIndiLoadParams( ...
+    'cntrlAttiRedIndi_params_default');
 
 % position position controller
-fm_loiter.pos_cntrl = cntrlPosNdiLoadParams( ...
-    'cntrl_pos_ndi_params_default' );
+fm_loiter.psc = cntrlPosNdiLoadParams( ...
+    'cntrlPosNdi_params_default' );
 
 % control effectiveness
 fm_loiter.cntrl_effect = controlEffectivenessLoadParams( ...

@@ -8,6 +8,10 @@
 % *************************************************************************
 
 % attitude controller
+alt_cntrl.atc = cntrlAttiRedIndiLoadParams( ...
+    'cntrlAttiRedIndi_params_default' );
+
+% attitude controller
 fm_alt_hold.cntrl = cntrlAltIndiLoadParams( ...
     'cntrl_alt_indi_params_default' );
 
