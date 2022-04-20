@@ -4,7 +4,7 @@ function fm_alt_hold = fmCopterAltHoldIndiLoadParams( filename )
 % 
 % Example:
 %  fm_alt_hold = fmCopterAltHoldIndiLoadParams( ...
-%   'fm_copter_alt_hold_indi_params_default' );
+%   'fmCopterAltHoldIndi_params_default' );
 % 
 
 % Disclamer:

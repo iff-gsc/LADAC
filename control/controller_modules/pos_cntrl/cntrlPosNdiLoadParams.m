@@ -1,9 +1,8 @@
-function alt_cntrl = cntrlAltIndiLoadParams( filename )
-% cntrlAltIndiLoadParams loads an altitude hold controller struct
+function psc = cntrlPosNdiLoadParams( filename )
+% cntrlPosIndiLoadParams NDI position controller struct
 % 
 % Example:
-%  atti_cntrl = cntrlAltIndiLoadParams( ...
-%   'cntrl_alt_indi_params_default' );
+%  psc = cntrlPosNdiLoadParams( 'cntrlPosNdi_params_default' );
 % 
 
 % Disclamer:

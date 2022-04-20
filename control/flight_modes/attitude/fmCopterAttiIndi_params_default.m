@@ -8,8 +8,8 @@
 % *************************************************************************
 
 % attitude controller
-fm_atti.cntrl = cntrlAttiRedIndiLoadParams( ...
-    'cntrl_atti_red_indi_params_default' );
+fm_atti.atc = cntrlAttiRedIndiLoadParams( ...
+    'cntrlAttiRedIndi_params_default' );
 
 % control effectiveness
 fm_atti.cntrl_effect = controlEffectivenessLoadParams( ...
