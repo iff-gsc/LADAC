@@ -18,6 +18,8 @@ function structure = structureCreateFromNastran( pch_filename, GRID_path, axis_r
 %                       - M (mass nxn matrix)
 %                       - xyz (node positions 3xn matrix)
 % 
+% See also:
+%   structurePlot, structurePlotEigenmode, structureGetReduced
 
 % Disclamer:
 %   SPDX-License-Identifier: GPL-2.0-only

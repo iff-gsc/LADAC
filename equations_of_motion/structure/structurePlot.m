@@ -3,6 +3,19 @@ function [] = structurePlot( structure )
 %   stiffness matrix and the mass matrix. All connected nodes are
 %   visualized by lines, the node is visualized by a dot and a circle where
 %   the circle size is correlated with the node mass.
+% 
+% Syntax:
+%   structurePlot( structure )
+% 
+% Inputs:
+%   structure           structure struct as specified by
+%                       structureCreateFromNastran
+% 
+% Outputs:
+%   -
+% 
+% See also:
+%   structureCreateFromNastran, structurePlotEigenmode
 
 % Disclamer:
 %   SPDX-License-Identifier: GPL-2.0-only
