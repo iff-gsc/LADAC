@@ -33,12 +33,12 @@ function [ structure_red, omega_red, V, D ] = structureGetReduced( structure, N 
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-% get eigenvalues of eq. (3) in [1], eigenvalues (omega^2) are in Hz^2
+% get eigenvalues of eq. (3) in [1], eigenvalues (omega^2) are in (rad/s)^2
 [V,D] = eig( structure.K, structure.M );
 
 % convert diagonal matrix of eigenvalues into a vector of eigenfrequencies
 % in rad/s
-[omega,idx_omega] = sort(1/(2*pi)*sqrt(diag(abs(D))));
+[omega,idx_omega] = sort(sqrt(diag(abs(D))));
 
 % number of degrees of freedom for every node
 DOF = 0;
