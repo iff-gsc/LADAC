@@ -83,6 +83,7 @@ prm.i = atan( -( pos_matrix_lead(3,1) - pos_matrix_trail(3,1) ) / ( pos_matrix_l
 
 prm.rot_x = atan( (pos_matrix_25(3,end)-pos_matrix_25(3,1)) / (pos_matrix_25(2,end)-pos_matrix_25(2,1)) );
 
+prm.nu = prm.nu + prm.rot_x;
 
     function [x_frd,y_frd,z_frd] = tiglWingGetChordPoint_frd( handle, wing_idx, segment_idx, eta, xsi )
         [x_bru,y_bru,z_bru] = tiglWingGetChordPoint( handle, wing_idx, segment_idx, eta, xsi );
