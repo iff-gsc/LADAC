@@ -20,7 +20,7 @@ function [prm] = wingSetParams(prm)
 
 % aircraft geometry constants
 % wing area (scalar), in m^2
-prm.S = trapz( prm.eta_segments_wing*prm.b, prm.c );  
+prm.S = trapz( prm.eta_segments_wing*prm.b./[1,cos(prm.nu)], prm.c );  
 % aspect ratio, in -
 prm.AR = prm.b^2 / prm.S;
 % taper ratio (total wing), in -

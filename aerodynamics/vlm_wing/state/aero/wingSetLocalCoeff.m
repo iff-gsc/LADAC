@@ -32,12 +32,11 @@ c = wing.params.S/wing.params.b;
 
 if ~wing.config.is_unsteady
     % Compute the aerodynamic force coefficients in aircraft frame
-    % according to [1], eq. 25. Note that in this function we do not
-    % compute the sum of all forces/coefficients and 
-    % v_i = v_inf + sum(G_i+v_ij)
-    wing.state.aero.coeff_loc.c_XYZ_b = 2 * repmat(wing.state.aero.circulation.gamma,3,1) .* cross( wing.state.aero.circulation.v_i, zeta, 1 );
-    c_L = vecnorm( wing.state.aero.coeff_loc.c_XYZ_b, 2, 1 );
-    c_D = zeros(size(c_L));
+    % similar to [1], eq. 25.
+    normal_vector(:) = cross( wing.state.aero.circulation.v_i, zeta, 1 );
+    normal_vector = normal_vector./repmat((vecnorm(normal_vector,2,1)),3,1);
+    wing.state.aero.coeff_loc.c_XYZ_b = repmat( wing.state.aero.circulation.c_L, 3, 1 ) .* normal_vector;
+    c_D = zeros(1,wing.n_panel);
     
     % to do: 'map' supported multiple segments/airfoils per wing but
     % 'analytic' does not
@@ -50,14 +49,14 @@ if ~wing.config.is_unsteady
             fcm = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcm, wing.state.aero.circulation.Ma, wing.airfoil.analytic.ncm, wing.airfoil.analytic.ocm );
             fcl = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcl, wing.state.aero.circulation.Ma, wing.airfoil.analytic.ncl, wing.airfoil.analytic.ocl );
             [ c_L_alpha, alpha_0 ] = airfoilAnalytic0515ClAlphaMax( fcl, wing.state.aero.circulation.Ma(:) );
-            f_st = airfoilDynStallFst( c_L(:), c_L_alpha, wing.state.aero.circulation.alpha_eff(:) - alpha_0 );
-            wing.state.aero.coeff_loc.c_m_airfoil(:) = airfoilAnalyticBlCm( fcm, f_st, c_L(:) );
+            f_st = airfoilDynStallFst( wing.state.aero.circulation.c_L(:), c_L_alpha, wing.state.aero.circulation.alpha_eff(:) - alpha_0 );
+            wing.state.aero.coeff_loc.c_m_airfoil(:) = airfoilAnalyticBlCm( fcm, f_st, wing.state.aero.circulation.c_L(:) );
         case 'simple'
             % drag coefficient
             c_D(:) = airfoilAnalyticSimpleCd( wing.airfoil.simple, ...
                 wing.state.aero.circulation.alpha_eff );
             % local airfoil pitching moment coefficient w.r.t. local c/4
-            wing.state.aero.coeff_loc.c_m_airfoil = airfoilAnalyticSimpleCm(wing.airfoil.simple,c_L);
+            wing.state.aero.coeff_loc.c_m_airfoil = airfoilAnalyticSimpleCm(wing.airfoil.simple,wing.state.aero.circulation.c_L);
     end
     
     % flap moment
@@ -86,11 +85,11 @@ if ~wing.config.is_unsteady
 else
     
     % unsteady coefficients
-    normal_vector(:) = cross( wing.state.aero.circulation.v_i, zeta, 1 );
+    normal_vector(:) = cross( wing.state.aero.unsteady.v_i, zeta, 1 );
     normal_vector = normal_vector./repmat((vecnorm(normal_vector,2,1)),3,1);
     wing.state.aero.coeff_loc.c_XYZ_b = repmat( wing.state.aero.unsteady.c_L_c ...
         + wing.state.aero.unsteady.c_L_nc, 3, 1 ) .* normal_vector ...
-        + repmat( wing.state.aero.unsteady.c_D, 3, 1 ) .* wing.state.aero.circulation.v_i;
+        + repmat( wing.state.aero.unsteady.c_D, 3, 1 ) .* wing.state.aero.unsteady.v_i;
     % local airfoil pitching moment coefficient w.r.t. local c/4
     wing.state.aero.coeff_loc.c_m_airfoil(:) = wing.state.aero.unsteady.c_m_c ...
         + wing.state.aero.unsteady.c_m_nc;

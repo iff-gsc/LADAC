@@ -177,8 +177,8 @@ end
 function geometry = geometryTwist( params, geometry )
     
     if params.is_symmetrical
-        twist_segments_sym = [ params.epsilon, 0, params.epsilon ];
-        y_segments_sym = [ -params.y_segments_wing(2:end), params.y_segments_wing ];
+        twist_segments_sym = [ flip(params.epsilon), 0, params.epsilon ];
+        y_segments_sym = [ flip(-params.y_segments_wing(2:end)), params.y_segments_wing ];
     else
         twist_segments_sym = [0,params.epsilon];
         y_segments_sym = params.y_segments_wing;

@@ -9,6 +9,6 @@ function db = wingGetSegmentSpan( vortex )
 % *************************************************************************
 
 spanwise_diff = diff( vortex.pos(2:3,:), 1, 2 );
-db = vecnorm( spanwise_diff, 2 );
+db = vecnorm( spanwise_diff, 2, 1 );
 
 end

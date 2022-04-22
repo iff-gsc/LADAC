@@ -7,8 +7,8 @@
 % 
 % Literature:
 %   [1] Schlichting, H.; Truckenbrodt, E.; "Aerodynamik des FLugzeugs -
-%       Zweiter Band: Aerodynamik des Tragflï¿½gels (Teil II), des Rumpfes,
-%       der Flï¿½gel-Rumpf-Anordnung und der Leitwerke", 3. Auflage,
+%       Zweiter Band: Aerodynamik des Tragflügels (Teil II), des Rumpfes,
+%       der Flügel-Rumpf-Anordnung und der Leitwerke", 3. Auflage,
 %       Springer-Verlag, Berlin, Heidelberg, 2001
 % 
 
@@ -32,7 +32,7 @@ n_panel = 50;
 % define current rigid body state
 alpha = deg2rad(2.1);
 beta = 0;
-V = 1;
+V = 23;
 h = 0;
 omega = [0;0;0;];
 
@@ -43,7 +43,7 @@ actuators_rate = [0,0];
 %% Start computation 
 
 % create wing
-wing = wingCreate( wing_parametric(AR,1,sweep,0), 50 );
+wing = wingCreate( wing_parametric(AR,1,sweep,0.1), 50 );
 
 % compute aerodynamics
 wing = wingSetState( wing, alpha, beta, V, omega, actuators_pos, actuators_rate, [0;0;0] );
@@ -52,19 +52,23 @@ wing = wingSetState( wing, alpha, beta, V, omega, actuators_pos, actuators_rate,
 v_test_mat = wingGetDimlessIndVel( repmat([1;0;0],1,n_panel),wing.geometry);
 v_test = -squeeze( v_test_mat(3,:,:) ) / sum( wingGetSegmentSpan( wing.geometry.vortex ) );
 
-V_Ab = repmat( dcmBaFromAeroAngles(alpha,0)*[1;0;0],1,n_panel );
-w_Ab = V_Ab(3,:);
+V_Ab = repmat( aeroDCM(alpha,0)*[1;0;0], 1, n_panel );
+V_A_local = zeros(3,n_panel);
+for i=1:n_panel
+    V_A_local(:,i) = aeroDCM(wing.geometry.ctrl_pt.local_incidence(i),0)*V_Ab(:,i);
+end
+w_A_local = V_A_local(3,:);
 
 infl_coeff = wingGetDimlessIndVel( -wing.state.aero.local_inflow.V, wing.state.geometry );
-Gamma = squeeze(infl_coeff(3,:,:)) \ w_Ab';
+Gamma = squeeze(infl_coeff(3,:,:)) \ w_A_local';
 l = wingGetSpatialVectorAlongBoundSegment( wing.geometry.vortex );
 
-alpha_eff = alpha + inducedAlpha( 2*pi, -V_Ab, zeros(size(V_Ab)), Gamma', l, wing.geometry.ctrl_pt.c );
+alpha_eff = alpha + wing.geometry.ctrl_pt.local_incidence + inducedAlpha( 2*pi, -V_Ab, zeros(size(V_Ab)), Gamma', l, wing.geometry.ctrl_pt.c, wing.geometry.ctrl_pt.local_incidence );
 
 
 %% plot results
 figure
-plot(wing.geometry.ctrl_pt.pos(2,:), alpha*cos(wing.params.lambda)*ones(1,n_panel))
+plot(wing.geometry.ctrl_pt.pos(2,:), (alpha+ wing.geometry.ctrl_pt.local_incidence).*cos(wing.interim_results.sweep))
 hold on
 plot(wing.geometry.ctrl_pt.pos(2,:), alpha_eff)
 plot(wing.geometry.ctrl_pt.pos(2,:), wing.state.aero.circulation.alpha_eff,'--')
@@ -76,9 +80,11 @@ legend('infinite span','finite span (VLM)','finite span (NLVSM)','location','sou
 
 
 %% functions
-function alpha_i = inducedAlpha( C_L_alpha, V_Ab_inf, V_i, Gamma, l, c )
+function alpha_i = inducedAlpha( C_L_alpha, V_Ab_inf, V_i, Gamma, l, c, local_incidence )
 
 [alpha_inf,~] = aeroAngles(-V_Ab_inf);
+
+alpha_inf = alpha_inf + local_incidence;
 
 c_L_inf = 2*pi*alpha_inf;
 span = sum(l(2,:));

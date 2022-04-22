@@ -1,16 +1,15 @@
 function M_i_b = wingGetLocalAirfoilMoment( wing )
 % wingGetLocalAirfoilMoment returns an array of vectors of local aerodynamic
-% forces of the discretized wing.
+% pitching moments of the discretized wing w.r.t. the local c/4 position.
 % 
 % Inputs:
 %   wing        Wing struct (see wingCreate)
 % 
 % Outputs:
-%   M_i_b       Local profile pitching moments (1xn array) with respect to
-%               the origin of the body frame (b), in Nm
+%   M_i_b       Local airfoil pitching moments (1xn array) with respect to
+%               the local c/4 positions, in Nm
 % 
 % See also: wingSetLocalMomentCoeff, wingGetLocalForce, wingGetGlobalMoment
-% 
 
 % Disclamer:
 %   SPDX-License-Identifier: GPL-2.0-only
