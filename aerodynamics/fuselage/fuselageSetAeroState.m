@@ -34,7 +34,7 @@ Ma = V_A ./ fuselage.state.external.atmosphere.a;
 
 dx = abs( diff( fuselage.geometry.border_pos(1,:) ) );
 
-beta_Ma = sqrt( 1 - Ma^2 );
+beta_Ma = sqrtReal( 1 - Ma^2 );
 compr_fac = 1 / beta_Ma;
 
 radius = fuselage.geometry.width/2;
@@ -44,8 +44,7 @@ total_volume = sum( volume );
 volume23 = volume.^(2/3);
 total_volume_23 = total_volume^(2/3);
 
-% compressible correction, [1], eq. (9.80a)
-b2 = ( compr_fac*fuselage.geometry.width_visc ).^2;
+b2 = fuselage.geometry.width_visc.^2;
 
 % compressible correction, [1], eq. (9.80d)
 alpha = fuselage.state.aero.local_inflow.alpha * compr_fac;
@@ -53,13 +52,14 @@ alpha = fuselage.state.aero.local_inflow.alpha * compr_fac;
 alpha = 0.5*sin(2*alpha);
 beta = fuselage.state.aero.local_inflow.beta * compr_fac;
 beta = 0.5*sin(2*beta);
+T_unsteady = 1;
 
 % [1], eq. (10.7) -> derivative
 if fuselage.config.is_unsteady
     % time constant
     b12 = 0.45;
     c = max(fuselage.params.width);
-    T_unsteady = 1 / ( (2*V_A/c)*beta_Ma^2*b12 );
+    T_unsteady(:) = 1 / ( (2*V_A/c)*beta_Ma^2*b12 );
     alB2_dx = diff( alpha .* b2 ) ./ dx;
     beB2_dx = diff( beta .* b2 ) ./ dx;
 else

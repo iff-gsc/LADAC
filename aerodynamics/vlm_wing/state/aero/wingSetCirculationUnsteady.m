@@ -58,7 +58,7 @@ span = sum(wingGetSegmentSpan(wing.state.geometry.vortex));
 % normal components of free-stream flow [4], eq. (12.8)
 v_ni = - dot( v_inf, u_n );
 % angle of attack of free-stream
-alpha_inf = acos(v_ni) - pi/2;
+alpha_inf = acosReal(v_ni) - pi/2;
 
 % ** use overworked version of algorithm presented in [3], page 3 **
 
@@ -154,7 +154,7 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
         c_L_VLM = c_L_visc;
         wing.state.aero.circulation.gamma = 0.5*c_L_VLM / span .* wing.state.geometry.ctrl_pt.c;
         v_ni_VLM = (A * wing.state.aero.circulation.gamma(:))';
-        wing.state.aero.circulation.Delta_alpha = acos(v_ni_VLM) - pi/2 - alpha_inf;
+        wing.state.aero.circulation.Delta_alpha = acosReal(v_ni_VLM) - pi/2 - alpha_inf;
     end
     
     % VLM lift without any downwash

@@ -15,6 +15,10 @@ v_inf = repmat([-1;0;0],1,n_panel);
 spanwise_vector = wingGetDimLessSpanwiseLengthVector(wing_state.geometry.vortex);
 sweep = pi/2 - acos( abs( dot( -spanwise_vector, -v_inf, 1 ) ) ./ ( vecnorm(-v_inf,2,1) .* vecnorm(spanwise_vector,2,1) ) );
 
+%%%
+c_L_alpha = 0; alpha_inf_0 = 0; c_L_alpha_max = 0; alpha_0 = 0; fcl = 0;
+%%%
+
 switch wing_config.airfoil_method
     case 'analytic'
         % get coefficients of analytic functions for different Mach numbers
@@ -84,6 +88,8 @@ switch wing_config.airfoil_method
         % assume that aerodynamics is steady state
         X = u;
     case 'simple'
+        X = zeros( size( wing_state.aero.unsteady.X ) );
+    otherwise %%%
         X = zeros( size( wing_state.aero.unsteady.X ) );
 end
 

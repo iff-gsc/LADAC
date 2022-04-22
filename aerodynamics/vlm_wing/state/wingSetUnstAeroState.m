@@ -31,6 +31,9 @@ function wing = wingSetUnstAeroState( wing ) %#codegen
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
+% init
+alpha_inf_0 = zeros( 1, wing.n_panel );
+
 % use raw inflow in the first step and take into account downwash
 % afterwards
 abs_V_i = vecnorm( wing.state.aero.local_inflow.V, 2 );
@@ -56,7 +59,7 @@ switch wing.config.airfoil_method
         [c_L_alpha_max,alpha_0] = airfoilAnalytic0515ClAlphaMax( fcl, wing.state.aero.circulation.Ma(:) );
 
         % effective angle of attack for an equivalent uncambered airfoil
-        alpha_inf_0 = wing.state.aero.circulation.alpha_eff - deg2rad(alpha_0)';
+        alpha_inf_0(:) = wing.state.aero.circulation.alpha_eff - deg2rad(alpha_0)';
 
         % reduce effective dimensionless pitch rate due to wing downwash
         factor_3d = max( 0.1, min( 1, 1 - wing.state.aero.circulation.alpha_ind ./ alpha_inf_0 ) );
@@ -94,7 +97,7 @@ switch wing.config.airfoil_method
     case 'simple'
 
         % effective angle of attack for an equivalent uncambered airfoil
-        alpha_inf_0 = wing.state.aero.circulation.alpha_eff - deg2rad(wing.airfoil.simple.alpha_0);
+        alpha_inf_0(:) = wing.state.aero.circulation.alpha_eff - deg2rad(wing.airfoil.simple.alpha_0);
         
         % reduce effective pitch rate due to wing downwash
         factor_3d = max( 0.1, min( 1, 1 - wing.state.aero.circulation.alpha_ind ./ alpha_inf_0 ) );
