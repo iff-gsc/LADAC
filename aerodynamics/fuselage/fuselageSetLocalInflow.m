@@ -12,7 +12,6 @@ function fuselage = fuselageSetLocalInflow( fuselage, xyz_cg  )
 % 
 % See also:
 %   fuselageInit, fuselageLocalInflowInit
-% 
 
 % Disclamer:
 %   SPDX-License-Identifier: GPL-2.0-only
@@ -24,12 +23,12 @@ function fuselage = fuselageSetLocalInflow( fuselage, xyz_cg  )
 % local airspeed from rotation
 r_cntrl_cg = fuselage.state.geometry.border_pos ...
     - repmat( xyz_cg, 1, size(fuselage.state.geometry.border_pos,2) );
-V_Ab = dcmBaFromAeroAngles( fuselage.state.body.alpha, fuselage.state.body.beta ) ...
+V_Ab = aeroDCM( fuselage.state.body.alpha, fuselage.state.body.beta ) ...
     * [ fuselage.state.body.V; 0; 0 ];
 
 % total local airspeed including local wind (external) and structure motion
 V_border = velocityFromRot( V_Ab, fuselage.state.body.omega, r_cntrl_cg ) ...
-    + fuselage.state.geometry_deriv.border_pos_dt + fuselage.state.external.V_Wb;
+    + fuselage.state.geometry_deriv.border_pos_dt - fuselage.state.external.V_Wb;
 fuselage.state.aero.local_inflow.V(:) = V_border(:,1:end-1) + diff(V_border,1,2)/2;
 
 % local aerodynamic angles
