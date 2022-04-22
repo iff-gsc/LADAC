@@ -123,7 +123,7 @@ switch wing.config.airfoil_method
 end
 
 % rotate induced velocity unit vector
-wing.state.aero.unsteady.v_i = rodrigues_rot( wing.state.aero.circulation.v_i, ...
+wing.state.aero.unsteady.v_i = axisAngle( wing.state.aero.circulation.v_i, ...
     wing.state.aero.circulation.rot_axis, alpha_inf_0 - wing.state.aero.unsteady.alpha_eff );
 
 % flap

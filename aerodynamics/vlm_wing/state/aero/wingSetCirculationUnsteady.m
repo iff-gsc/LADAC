@@ -138,7 +138,7 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
     end
     
     % adjust the normal vector (if Delta_alpha ~= 0)
-    u_n_VLM = rodrigues_rot( u_n, wing.state.aero.circulation.rot_axis, wing.state.aero.circulation.Delta_alpha );
+    u_n_VLM = axisAngle( u_n, wing.state.aero.circulation.rot_axis, wing.state.aero.circulation.Delta_alpha );
     % influence coefficients matrix [4], eq. (12.7)
     A(:) = dot( wing.interim_results.dimless_induced_vel_beta, repmat(u_n_VLM,1,1,wing.n_panel), 1 );
     

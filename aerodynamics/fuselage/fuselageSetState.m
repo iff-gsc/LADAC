@@ -56,7 +56,7 @@ is_unsteady         = false;
 
 V_Wb            = zeros( size(fuselage.state.external.V_Wb) );
 V_Wb_dt         = zeros( size(fuselage.state.external.V_Wb_dt) );
-atmosphere      = isaAtmosphere(0);
+atmosphere      = isAtmosphere(0);
 structure_pos   = zeros( size(fuselage.aeroelasticity.T_cs,2), 1 );
 structure_vel   = zeros( size(fuselage.aeroelasticity.T_cs,2), 1 );
 alpha_unst      = zeros( size(fuselage.state.aero.unsteady.alpha) );

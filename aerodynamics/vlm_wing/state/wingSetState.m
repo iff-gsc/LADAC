@@ -111,7 +111,7 @@ is_alpha_ind_fb     = false;
 V_Kb_dt = zeros(3,1);
 omega_dt = zeros(3,1);
 
-atmosphere      = isaAtmosphere(0);
+atmosphere      = isAtmosphere(0);
 
 V_Wb            = zeros( size(wing.state.external.V_Wb) );
 V_Wb_dt         = zeros( size(wing.state.external.V_Wb_dt) );
