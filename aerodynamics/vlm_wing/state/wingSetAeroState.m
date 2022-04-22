@@ -1,10 +1,10 @@
-function wing = wingSetAeroState( wing, xyz_cg )
+function wing = wingSetAeroState( wing, pos_ref_c )
 % wingSetAeroState computes the aerodynamic state of the wing.
 % 
 % Inputs:
 % 	wing           	wing struct, see wingCreate
-%   xyz_cg          vehicle center of gravity position in wing coordinate
-%                   system (3x1 array), in m
+%   pos_ref_c      	vehicle reference position (for rigid body parameters)
+%                   in c frame (3x1 array), in m
 % 
 % Outputs:
 % 	wing           	wing struct, see wingCreate
@@ -19,7 +19,7 @@ function wing = wingSetAeroState( wing, xyz_cg )
 % *************************************************************************
 
 % set local inflow
-wing = wingSetLocalInflow( wing, xyz_cg );
+wing = wingSetLocalInflow( wing, pos_ref_c );
 
 % dimensionless induced velocities
 beta_rot = 0;
@@ -28,7 +28,7 @@ if wing.config.is_infl_recomputed
     wing.interim_results.dimless_induced_vel_beta = ...
         wingGetDimlessIndVel( -wing.state.aero.local_inflow.V, wing.state.geometry );
 else
-    V_Ab(:) = dcmBaFromAeroAngles( wing.state.body.alpha, wing.state.body.beta ) ...
+    V_Ab(:) = aeroDCM( wing.state.body.alpha, wing.state.body.beta ) ...
         * [ wing.state.body.V; 0; 0 ];
     [~,beta_rot(:)] = aeroAngles( wing.interim_results.M_rot_x * V_Ab );
 

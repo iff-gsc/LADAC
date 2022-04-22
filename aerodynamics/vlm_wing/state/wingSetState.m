@@ -1,4 +1,4 @@
-function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuators_rate, xyz_cg, varargin )
+function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuators_rate, pos_ref_c, varargin )
 %wingSetState sets the state struct of a wing struct (wing.state).
 % 
 % Inputs:
@@ -31,7 +31,7 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 % 
 %   V_Kb_dt             rigid body acceleration (3x1 array), in m/s^2
 %   omega_dt            rigid body angular acceleration (3x1 array), in rad/s^2
-%   atmosphere          atmosphere struct (see isAtmosphere)
+%   atmosphere          atmosphere struct (see isaAtmosphere)
 %   V_Wb                wind velocity at each control point
 %                       (wing.state.external.V_Wb)
 %   V_Wb_dt             wind acceleration at each control point
@@ -89,7 +89,6 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 %   wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuators_rate, xyz_cg, 'alpha_ind', alpha_ind )
 % 
 % See also: wingCreate, wingSetAeroState
-% 
 
 % Disclamer:
 %   SPDX-License-Identifier: GPL-2.0-only
@@ -112,7 +111,7 @@ is_alpha_ind_fb     = false;
 V_Kb_dt = zeros(3,1);
 omega_dt = zeros(3,1);
 
-atmosphere      = isAtmosphere(0);
+atmosphere      = isaAtmosphere(0);
 
 V_Wb            = zeros( size(wing.state.external.V_Wb) );
 V_Wb_dt         = zeros( size(wing.state.external.V_Wb_dt) );
@@ -236,7 +235,7 @@ if is_alpha_ind_fb
 end
 
 % compute aerodynamic state
-wing = wingSetAeroState( wing, xyz_cg );
+wing = wingSetAeroState( wing, pos_ref_c );
 
 end
 
