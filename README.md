@@ -16,8 +16,7 @@ This is the main motivation and objective of LADAC:
 - The Simulink blocks are based on Matlab functions saved as m-files. This
     improves the use of version control. Diffs can be made easier and
     the data size of the repository is reduced.
-- It is possible to generate C/C++ code of the library functions. This is
-    assured by using the %#codegen directive.
+- It is possible to generate C/C++ code of the library functions.
 - All functions are carefully documented using comments in the code. This
     includes literature references to make scientific use easier.
 
@@ -30,37 +29,34 @@ This is the main motivation and objective of LADAC:
   2. You may also need some MATLAB toolboxes like Curve Fitting Toolbox,
 	   Aerospace Blockset, Aerospace Toolbox, MATLAB Coder, MATLAB Compiler, 
 	   Simulink Control Design, Simulink Coder depending on what you want to do
-- Clone LADAC (see Tests section).
+- Clone LADAC (generally the main branch should be used).
+  - If your project is a Git repository, you should add LADAC as a submodule:
+    ```
+    git add submodule https://github.com/iff-gsc/ladac.git
+    ```
+  - Otherwise, just clone LADAC to the desired directory:
+    ```
+    git clone --recursive https://github.com/iff-gsc/ladac.git
+    ```
+- Add LADAC to the Matlab path (in Matlab Command Window):
+    ```
+    addpath(genpath('LADAC'));
+    ```
 
 
 ## Tests
 
-1. Add LADAC to your project
-   - If your project is a Git repository, you should add LADAC as a
-    submodule:
-        ```
-        git add submodule https://github.com/iff-gsc/ladac.git
-        ```
-     OR: clone LADAC to the desired directory:
-        ```
-        git clone --recursive https://github.com/iff-gsc/ladac.git
-        ```
-   - Generally, the master branch should be used.
-        
-2. Add LADAC to the Matlab path:
+1. Check if LADAC functions work by calling the automatic test framework (in Matlab Command Window):
     ```
-    addpath(genpath('LADAC'));
+    check_ladac
     ```
-3. Test if LADAC functions work by e.g. calling the ISA atmosphere function or its documentation:
-    ```
-    isAtmosphere(0)  
-    help isAtmosphere
-    ```
-4. Test if LADAC appears in the Simulink Library Browser:
+2. Check if LADAC appears in the Simulink Library Browser:
    - Open a Simulink file.
    - Open the Simulink Library Browser.
-   - Look for "LADAC" at the highest level (you may have to refresh the Library Browser by right-clicking or pressing F5). This will only work if you use the supported Matlab version. You can use the library blocks in newer version but they will not appear in the Library Browser.
-   - Check whether all sub-areas of LADAC appear and if you can add blocks to your Simulink file. This will only work if you use the supported Matlab version. You can use the library blocks in newer version but they will not appear in the Library Browser.
+   - Look for "LADAC" at the highest level (you may have to refresh the Library Browser by right-clicking or pressing F5).
+     This will probably only work if you use the supported Matlab version.
+   - Check whether all sub-areas of LADAC appear and if you can add blocks to your Simulink file.
+     Alternatively, you can add blocks by opening `LADAC.slx` (you can click through the sub-areas and add blocks by copy and paste).
 
 
 ## How to use?
@@ -73,7 +69,7 @@ These areas are partly subdivided again into subareas.
 Each area and subarea is located in a folder or subfolder (see [Contents](#Contents)).
 - Usually each folder or subfolder contains a separate README with specific information.
 - Most of the implementations are m-functions that are documented inside the code.
-- Each subdirectory contains a Simulink library file (.slx or .mdl) with the same name as the subdirectory. These libraries contain blocks which call the m-functions. There are also more complex blocks, but they are always based on the m-functions.
+- Each subdirectory contains a Simulink library file (.slx) with the same name as the subdirectory. These libraries contain blocks which call the m-functions. There are also more complex blocks, but they are always based on the m-functions.
 
 ### Contents
 
@@ -110,12 +106,10 @@ such as axes transformation, interfaces to external programs and unit conversion
 
 ### Modeling and control of systems
 - Use LADAC as Git submodule.
-- Build your models using the LADAC library blocks
-  - EITHER: by drag and drop the blocks from the Simulink Library Browser
-  - OR: by copy and paste them from the corresponding Simulink library file (.slx).
+- Build your models using the LADAC library blocks.
 - Make yourself familiar with working with libraries:
   - Read the Matlab documentation, e.g. https://www.mathworks.com/help/simulink/ug/creating-and-working-with-linked-blocks.html
-  - **Hint:** display links of library blocks: Display --> Library Links --> All
+  - **Hint:** display links of library blocks: Display &#8594; Library Links &#8594; All
 
 ### Anything missing in LADAC?
 - Make sure you did not overlook the required function.
@@ -127,14 +121,14 @@ such as axes transformation, interfaces to external programs and unit conversion
 Contributions are welcome and encouraged. You can contribute in many ways:
 
 - implement a new feature in the software  
-  --> [read developers guide](docs/Development.md).
+  &#8594; [read developers guide](docs/Development.md).
 - fix a bug  
-  --> [read developers guide](docs/Development.md).
+  &#8594; [read developers guide](docs/Development.md).
 - documentation updates and corrections  
-  --> [read developers guide](docs/Development.md).
+  &#8594; [read developers guide](docs/Development.md).
 - report a bug   
-  --> [create an issue](https://github.com/iff-gsc/ladac/issues/new)
+  &#8594; [create an issue](https://github.com/iff-gsc/ladac/issues/new)
 - new feature ideas & suggestions  
-  --> [create an issue](https://github.com/iff-gsc/ladac/issues/new)
+  &#8594; [create an issue](https://github.com/iff-gsc/ladac/issues/new)
 
 Before creating new issues please check to see if there is an existing one.
