@@ -14,6 +14,8 @@ function fuselage = fuselageSetState( fuselage, alpha, beta, V, omega, xyz_cg, v
 %       'structure_pos', structure_pos )
 %   fuselage = fuselageSetState( fuselage, alpha, beta, V, omega, xyz_cg, ...
 %       'structure_pos', structure_pos, 'structure_vel', structure_vel )
+%   fuselage = fuselageSetState( fuselage, alpha, beta, V, omega, xyz_cg, ...
+%       'unsteady', alpha_unst, beta_unst )
 % 
 % Inputs:
 %   fuselage        fuselage struct (see fuselageInit)
@@ -23,20 +25,23 @@ function fuselage = fuselageSetState( fuselage, alpha, beta, V, omega, xyz_cg, v
 %   omega           angular velocity (3x1 array), in rad/s
 %   xyz_cg          center of gravity position in fuselage frame (3x1
 %                   array), in m
-%   atmosphere      atmosphere struct (see isAtmosphere)
+%   atmosphere      atmosphere struct (see isaAtmosphere)
 %   V_Wb            local wind velocity vecotrs
 %                   (fuselage.state.external.V_Wb)
 %   V_Wb_dt         local wind acceleration vectors
 %                   (fuselage.state.external.V_Wb_dt)
 %   structure_pos   structure position state
 %   structure_vel   structure velocity state
+%   alpha_unst      unsteady (effective) angle of attack
+%                   (fuselage.state.aero.unsteady.alpha), in rad
+%   beta_unst       unsteady (effective) sideslip angle
+%                   (fuselage.state.aero.unsteady.beta), in rad
 % 
 % Outputs:
 %   fuselage        fuselage struct (see fuselageInit)
 % 
 % See also:
 %   fuselageInit, fuselageCreate, fuselageSetAeroState
-% 
 
 % Disclamer:
 %   SPDX-License-Identifier: GPL-2.0-only
@@ -51,7 +56,7 @@ is_unsteady         = false;
 
 V_Wb            = zeros( size(fuselage.state.external.V_Wb) );
 V_Wb_dt         = zeros( size(fuselage.state.external.V_Wb_dt) );
-atmosphere      = isAtmosphere(0);
+atmosphere      = isaAtmosphere(0);
 structure_pos   = zeros( size(fuselage.aeroelasticity.T_cs,2), 1 );
 structure_vel   = zeros( size(fuselage.aeroelasticity.T_cs,2), 1 );
 alpha_unst      = zeros( size(fuselage.state.aero.unsteady.alpha) );

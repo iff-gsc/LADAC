@@ -56,6 +56,8 @@ state.aero.circulation.Delta_alpha  = zeros( 1, n_panel );
 state.aero.circulation.Re           = zeros( 1, n_panel );
 state.aero.circulation.Ma           = zeros( 1, n_panel );
 state.aero.circulation.num_iter 	= 0;
+% rotation axes for VLM angle of attack correction
+state.aero.circulation.rot_axis     = zeros( 3, n_panel );
 % local coefficients
 state.aero.coeff_loc.c_XYZ_b     	= zeros( 3, n_panel );
 state.aero.coeff_loc.c_lmn_b        = zeros( 3, n_panel );
@@ -82,6 +84,8 @@ state.aero.unsteady.c_m_c           = zeros( 1, n_panel );
 state.aero.unsteady.c_D             = zeros( 1, n_panel );
 state.aero.unsteady.alpha_eff       = zeros( 1, n_panel );
 state.aero.unsteady.c_L_c_flap      = zeros( 1, n_panel );
+% incuded normalized velocity vectors in body frame
+state.aero.unsteady.v_i             = zeros( 3, n_panel );
 
 % state for dynamic stall model
 state.aero.unsteady.X_dt            = zeros( 3, n_panel );

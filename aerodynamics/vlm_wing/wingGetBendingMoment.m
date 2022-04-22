@@ -15,7 +15,7 @@ lift2bm = zeros( num_eta, num_cntrl_pt );
 % bending moment at each control point...
 % ... at the left side
 cntrl_span = -vecnorm(wing_geometry.ctrl_pt.pos(2:3,:),2,1);
-cntrl_span([1,diff(cntrl_span)]<=0) = -cntrl_span([1,diff(cntrl_span)]<0);
+cntrl_span([1,diff(cntrl_span)]<0) = -cntrl_span([1,diff(cntrl_span)]<0);
 
 span = 2 * norm(wing_geometry.vortex.pos(2:3,end),2);
 

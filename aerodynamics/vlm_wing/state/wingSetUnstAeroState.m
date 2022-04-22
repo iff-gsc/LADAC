@@ -54,7 +54,6 @@ switch wing.config.airfoil_method
 
         % get points on lift curve
         [c_L_alpha_max,alpha_0] = airfoilAnalytic0515ClAlphaMax( fcl, wing.state.aero.circulation.Ma(:) );
-        c_L_alpha_max = c_L_alpha_max .* cos(wing.interim_results.sweep)';
 
         % effective angle of attack for an equivalent uncambered airfoil
         alpha_inf_0 = wing.state.aero.circulation.alpha_eff - deg2rad(alpha_0)';
@@ -104,7 +103,7 @@ switch wing.config.airfoil_method
         
         % clean airfoil coefficients
         c_L_alpha = wing.airfoil.simple.c_L_alpha ./ ...
-            sqrtReal(1-wing.state.aero.circulation.Ma.^2).*cos(wing.interim_results.sweep);
+            sqrtReal(1-wing.state.aero.circulation.Ma.^2);
         
         [ wing.state.aero.unsteady.c_L_c, wing.state.aero.unsteady.c_m_c, ...
             wing.state.aero.unsteady.c_L_nc, wing.state.aero.unsteady.c_m_nc, ...
@@ -119,6 +118,10 @@ switch wing.config.airfoil_method
             alpha_inf_0, wing.state.aero.unsteady.alpha_eff );
         
 end
+
+% rotate induced velocity unit vector
+wing.state.aero.unsteady.v_i = rodrigues_rot( wing.state.aero.circulation.v_i, ...
+    wing.state.aero.circulation.rot_axis, alpha_inf_0 - wing.state.aero.unsteady.alpha_eff );
 
 % flap
 [ wing.state.aero.unsteady.c_L_c_flap, wing.state.aero.unsteady.z_dt ] = airfoilFlapUnstLift( ...
