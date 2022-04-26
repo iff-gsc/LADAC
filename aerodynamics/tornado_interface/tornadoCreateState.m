@@ -18,6 +18,9 @@ function state = tornadoCreateState( alpha, beta, V_A, omega_Kb, h, is_pgcorr )
 % Literature:
 %   [1] User's Guide Tornado 1.0, Release 2.3 2001-01-21,
 %       http://tornado.redhammer.se/images/manual.pdf
+% 
+% See also:
+%   TornadoCreateGeo
 
 % Disclamer:
 %   SPDX-License-Identifier: GPL-2.0-only
