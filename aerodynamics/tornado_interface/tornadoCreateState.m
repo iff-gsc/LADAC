@@ -37,7 +37,7 @@ state.R = omega_Kb(3);
 state.AS = V_A;
 state.ALT = h;
 
-atmosp = isaAtmosphere(h);
+atmosp = isAtmosphere(h);
 
 state.rho = atmosp.rho;
 

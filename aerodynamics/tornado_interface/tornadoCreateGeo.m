@@ -34,7 +34,7 @@ function geo = tornadoCreateGeo( params_file, xyz_cg_c, xyz_ref_c, ...
 
 params = wingLoadParameters(params_file);
 
-ny = n_panel_y/2;
+ny = (n_panel_y+1)/2;
 
 eta_partitions = unique( [ params.eta_segments_wing, ...
     params.eta_segments_device ] );
@@ -59,7 +59,7 @@ flap_depth = zeros(1,n_partitions);
 for i = 1:length(params.eta_segments_device)-1
     idx = find(eta_partitions >= params.eta_segments_device(i) & ...
         eta_partitions < params.eta_segments_device(i+1));
-    flap_depth(idx) = flap_depth(i);
+    flap_depth(idx) = params.flap_depth(i);
     is_flapped(idx) = params.control_input_index(1,end/2+i) > 0 & flap_depth(i) > 0;
 end
 
@@ -110,7 +110,7 @@ geo.meshtype = ones(1,geo.nelem);
 % relative flap depth of each partition, dimensionless
 geo.fc = flap_depth;
 % number of panels in x direction of the flap for each partition
-geo.fnx = n_panel_x_flap * ones(1,geo.nelem);
+geo.fnx = n_panel_x_flap * ones(1,geo.nelem) .* geo.flapped;
 % are flaps deflected symmetrically (per partition)?
 geo.fsym = zeros(1,geo.nelem);
 

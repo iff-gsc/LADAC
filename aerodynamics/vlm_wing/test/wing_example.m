@@ -14,7 +14,7 @@ wing = wingCreate('wing_params_default',40);
 
 % define current rigid body state
 alpha = deg2rad(2);
-beta = deg2rad(3);
+beta = deg2rad(3)*0;
 V = 20;
 omega = [0;0;0];
 h = 0;
@@ -23,7 +23,7 @@ h = 0;
 xyz_cg = zeros(3,1);
 
 % define actuator states
-actuators_pos = [ 10 0 0 0 ];
+actuators_pos = [ 10 0 0 0 ]*0;
 actuators_rate = [ 0 0 0 0 ];
 
 %% compute wing state
