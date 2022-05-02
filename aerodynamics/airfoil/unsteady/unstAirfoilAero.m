@@ -1,5 +1,5 @@
-function [A,B,C,D] = unstProfileAero( V, Ma, c, C_L_alpha, x_ac ) %#codegen
-% unstProfileAero computes the matrices of a state-space representation for
+function [A,B,C,D] = unstAirfoilAero( V, Ma, c, C_L_alpha, x_ac ) %#codegen
+% unstAirfoilAero computes the matrices of a state-space representation for
 %   unsteady transsonic airfoil behavior according to [1]. The model has 8
 %   states, two inputs and three outputs (the effective angle of attack was
 %   added as a third output).
