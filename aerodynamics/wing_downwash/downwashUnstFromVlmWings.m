@@ -22,10 +22,11 @@ function dw = downwashUnstFromVlmWings( wing_main, wing_htp, V )
 % See also:
 %   downwashUnstAnalytic, downwashUnstSchedule
 % 
-% Authors:
-%   Yannic Beyer
+% Disclamer:
+%   SPDX-License-Identifier: GPL-2.0-only
 % 
-% Copyright 2021 TU Braunschweig
+%   Copyright (C) 2020-2022 Yannic Beyer
+%   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
 % mean aerodynamic center (c/4) and mean trailing edge position of main
