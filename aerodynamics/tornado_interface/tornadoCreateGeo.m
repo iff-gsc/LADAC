@@ -1,5 +1,5 @@
 function geo = tornadoCreateGeo( params_file, xyz_cg_c, xyz_ref_c, ...
-    n_panel_y, n_panel_x, n_panel_x_flap )
+    n_panel_y, n_panel_x, n_panel_x_flap, flap_pos, is_flap_sym )
 % tornadoCreateGeo create geometry struct as used by Tornado [1] from
 % parameters file
 % 
@@ -14,6 +14,13 @@ function geo = tornadoCreateGeo( params_file, xyz_cg_c, xyz_ref_c, ...
 %   n_panel_y       number of panels in y direction (scalar int)
 %   n_panel_x       number of panels in x direction (scalar int)
 %   n_panel_x_flap  number of panels in x direction for flaps
+%   flap_pos        flap position (1xM array, where M is the number of
+%                   flaps per wing half), in rad. Note that flaps on the
+%                   left and on the right wing cannot be controlled
+%                   independently.
+%   is_flap_sym     boolean (1xM array) that indicates if the corresponding
+%                   flap is deflected in the same direction on the left
+%                   wing (true) or anti-symmetric (false)
 % 
 % Outputs:
 %   geo             geometry (geo) struct as used by Tornado
@@ -56,11 +63,13 @@ end
 
 is_flapped = false(1,n_partitions);
 flap_depth = zeros(1,n_partitions);
+flap_idx = zeros(1,n_partitions);
 for i = 1:length(params.eta_segments_device)-1
     idx = find(eta_partitions >= params.eta_segments_device(i) & ...
         eta_partitions < params.eta_segments_device(i+1));
     flap_depth(idx) = params.flap_depth(i);
-    is_flapped(idx) = params.control_input_index(1,end/2+i) > 0 & flap_depth(i) > 0;
+    is_flapped(idx) = params.control_input_index(1,end/2+i) > 0 & params.flap_depth(i) > 0;
+    flap_idx(idx) = params.control_input_index(1,end/2+i);
 end
 
 % number of wings
@@ -114,8 +123,15 @@ geo.fnx = n_panel_x_flap * ones(1,geo.nelem) .* geo.flapped;
 % are flaps deflected symmetrically (per partition)?
 geo.fsym = zeros(1,geo.nelem);
 
-% unknown and hard coded
+% set flaps (Tornado only supports symmetric and anti-symmetric)
 geo.flap_vector = zeros(1,geo.nelem);
+flap_unique = unique(flap_idx(flap_idx~=0));
+for i = 1:max(flap_idx)
+    geo.flap_vector(flap_idx==i) = flap_pos(find(flap_unique==i));
+    geo.fsym(flap_idx==i) = is_flap_sym(find(flap_unique==i));
+end
+
+% unknown and hard coded
 geo.name = 'Undefined';
 geo.project = 'Undefined';
 geo.version = 136;
