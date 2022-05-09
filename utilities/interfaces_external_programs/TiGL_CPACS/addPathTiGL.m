@@ -30,7 +30,9 @@ function addPathTiGL(TiGL_version)
 % --> FEEL FREE TO ADD OTHER POTENTIAL DIRECTORIES
 possible_paths = { ...
     'C:/Program Files'; ...
-    'C:/Program Files (x86)' ...
+    'C:/Program Files (x86)'; ...
+    '/usr/local/lib'; ...
+    '/usr/local/share' ...
     };
 
 % possible path to the matlab directory from the TiGL directory
@@ -44,13 +46,17 @@ TiGL_subfolder = { ...
 % (This works for version 2 and 3)
 TiXI_subfolder = { ...
             '/share/tixi/matlab'; ...
-            '/share/tixi3/matlab' ...
+            '/share/tixi3/matlab'; ...
+            '/matlab' ...
             };
 
 %% find TiGL and TiXI and add to path (this should not be modified)
 
 num_path = length( possible_paths );
-TiGL_folder_name = ['TIGL ', TiGL_version];
+TiGL_folder_names = { ...
+            'tigl'; ...
+            ['TIGL ', TiGL_version] ...
+            };
 
 % init variables
 TiGL_path_found = false;
@@ -61,18 +67,22 @@ TiXI_matlab_path_found = false;
 for i = 1:num_path
     
     % find the TIGL directory
-    TiGL_path = [ possible_paths{i}, '/', TiGL_folder_name ];
-    if exist( TiGL_path, 'dir' )
-        TiGL_path_found = true;
-        for j = 1:length(TiGL_subfolder)
-            if exist( [ TiGL_path, TiGL_subfolder{j} ], 'dir' ) 
-                % add to path TIGL subdirectory
-                addpath( [ TiGL_path, TiGL_subfolder{j} ] );
-                TiGL_matlab_path_found = true;
+    for ii = 1:length(TiGL_folder_names)
+        TiGL_path = [ possible_paths{i}, '/', TiGL_folder_names{ii} ];
+        if exist( TiGL_path, 'dir' )
+            TiGL_path_found = true;
+            for j = 1:length(TiGL_subfolder)
+                if exist( [ TiGL_path, TiGL_subfolder{j} ], 'dir' ) 
+                    % add to path TIGL subdirectory
+                    addpath( [ TiGL_path, TiGL_subfolder{j} ] );
+                    TiGL_matlab_path_found = true;
+                end
             end
         end
     end
-    
+end
+
+if TiGL_matlab_path_found
     % find TIXI directory
     list_dir = dir( possible_paths{i} );
     len_list_dir = length(list_dir);
@@ -80,7 +90,7 @@ for i = 1:num_path
     is_TiGL_dir = false(len_list_dir,1);
     for k = 1:len_list_dir
         if list_dir(k).isdir
-            if strfind( list_dir(k).name, 'TIXI' ) == 1
+            if contains( list_dir(k).name, 'TIXI' ) || contains( list_dir(k).name, 'tixi' )
                 is_TiGL_dir(k) = true;
             end
         end
