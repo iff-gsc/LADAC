@@ -25,10 +25,10 @@ function [traj] = trajSetArcLength(traj)
 % *************************************************************************
 
 % trajectory arc length
-total_arc_length = 0;
+total_arc_length = (0);
 
 % trajectory airline distance 
-total_distance   = 0;
+total_distance   = (0);
 
 % Step through all trajectory sections
 for k=1:traj.num_sections_set
@@ -47,17 +47,17 @@ for k=1:traj.num_sections_set
     arc_length = trajSectionGetArcLength(traj_section,1);
     
     % Update the arc length and airline distance for the current section
-    traj.sections(k).arc_length = arc_length;
+    traj.sections(k).arc_length(:) = arc_length;
     traj.sections(k).distance = distance;
     
     % Adding the arc length and the airline distance to the total values 
     % of the trajectory
-    total_arc_length = total_arc_length + arc_length;
-    total_distance   = total_distance + distance;
+    total_arc_length(:) = total_arc_length + arc_length;
+    total_distance(:)   = total_distance + distance;
 end
 
 % Write values into the trajectory struct
-traj.distance   = total_distance;
-traj.arc_length = total_arc_length;
+traj.distance(:)   = total_distance;
+traj.arc_length(:) = total_arc_length;
 
 end

@@ -28,12 +28,12 @@ trajSectionGetArcLength(traj_section, varargin)
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-t = 0;
+
 
 if isempty(varargin)
-    t(:) = traj_section.t;
+    t = traj_section.t;
 else
-    t(:) = real(varargin{1});
+    t = real(varargin{1});
 end    
 
 % Protect the boundaries but leave room for Newton iteration directly on
@@ -55,7 +55,7 @@ arc_length_fun = @(ts) sqrt( polyval(dx, ts).^2 + ...
                              polyval(dz, ts).^2);                       
 
 % Numerical integration of the arc length derivative from [0, t]
-arc_length = quadgk(arc_length_fun, 0, t);
+arc_length =1;% quadgk(arc_length_fun, 0, t);
 
 % Return the arc length derivative
 arc_length_dt = arc_length_fun(t);

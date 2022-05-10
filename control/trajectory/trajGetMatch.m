@@ -45,11 +45,11 @@ zf = position(3);
 
 % first_checked_section = max(1,active_section-1);
 % last_checked_section = min(traj.num_sections_set,active_section+3);
-first_checked_section = 1;
-last_checked_section = traj.num_sections_set;
+first_checked_section = int16(1);
+last_checked_section = int16(traj.num_sections_set);
 
-section_errors = zeros(last_checked_section-first_checked_section+1, 1);
-section_t      = zeros(last_checked_section-first_checked_section+1, 1);
+section_errors = zeros(min(last_checked_section-first_checked_section+1,64), 1);
+section_t      = zeros(min(last_checked_section-first_checked_section+1,64), 1);
 
 traj_degree = traj.polynomial_degree;
 
@@ -164,7 +164,7 @@ for k = first_checked_section:last_checked_section
     
     
     %P  = [A B C D E F]; % Polynomial of 5-th degree
-    ti = roots(P); % calculate the roots
+    ti = [0 0 0 0 0 ];%roots(P); % calculate the roots
     
     T = zeros(no_of_points,1);
     T(no_of_points) = 1;
