@@ -55,7 +55,7 @@ arc_length_fun = @(ts) sqrt( polyval(dx, ts).^2 + ...
                              polyval(dz, ts).^2);                       
 
 % Numerical integration of the arc length derivative from [0, t]
-arc_length =1;% quadgk(arc_length_fun, 0, t);
+arc_length = quadgk(arc_length_fun, 0, t);
 
 % Return the arc length derivative
 arc_length_dt = arc_length_fun(t);

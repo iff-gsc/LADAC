@@ -60,7 +60,7 @@ else
 end
 
 num_of_waypoints = length(points_new);
-num_of_splines = (num_of_waypoints-1);
+num_of_splines = num_of_waypoints-1;
 
 pp = ones(degree+1, degree+1);
 pp(2:end,:) = 0;
@@ -114,7 +114,7 @@ if cycle == false
 else
     
     % Boundary Condition Size
-    bnd_left(:)  = (2);
+    bnd_left(:)  = 2;
     bnd_right = floor((degree+1)/2);
     
     last_row = sub_mat_size*(num_of_splines-1)+bnd_left;

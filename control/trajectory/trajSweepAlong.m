@@ -39,8 +39,8 @@ function [section_id, t] = trajSweepAlong(traj, section_id_start, t_start, dist)
 % *************************************************************************
 
 % Initialization
-t = (-1);
-section_id = (-1);
+t = -1;
+section_id = -1;
 active_section = section_id_start;
 
 % Check if the distance is a multiple of the total length of the trajectory
@@ -98,7 +98,7 @@ if(sign(dist) >= 0)
         else
             % Subtract the available distance entirely
             dist_remaining = dist_remaining - dist_available;
-            t_start(:) = (0);
+            t_start(:) = 0;
         end
         
     end
@@ -152,7 +152,7 @@ else
         else
             % Subtract the available distance entirely
             dist_remaining = dist_remaining - dist_available;
-            t_start(:) = (1);
+            t_start(:) = 1;
         end
     end
 end

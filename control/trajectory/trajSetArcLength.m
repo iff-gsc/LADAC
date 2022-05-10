@@ -25,10 +25,10 @@ function [traj] = trajSetArcLength(traj)
 % *************************************************************************
 
 % trajectory arc length
-total_arc_length = (0);
+total_arc_length = 0;
 
 % trajectory airline distance 
-total_distance   = (0);
+total_distance   = 0;
 
 % Step through all trajectory sections
 for k=1:traj.num_sections_set

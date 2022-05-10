@@ -39,7 +39,7 @@ function traj = trajFromWaypoints(traj, waypoints, degree, cycle)
 if(~mod(degree,2))
     degree = degree + 1;
 end
-%num_of_splines = single(0);
+
 % Calculate the coefficients
 [coeffs_x, num_of_splines] = polyInterpolation(waypoints(1,:), ...
                              degree, cycle, 0, 0);

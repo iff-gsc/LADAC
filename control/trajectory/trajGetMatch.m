@@ -164,7 +164,7 @@ for k = first_checked_section:last_checked_section
     
     
     %P  = [A B C D E F]; % Polynomial of 5-th degree
-    ti = [0 0 0 0 0 ];%roots(P); % calculate the roots
+    ti = roots(P); % calculate the roots
     
     T = zeros(no_of_points,1);
     T(no_of_points) = 1;
