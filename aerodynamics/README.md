@@ -25,6 +25,8 @@ The simple wing project is 2-point aerodynamics model for wings that computes re
 for high angles of attack and sideslip angles, where potential flow methods fail.
 However, for small aerodynamic angles this method is most likely less accurate as potential flow methods.
 The validation of the simple wing project is currently underway.
+- [**Tornado interface**](tornado_interface)  
+The Tornado interface allows easy use of the third-party VLM code Tornado.
 - [**VLM Wing**](vlm_wing)  
 The VLM wing allows the computation of wing aerodynamics with a nonlinear vortex lattice method (VLM)
 that has no discretization in chord direction.
