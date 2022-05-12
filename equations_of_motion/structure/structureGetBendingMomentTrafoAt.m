@@ -1,4 +1,4 @@
-function md2bm = structureGetBendingMomentTrafoAt( structure_red, structure, eta )
+function [md2bm, span_load_station] = structureGetBendingMomentTrafoAt( structure_red, structure, eta )
 % structureGetBendingMomentTrafoAt compute transformation matrix that maps
 % modal dispacement vector to bending moment at specified locations
 % 
@@ -16,6 +16,8 @@ function md2bm = structureGetBendingMomentTrafoAt( structure_red, structure, eta
 %                           each eta (NxM array, where M is the number of
 %                           modal displacements of structure_red); it is
 %                           the matrix product of [1], eq. (11)
+%   span_load_station       y coordinates in aircraft frame of the load
+%                           stations defined by eta (1xN array)
 % 
 % See also:
 %   structureGetReduced, structureCreateFromNastran
@@ -34,6 +36,7 @@ function md2bm = structureGetBendingMomentTrafoAt( structure_red, structure, eta
 % *************************************************************************
 
 Phi_Lg = zeros( length(eta), size( structure.K,1 ) );
+span_load_station = zeros(1,length(eta));
 
 % node indices from wing tip to wing root
 idx_left = idxFromTipToRoot( structure, 'left' );
@@ -59,6 +62,8 @@ for i = 1:length(eta)
     Phi_Lg( i, (idx_use-1)*6+3 ) = -abs( structure.xyz(2,idx_use) - abs(eta(i)) * wing_nodes_pos_tip_to_root(2,1) );
 %     Phi_Lg( i, (idx_use-1)*6+2 ) = -abs( structure.xyz(2,idx_use) - abs(eta(i)) * wing_nodes_pos_tip_to_root(3,1) );
 %     Phi_Lg( i, (idx_use-1)*6+4 ) = 1;
+
+    span_load_station(i) = eta(i) * wing_nodes_pos_tip_to_root(2,1);
 end
 
 
