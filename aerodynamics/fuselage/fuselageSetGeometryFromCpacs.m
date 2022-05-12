@@ -25,7 +25,7 @@ function fuselage = fuselageSetGeometryFromCpacs( fuselage, tiglHandle, fuse_UID
 fuse_index = tiglFuselageGetIndex( tiglHandle, fuse_UID );
 
 % compute fuselage center line and circumfence at sections
-fuse_num_sections = tiglFuselageGetSectionCount(tiglHandle,3);
+fuse_num_sections = tiglFuselageGetSectionCount(tiglHandle,fuse_index);
 points_right = zeros(3,fuse_num_sections);
 points_left = zeros(3,fuse_num_sections);
 circumfence = zeros(1,fuse_num_sections);
