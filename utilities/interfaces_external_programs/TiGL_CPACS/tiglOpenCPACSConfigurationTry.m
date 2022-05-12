@@ -12,6 +12,7 @@ function tiglHandle = tiglOpenCPACSConfigurationTry( tixiHandle )
 
 try
     tiglHandle = tiglOpenCPACSConfiguration( tixiHandle, '' );
+    disp('tiglOpenCPACSConfigurationTry: Successfully opened CPACS file with TiGL.')
 catch ME
     if (strcmp(ME.message(1:16), 'Invalid MEX-file') )
         msg = ['\n++++++++++++++++++++++++++++ Custom message ++++++++++++++++++++++++++++\n\n', ...

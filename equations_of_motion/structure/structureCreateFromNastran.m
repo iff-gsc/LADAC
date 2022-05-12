@@ -28,6 +28,8 @@ function structure = structureCreateFromNastran( pch_filename, GRID_path, axis_r
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
+disp('structureCreateFromNastran: Starting to create structure from Nastran files...')
+
 pch_contents    = nastranReadPch( pch_filename );
 grid            = nastranReadGrid( GRID_path );
 nodesPos        = nastranGetNodesPos( grid.xPos, grid.yPos, grid.zPos, grid.nodeIDs, pch_contents.nodesList );
@@ -36,5 +38,7 @@ sign_matrix     = sign_vector * sign_vector';
 structure.M     = sign_matrix .* pch_contents.M;
 structure.K     = sign_matrix .* pch_contents.K;
 structure.xyz   = axis_reversed.*[ nodesPos.x'; nodesPos.y'; nodesPos.z' ];
+
+disp('structureCreateFromNastran: Finished!')
 
 end

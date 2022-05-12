@@ -12,6 +12,7 @@ function tixiHandle = tixiOpenDocumentTry( CPACS_file_path )
 
 try
     tixiHandle = tixiOpenDocument( CPACS_file_path );
+    disp('tixiOpenDocumentTry: Successfully opened CPACS file with TiXI.');
 catch ME
     if (strcmp(ME.message(1:16), 'Invalid MEX-file') )
         msg = ['\n++++++++++++++++++++++++++++ Custom message ++++++++++++++++++++++++++++\n\n', ...
