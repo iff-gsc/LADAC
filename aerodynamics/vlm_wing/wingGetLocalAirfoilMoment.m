@@ -23,7 +23,7 @@ b_i = wingGetSegmentSpan( wing.geometry.vortex );
 % local chord
 c_i = wing.geometry.ctrl_pt.c;
 % local airspeed vector
-V_rot = wing.state.aero.local_inflow.V;
+V_rot = wing.state.aero.local_inflow.V_25;
 % local absolute airspeed
 abs_V_rot = vecnorm( V_rot, 2 );
 % air density

@@ -18,7 +18,7 @@ function wing = wingSetGlobalCoeff( wing ) %#codegen
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-V_rel = vecnorm( wing.state.aero.local_inflow.V, 2 )/wing.state.body.V;
+V_rel = vecnorm( wing.state.aero.local_inflow.V_25, 2 )/wing.state.body.V;
 
 segment_span    = wingGetSegmentSpan(wing.state.geometry.vortex);
 

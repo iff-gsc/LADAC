@@ -1,4 +1,4 @@
-function [bodyState] = wingSetBodyState( bodyState, alpha, beta, V, omega, V_Kb_dt, omega_dt ) %#codegen
+function [bodyState] = wingSetBodyState( bodyState, alpha, beta, V, omega ) %#codegen
 %setBodyState sets the current wing state
 %   The function setBodyState transferes the values of the input data 
 %   (state of the wing) to the objects of the input struct. 
@@ -40,11 +40,5 @@ bodyState.omega = omega;
 bodyState.alpha = alpha;
 % sideslip angle
 bodyState.beta = beta;
-
-% time derivative of kinematic velocity vector
-bodyState.V_Kb_dt = V_Kb_dt;
-
-% time derivative of angular velocity vector
-bodyState.omega_dt = omega_dt;
 
 end

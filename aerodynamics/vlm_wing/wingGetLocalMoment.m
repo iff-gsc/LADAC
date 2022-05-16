@@ -24,7 +24,7 @@ b_i = wingGetSegmentSpan( wing.geometry.vortex );
 % local chord
 c_i = wing.geometry.ctrl_pt.c;
 % local absolute airspeed
-abs_V_loc = vecnorm( wing.state.aero.local_inflow.V, 2 );
+abs_V_loc = vecnorm( wing.state.aero.local_inflow.V_25, 2 );
 % air density
 rho = wing.state.external.atmosphere.rho;
 

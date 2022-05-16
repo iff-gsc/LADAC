@@ -29,12 +29,6 @@ state.body.omega    = zeros(3,1);
 % and beta_K! The wind velocity is covered in "external".)
 state.body.alpha    = 0;
 state.body.beta     = 0;
-% derivative of angular velocity vector (only relevant for unsteady
-% aerodynamics)
-state.body.omega_dt = zeros(3,1);
-% derivative of the kinematic velocity vector (only relevant for unsteady
-% aerodynamics)
-state.body.V_Kb_dt  = zeros(3,1);
 
 %% actuator states
 state.actuators.pos          	= zeros( 1, num_actuators );
@@ -66,10 +60,11 @@ state.aero.coeff_loc.c_m_airfoil    = zeros( 1, n_panel );
 state.aero.coeff_glob.C_XYZ_b       = zeros(3,1);
 state.aero.coeff_glob.C_lmn_b       = zeros(3,1);
 % local velocity due to rotation
-state.aero.local_inflow.V         	= zeros( 3, n_panel );
-state.aero.local_inflow.alpha    	= zeros( 1, n_panel );
+state.aero.local_inflow.V_75        = zeros( 3, n_panel );
+state.aero.local_inflow.alpha_75  	= zeros( 1, n_panel );
 state.aero.local_inflow.beta     	= zeros( 1, n_panel );
-state.aero.local_inflow.V_dt      	= zeros( 3, n_panel );
+state.aero.local_inflow.alpha_25    = zeros( 1, n_panel );
+state.aero.local_inflow.V_25      	= zeros( 3, n_panel );
 
 %% unsteady aerodynamics
 % unsteady, transsonic aerodynamics
@@ -109,7 +104,6 @@ state.geometry = geometry;
 state.geometry.ctrl_pt_dt = geometry.ctrl_pt;
 state.geometry.ctrl_pt_dt = wingSetPosition( ...
     state.geometry.ctrl_pt_dt, zeros( n_panel*4, 1 ), 4, true );
-state.geometry.ctrl_pt_dt2 = state.geometry.ctrl_pt_dt;
 
 %% external
 state.external = wingCreateExternal( n_panel );

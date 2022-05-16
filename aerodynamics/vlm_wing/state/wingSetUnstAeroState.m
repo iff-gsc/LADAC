@@ -36,16 +36,15 @@ alpha_inf_0 = zeros( 1, wing.n_panel );
 
 % use raw inflow in the first step and take into account downwash
 % afterwards
-abs_V_i = vecnorm( wing.state.aero.local_inflow.V, 2 );
-abs_V_i_3 = repmat( abs_V_i, 3, 1 );
-alpha_dt = aeroAnglesDeriv( abs_V_i_3 .* wing.interim_results.u_n, ...
-    repmat( vecnorm( wing.state.aero.local_inflow.V_dt, 2 ), 3, 1 ) .* wing.interim_results.u_n );
+abs_V_i = vecnorm( wing.state.aero.local_inflow.V_25, 2 );
 
-% dimensionless pitch rate [1], Nomenclature
-q = alpha_dt .* wing.state.geometry.ctrl_pt.c ./ abs_V_i;
+% dimensionless pitch rate [1], Nomenclature and Eq. between (18) and (19)
+q = 2 * (wing.state.aero.local_inflow.alpha_75 - wing.state.aero.local_inflow.alpha_25);
 
 % to do: explain why aerodynamic center is at 0.25c
 x_ac = 0.25 * ones( 1, wing.n_panel );
+
+wing.state.aero.circulation.alpha_eff = wing.state.aero.circulation.alpha_eff - q/2;
 
 switch wing.config.airfoil_method
     case 'analytic'

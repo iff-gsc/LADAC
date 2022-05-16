@@ -36,7 +36,7 @@ switch wing_config.airfoil_method
             sqrtReal(1-wing_state.aero.circulation.Ma.^2).*cos(sweep);
 end
 
-abs_V_i = vecnorm( wing_state.aero.local_inflow.V, 2 );
+abs_V_i = vecnorm( wing_state.aero.local_inflow.V_75, 2 );
 
 x_ac = 0.25 * ones( 1, n_panel );
 

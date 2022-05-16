@@ -14,13 +14,10 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 %                   system (3x1 array), in m
 %   flag            Indicates that the next input is a specific variable
 %                   that can be passed optionally:
-%                       'V_Kb_dt'           Next variable is V_Kb_dt.
-%                       'omega_dt'          Next variable is omega_dt,
 %                       'atmosphere'        Next variable is atmosphere,
 %                       'wind'              Next variables are V_Wb, V_Wb_dt,
 %                       'structure_pos'     Next variable is structure_pos,
 %                       'structure_vel'     Next variable is structure_vel,
-%                       'structure_accel'   Next variable is structure_accel,
 %                       'unst_aero_state'   Next variable is unst_aero_state,
 %                       'dyn_stall_state'   Next variable is dyn_stall_state,
 %                       'unst_flap_state'   Next variable is unst_flap_state,
@@ -29,8 +26,6 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 %                       'Delta_alpha'       Next variable is Delta_alpha,
 %                       'alpha_ind'         Next variable is alpha_ind.
 % 
-%   V_Kb_dt             rigid body acceleration (3x1 array), in m/s^2
-%   omega_dt            rigid body angular acceleration (3x1 array), in rad/s^2
 %   atmosphere          atmosphere struct (see isaAtmosphere)
 %   V_Wb                wind velocity at each control point
 %                       (wing.state.external.V_Wb)
@@ -39,8 +34,6 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 %   structure_pos       position of structure (size(wing.T_vs,2)x1 array),
 %                       usually in modal space (unit unknown)
 %   structure_vel       velocity of structure (size(wing.T_vs,2)x1 array),
-%                       usually in modal space (unit unknown)
-%   structure_accel     acceleration of structure (size(wing.T_vs,2)x1 array),
 %                       usually in modal space (unit unknown)
 %   unst_aero_state     unsteady airfoil state per segment
 %                       (wing.state.aero.unsteady.x)
@@ -61,8 +54,6 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 % Syntax:
 %   % default:
 %   wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuators_rate, xyz_cg )
-%   % pass rigid body acceleration:
-%   wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuators_rate, xyz_cg, 'V_Kb_dt', V_Kb_dt )
 %   % pass rigid body rotational acceleration:
 %   wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuators_rate, xyz_cg, 'omega_dt', omega_dt )
 %   % pass atmosphere:
@@ -73,8 +64,6 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 %   wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuators_rate, xyz_cg, 'structure_pos', structure_pos )
 %   % pass velocity of structure (usually modal):
 %   wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuators_rate, xyz_cg, 'structure_vel', structure_vel )
-%   % pass acceleration of structure (usually modal):
-%   wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuators_rate, xyz_cg, 'structure_accel', structure_accel )
 %   % pass unsteady airfoil state (potential flow):
 %   wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuators_rate, xyz_cg, 'unst_aero_state', unst_aero_state )
 %   % pass dynamic stall state:
@@ -100,16 +89,12 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 %% decode variable input arguments
 
 is_structure_state  = false;
-is_structure_accel  = false;
 is_unst_airfoil_state = false;
 is_dyn_stall_state  = false;
 is_unst_flap_state  = false;
 is_unst_act2_state  = false;
 is_tau_v_state      = false;
 is_alpha_ind_fb     = false;
-
-V_Kb_dt = zeros(3,1);
-omega_dt = zeros(3,1);
 
 atmosphere      = isAtmosphere(0);
 
@@ -118,7 +103,6 @@ V_Wb_dt         = zeros( size(wing.state.external.V_Wb_dt) );
 
 structure_pos   = zeros( size(wing.aeroelasticity.T_vs,2), 1 );
 structure_vel   = zeros( size(wing.aeroelasticity.T_vs,2), 1 );
-structure_accel = zeros( size(wing.aeroelasticity.T_vs,2), 1 );
 
 unst_aero_state = zeros(size(wing.state.aero.unsteady.x));
 dyn_stall_state = zeros(size(wing.state.aero.unsteady.X));
@@ -129,16 +113,10 @@ tau_v           = zeros(size(wing.state.aero.unsteady.tau_v));
 alpha_ind       = zeros(size(wing.state.aero.circulation.alpha_ind));
 
 for i = 1:length(varargin)
-    if strcmp(varargin{i},'accel')
-        % idx_max: codegen workaround (yes, either me or Matlab is dumb)
-        idx_min = min(numel(V_Kb_dt),numel(varargin{i+1}));
-        V_Kb_dt(1:idx_min) = varargin{i+1}(1:idx_min);
-    elseif strcmp(varargin{i},'angular_accel')
-        idx_min = min(numel(omega_dt),numel(varargin{i+1}));
-        omega_dt(1:idx_min) = varargin{i+1}(1:idx_min);
-    elseif strcmp(varargin{i},'atmosphere')
+    if strcmp(varargin{i},'atmosphere')
         atmosphere = varargin{i+1};
     elseif strcmp(varargin{i},'wind')
+        % idx_max: codegen workaround (yes, either me or Matlab is dumb)
         idx_min = min(numel(V_Wb),numel(varargin{i+1}));
         V_Wb(1:idx_min) = varargin{i+1}(1:idx_min);
         idx_min = min(numel(V_Wb_dt),numel(varargin{i+2}));
@@ -150,10 +128,6 @@ for i = 1:length(varargin)
     elseif strcmp(varargin{i},'structure_vel') && wing.config.is_flexible
         idx_min = min(numel(structure_vel),numel(varargin{i+1}));
         structure_vel(1:idx_min) = varargin{i+1}(1:idx_min);
-    elseif strcmp(varargin{i},'structure_accel') && wing.config.is_flexible
-        idx_min = min(numel(structure_accel),numel(varargin{i+1}));
-        structure_accel(1:idx_min) = varargin{i+1}(1:idx_min);
-        is_structure_accel(:) = true;
     elseif strcmp(varargin{i},'unst_airfoil_state')
         idx_min = min(numel(unst_aero_state),numel(varargin{i+1}));
         unst_aero_state(1:idx_min) = varargin{i+1}(1:idx_min);
@@ -184,8 +158,7 @@ end
 %% set current wing state
 
 % set current rigid body state
-wing.state.body = wingSetBodyState( wing.state.body, alpha, beta, V, omega, ...
-    V_Kb_dt, omega_dt );
+wing.state.body = wingSetBodyState( wing.state.body, alpha, beta, V, omega );
 
 % set external state
 wing.state.external = wingSetExternal( wing.state.external, V_Wb, V_Wb_dt, ...
@@ -193,15 +166,11 @@ wing.state.external = wingSetExternal( wing.state.external, V_Wb, V_Wb_dt, ...
 
 % set flexible wing state
 if wing.config.is_flexible
-    if is_structure_state && is_structure_accel
-        wing = wingSetGeometryState( wing, structure_pos, ...
-            'structure_vel', structure_vel, ...
-            'structure_accel', structure_accel );
-    elseif is_structure_state && ~is_structure_accel
+    if is_structure_state
         wing = wingSetGeometryState( wing, structure_pos, ...
             'structure_vel', structure_vel );
     else
-        error('Neither structure state nor structure acceleration was set.')
+        error('Structure state was not set.')
     end
 end
 
