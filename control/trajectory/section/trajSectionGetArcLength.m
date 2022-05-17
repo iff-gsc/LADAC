@@ -50,12 +50,12 @@ dy = polyder(traj_section.pos_y);
 dz = polyder(traj_section.pos_z);
 
 % Function handle of the arc length derivative
-arc_length_fun = @(ts) sqrt( polyval(dx, ts).^2 + ...
-                             polyval(dy, ts).^2 + ...
-                             polyval(dz, ts).^2);                       
+arc_length_fun = @(ts) sqrt( polyVal(dx, ts).^2 + ...
+                             polyVal(dy, ts).^2 + ...
+                             polyVal(dz, ts).^2);                       
 
 % Numerical integration of the arc length derivative from [0, t]
-arc_length = quadgk(arc_length_fun, 0, t);
+arc_length = integralSimpson(arc_length_fun, 0, t, 15);
 
 % Return the arc length derivative
 arc_length_dt = arc_length_fun(t);
