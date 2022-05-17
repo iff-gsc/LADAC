@@ -174,7 +174,7 @@ for k = 1:(num_of_splines-1)
 end
     
 % Solve the System
-x = A \ b;
+x = ladac_lsqr(A, b, 200);
 coeffs = full(x)';
 %% Plot function and derivatives
 if(plot_enable)
@@ -214,6 +214,96 @@ if(plot_enable)
         grid on
         
     end
+end
+
+end
+
+
+
+function [ x ] = ladac_lsqr( A, b,  itnlim)
+m = size(A,1);
+n = size(A,2);
+
+damp=0;
+
+itn    = 0;
+Anorm  = single(0);             
+
+% Set up the first vectors u and v for the bidiagonalization.
+% These satisfy  beta*u = b,  alfa*v = A'u.
+
+u      = b(1:m);        x    = single(zeros(n,1));
+alfa   = single(0);             beta = norm(u);
+v = single(zeros(m));
+w = single(zeros(m));
+if beta > 0
+   u = (1/beta)*u;
+   %if explicitA
+     v = A'*u;
+   %else  
+   %  v = A(u,2);
+   %end
+   alfa = norm(v);
+end
+if alfa > 0
+   v = (1/alfa)*v;      w = v;
+end
+
+Arnorm = alfa*beta;     if Arnorm == 0, return; end
+
+rhobar = alfa;          phibar = beta;          bnorm  = beta;
+rnorm  = beta;
+
+
+%------------------------------------------------------------------
+%     Main iteration loop.
+%------------------------------------------------------------------
+while itn < itnlim
+  itn = itn + 1;
+
+% Perform the next step of the bidiagonalization to obtain the
+% next beta, u, alfa, v.  These satisfy the relations
+%      beta*u  =  A*v  - alfa*u,
+%      alfa*v  =  A'*u - beta*v.
+
+  u = A*v    - alfa*u;
+
+  beta = norm(u);
+  if beta > 0
+    u     = (1/beta)*u;
+    Anorm = norm([Anorm alfa beta damp]);
+
+    v = A'*u   - beta*v;
+
+    alfa  = norm(v);
+    
+    if alfa > 0
+        v = (1/alfa)*v;
+    end
+    
+  end
+
+% Use a plane rotation to eliminate the damping parameter.
+% This alters the diagonal (rhobar) of the lower-bidiagonal matrix.
+
+  rhobar1 = norm([rhobar damp]);
+  cs1     = rhobar/rhobar1;
+  phibar  = cs1*phibar;
+
+  rho     =   norm([rhobar1 beta]);
+  cs      =   rhobar1/rho;
+  sn      =   beta   /rho;
+  theta   =   sn*alfa;
+  rhobar  = - cs*alfa;
+  phi     =   cs*phibar;
+  phibar  =   sn*phibar;
+
+  t1      =   phi  /rho;
+  t2      = - theta/rho;
+
+  x       = x      + t1*w;
+  w       = v      + t2*w;
+
 end
 
 end

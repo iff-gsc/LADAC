@@ -55,9 +55,26 @@ arc_length_fun = @(ts) sqrt( polyval(dx, ts).^2 + ...
                              polyval(dz, ts).^2);                       
 
 % Numerical integration of the arc length derivative from [0, t]
-arc_length = quadgk(arc_length_fun, 0, t);
+%arc_length = 0.0;%quadgk(arc_length_fun, 0, t);
+arc_length = integrateSimpson( arc_length_fun, 0, t, 15);
 
 % Return the arc length derivative
 arc_length_dt = arc_length_fun(t);
+
+end
+
+
+function [ sum ] = integrateSimpson( func, left, right, steps)
+t = left; 
+sum = 0;
+step = (right-left) / steps;
+step_1_2 = 0.5*step;
+
+for i = 1:steps
+    sum(:) = sum + (func(t) + 4.0 * func(t + step_1_2) + func(t + step));   
+    t(:) = t + step;
+end
+
+sum(:) = (1/6) * step * sum;
 
 end
