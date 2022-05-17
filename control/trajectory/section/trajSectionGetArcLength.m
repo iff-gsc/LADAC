@@ -28,12 +28,12 @@ trajSectionGetArcLength(traj_section, varargin)
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-
+t = 0;
 
 if isempty(varargin)
-    t = traj_section.t;
+    t(:) = traj_section.t;
 else
-    t = real(varargin{1});
+    t(:) = real(varargin{1});
 end    
 
 % Protect the boundaries but leave room for Newton iteration directly on
@@ -50,31 +50,14 @@ dy = polyder(traj_section.pos_y);
 dz = polyder(traj_section.pos_z);
 
 % Function handle of the arc length derivative
-arc_length_fun = @(ts) sqrt( polyval(dx, ts).^2 + ...
-                             polyval(dy, ts).^2 + ...
-                             polyval(dz, ts).^2);                       
+arc_length_fun = @(ts) sqrt( polyVal(dx, ts).^2 + ...
+                             polyVal(dy, ts).^2 + ...
+                             polyVal(dz, ts).^2);                       
 
 % Numerical integration of the arc length derivative from [0, t]
-%arc_length = 0.0;%quadgk(arc_length_fun, 0, t);
-arc_length = integrateSimpson( arc_length_fun, 0, t, 15);
+arc_length = integralSimpson(arc_length_fun, 0, t, 15);
 
 % Return the arc length derivative
 arc_length_dt = arc_length_fun(t);
-
-end
-
-
-function [ sum ] = integrateSimpson( func, left, right, steps)
-t = left; 
-sum = 0;
-step = (right-left) / steps;
-step_1_2 = 0.5*step;
-
-for i = 1:steps
-    sum(:) = sum + (func(t) + 4.0 * func(t + step_1_2) + func(t + step));   
-    t(:) = t + step;
-end
-
-sum(:) = (1/6) * step * sum;
 
 end

@@ -79,8 +79,8 @@ bnd_med = degree;
 intermediate_size = sub_mat_size*(num_of_splines-1);
 
 size_A_mat = sub_mat_size*num_of_splines;
-A = zeros(size_A_mat, size_A_mat,'single');
-b = zeros(size_A_mat, 1,'single');
+A = zeros(size_A_mat, size_A_mat);
+b = zeros(size_A_mat, 1);
 
 if cycle == false
     
@@ -114,7 +114,7 @@ if cycle == false
 else
     
     % Boundary Condition Size
-    bnd_left(:)  = 2;
+    bnd_left  = 2;
     bnd_right = floor((degree+1)/2);
     
     last_row = sub_mat_size*(num_of_splines-1)+bnd_left;
@@ -174,12 +174,11 @@ for k = 1:(num_of_splines-1)
 end
     
 % Solve the System
-x = ladac_lsqr(A, b, 200);
-coeffs = full(x)';
+coeffs = A \ b;
+
 %% Plot function and derivatives
 if(plot_enable)
     
-    figure(1)
     clf;
     subplot(derivatives+1, 1, 1)
     hold on
@@ -188,7 +187,7 @@ if(plot_enable)
         idx_beg = sub_mat_size*(i-1)+1;
         idx_end = sub_mat_size*(i);
         x_iter  = coeffs(idx_beg:idx_end);
-        plot(i-1:0.01:i,polyval(x_iter,0:0.01:1))
+        plot(i-1:0.01:i,polyVal(x_iter,0:0.01:1))
     end
     hold off
     grid on
@@ -208,102 +207,12 @@ if(plot_enable)
                 x_derivative = polyder(x_derivative);
             end
             
-            plot(i-1:0.01:i,polyval(x_derivative,0:0.01:1))
+            plot(i-1:0.01:i,polyVal(x_derivative,0:0.01:1))
         end
         hold off
         grid on
         
     end
-end
-
-end
-
-
-
-function [ x ] = ladac_lsqr( A, b,  itnlim)
-m = size(A,1);
-n = size(A,2);
-
-damp=0;
-
-itn    = 0;
-Anorm  = single(0);             
-
-% Set up the first vectors u and v for the bidiagonalization.
-% These satisfy  beta*u = b,  alfa*v = A'u.
-
-u      = b(1:m);        x    = single(zeros(n,1));
-alfa   = single(0);             beta = norm(u);
-v = single(zeros(m));
-w = single(zeros(m));
-if beta > 0
-   u = (1/beta)*u;
-   %if explicitA
-     v = A'*u;
-   %else  
-   %  v = A(u,2);
-   %end
-   alfa = norm(v);
-end
-if alfa > 0
-   v = (1/alfa)*v;      w = v;
-end
-
-Arnorm = alfa*beta;     if Arnorm == 0, return; end
-
-rhobar = alfa;          phibar = beta;          bnorm  = beta;
-rnorm  = beta;
-
-
-%------------------------------------------------------------------
-%     Main iteration loop.
-%------------------------------------------------------------------
-while itn < itnlim
-  itn = itn + 1;
-
-% Perform the next step of the bidiagonalization to obtain the
-% next beta, u, alfa, v.  These satisfy the relations
-%      beta*u  =  A*v  - alfa*u,
-%      alfa*v  =  A'*u - beta*v.
-
-  u = A*v    - alfa*u;
-
-  beta = norm(u);
-  if beta > 0
-    u     = (1/beta)*u;
-    Anorm = norm([Anorm alfa beta damp]);
-
-    v = A'*u   - beta*v;
-
-    alfa  = norm(v);
-    
-    if alfa > 0
-        v = (1/alfa)*v;
-    end
-    
-  end
-
-% Use a plane rotation to eliminate the damping parameter.
-% This alters the diagonal (rhobar) of the lower-bidiagonal matrix.
-
-  rhobar1 = norm([rhobar damp]);
-  cs1     = rhobar/rhobar1;
-  phibar  = cs1*phibar;
-
-  rho     =   norm([rhobar1 beta]);
-  cs      =   rhobar1/rho;
-  sn      =   beta   /rho;
-  theta   =   sn*alfa;
-  rhobar  = - cs*alfa;
-  phi     =   cs*phibar;
-  phibar  =   sn*phibar;
-
-  t1      =   phi  /rho;
-  t2      = - theta/rho;
-
-  x       = x      + t1*w;
-  w       = v      + t2*w;
-
 end
 
 end

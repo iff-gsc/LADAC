@@ -51,18 +51,18 @@ dy = polyder(traj_section.pos_y);
 % Derivative of z position
 dz = polyder(traj_section.pos_z);
 
-first_deriv = [polyval(dx, t); polyval(dy, t); polyval(dz, t)];
+first_deriv = [polyVal(dx, t); polyVal(dy, t); polyVal(dz, t)];
 
 % Calculate second derivative of path
 ddx = polyder(dx);
 ddy = polyder(dy);
 ddz = polyder(dz);
-sec_deriv = [polyval(ddx, t); polyval(ddy, t); polyval(ddz, t)];
+sec_deriv = [polyVal(ddx, t); polyVal(ddy, t); polyVal(ddz, t)];
 
 % Calculate third derivative of path
 dddx = polyder(ddx);
 dddy = polyder(ddy);
 dddz = polyder(ddz);
-third_deriv = [polyval(dddx, t); polyval(dddy, t); polyval(dddz, t)];
+third_deriv = [polyVal(dddx, t); polyVal(dddy, t); polyVal(dddz, t)];
 
 end
