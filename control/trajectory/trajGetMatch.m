@@ -186,13 +186,13 @@ for k = first_checked_section:last_checked_section
     %% trajGetError
     
     % Calculate x-positon with t
-    px = polyval(traj_section.pos_x, T');
+    px = polyVal(traj_section.pos_x, T');
     
     % Calculate y-positon with t
-    py = polyval(traj_section.pos_y, T');
+    py = polyVal(traj_section.pos_y, T');
     
     % Calculate z-positon with t
-    pz = polyval(traj_section.pos_z, T');
+    pz = polyVal(traj_section.pos_z, T');
     
     % return position vector
     curr_pos = [px; py; pz];

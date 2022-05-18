@@ -79,8 +79,8 @@ bnd_med = degree;
 intermediate_size = sub_mat_size*(num_of_splines-1);
 
 size_A_mat = sub_mat_size*num_of_splines;
-A = sparse(size_A_mat, size_A_mat);
-b = sparse(size_A_mat, 1);
+A = zeros(size_A_mat, size_A_mat);
+b = zeros(size_A_mat, 1);
 
 if cycle == false
     
@@ -174,12 +174,11 @@ for k = 1:(num_of_splines-1)
 end
     
 % Solve the System
-x = A \ b;
-coeffs = full(x)';
+coeffs = (A \ b)';
+
 %% Plot function and derivatives
 if(plot_enable)
     
-    figure(1)
     clf;
     subplot(derivatives+1, 1, 1)
     hold on
@@ -188,7 +187,7 @@ if(plot_enable)
         idx_beg = sub_mat_size*(i-1)+1;
         idx_end = sub_mat_size*(i);
         x_iter  = coeffs(idx_beg:idx_end);
-        plot(i-1:0.01:i,polyval(x_iter,0:0.01:1))
+        plot(i-1:0.01:i,polyVal(x_iter,0:0.01:1))
     end
     hold off
     grid on
@@ -208,7 +207,7 @@ if(plot_enable)
                 x_derivative = polyder(x_derivative);
             end
             
-            plot(i-1:0.01:i,polyval(x_derivative,0:0.01:1))
+            plot(i-1:0.01:i,polyVal(x_derivative,0:0.01:1))
         end
         hold off
         grid on

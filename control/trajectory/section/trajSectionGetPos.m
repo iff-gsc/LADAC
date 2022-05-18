@@ -36,13 +36,13 @@ else
 end    
 
 % Calculate x-positon with t
-px = polyval(traj_section.pos_x, t);
+px = polyVal(traj_section.pos_x, t);
 
 % Calculate y-positon with t
-py = polyval(traj_section.pos_y, t);
+py = polyVal(traj_section.pos_y, t);
 
 % Calculate z-positon with t
-pz = polyval(traj_section.pos_z, t);
+pz = polyVal(traj_section.pos_z, t);
 
 % return position vector
 pos = [px; py; pz];
