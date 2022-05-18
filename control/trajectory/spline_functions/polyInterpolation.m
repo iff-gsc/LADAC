@@ -79,8 +79,8 @@ bnd_med = degree;
 intermediate_size = sub_mat_size*(num_of_splines-1);
 
 size_A_mat = sub_mat_size*num_of_splines;
-A = zeros(size_A_mat, size_A_mat);
-b = zeros(size_A_mat, 1);
+A = zeros(size_A_mat, size_A_mat,superiorfloat(points,degree));
+b = zeros(size_A_mat, 1,superiorfloat(points,degree));
 
 if cycle == false
     

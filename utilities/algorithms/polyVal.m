@@ -32,7 +32,7 @@ function [y] = polyVal(p, x)
 
 nc = length(p);
 siz_x = size(x);
-y = zeros(siz_x);
+y = zeros(siz_x,superiorfloat(p,x));
 
 if nc > 0
     y(:) = p(1);

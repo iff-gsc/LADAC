@@ -45,9 +45,9 @@ if(traj.polynomial_degree ~= 5)
 end
 
 % return values
-section_idx = 1;
-error_sqr = inf;
-t = 0;
+section_idx = ones(1,superiorfloat(position));
+error_sqr = inf(superiorfloat(position));
+t = zeros(1,1,superiorfloat(position));
 
 % aircraft's position
 xf = position(1);
@@ -59,10 +59,10 @@ first_checked_section = 1;
 last_checked_section = traj.num_sections_set;
 
 % poly-vector
-P = zeros(1,10);
+P = zeros(1,10,superiorfloat(position));
 
 % Precalculation of subdiagonal matrix for schur decomposition
-A5 = diag(ones(8,1),-1);
+A5 = diag(ones(8,1,superiorfloat(position)),-1);
 
 % Iterate through all relevant sections
 for k = first_checked_section:last_checked_section
@@ -110,8 +110,8 @@ for k = first_checked_section:last_checked_section
     
     %% Calculate the squared error for every candidate between 0 and  1
     
-    t_values = zeros(1,6);
-    curr_pos = zeros(1,3);
+    t_values = zeros(1,6,superiorfloat(position));
+    curr_pos = zeros(1,3,superiorfloat(position));
     
     for i=1:11
         T_i = T(i);
