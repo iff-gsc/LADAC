@@ -174,7 +174,7 @@ for k = 1:(num_of_splines-1)
 end
     
 % Solve the System
-coeffs = A \ b;
+coeffs = (A \ b)';
 
 %% Plot function and derivatives
 if(plot_enable)
