@@ -48,7 +48,7 @@ for k=1:traj.num_sections_set
     
     % Update the arc length and airline distance for the current section
     traj.sections(k).arc_length(:) = arc_length;
-    traj.sections(k).distance = distance;
+    traj.sections(k).distance(:) = distance;
     
     % Adding the arc length and the airline distance to the total values 
     % of the trajectory

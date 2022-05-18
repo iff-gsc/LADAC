@@ -114,7 +114,7 @@ if cycle == false
 else
     
     % Boundary Condition Size
-    bnd_left  = 2;
+    bnd_left(:)  = 2;
     bnd_right = floor((degree+1)/2);
     
     last_row = sub_mat_size*(num_of_splines-1)+bnd_left;

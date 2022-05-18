@@ -67,7 +67,7 @@ ddot_r_g = ddot_r + [(acc_vec(1) / vel^2); (acc_vec(2) / vel^2); (acc_vec(3) / v
 
 % Check for parabel flight
 if(norm(ddot_r_g) > eps)
-    ddot_r = ddot_r_g;
+    ddot_r(:) = ddot_r_g;
 end
 
 % pre-calculation, often used
@@ -75,7 +75,7 @@ cross_dot_r_ddot_r = cross(dot_r, ddot_r);
 
 % Check for straight line
 if(norm(cross_dot_r_ddot_r) < eps)
-    cross_dot_r_ddot_r = [0; eps; 0];
+    cross_dot_r_ddot_r(:) = [0; eps; 0];
 end
 
 % unit vector tangent to the curve

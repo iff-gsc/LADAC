@@ -39,7 +39,7 @@ if nc > 0
 end
 
 for i = 2:nc
-    y = x .* y + p(i);
+    y(:) = x .* y + p(i);
 end
 
 end
