@@ -80,34 +80,34 @@ for i = 1:num_path
             end
         end
     end
-end
 
-if TiGL_matlab_path_found
-    % find TIXI directory
-    list_dir = dir( possible_paths{i} );
-    len_list_dir = length(list_dir);
-    % init variable
-    is_TiGL_dir = false(len_list_dir,1);
-    for k = 1:len_list_dir
-        if list_dir(k).isdir
-            if contains( list_dir(k).name, 'TIXI' ) || contains( list_dir(k).name, 'tixi' )
-                is_TiGL_dir(k) = true;
+    if TiGL_matlab_path_found
+        % find TIXI directory
+        list_dir = dir( possible_paths{i} );
+        len_list_dir = length(list_dir);
+        % init variable
+        is_TiGL_dir = false(len_list_dir,1);
+        for k = 1:len_list_dir
+            if list_dir(k).isdir
+                if contains( list_dir(k).name, 'TIXI' ) || contains( list_dir(k).name, 'tixi' )
+                    is_TiGL_dir(k) = true;
+                end
             end
         end
-    end
-    idx_TIXI_dir_vec = find(is_TiGL_dir == true);
-    if length(idx_TIXI_dir_vec) >= 1
-        % choose newest TiXI version ( --> end )
-        idx_TIXI_dir = idx_TIXI_dir_vec(1);
-        TiXI_folder_name = list_dir(idx_TIXI_dir).name;
-        TiXI_path_found = true;
-        TiXI_path = [ possible_paths{i}, '/', TiXI_folder_name ];
-        for l = 1:length(TiXI_subfolder)
-            if exist( [ TiXI_path, TiXI_subfolder{l} ], 'dir' ) 
-                % add to path TIXI subdirectory
-                addpath( [ TiXI_path, TiXI_subfolder{l} ] );
-                TiXI_matlab_path_found = true;
-            end 
+        idx_TIXI_dir_vec = find(is_TiGL_dir == true);
+        if length(idx_TIXI_dir_vec) >= 1
+            % choose newest TiXI version ( --> end )
+            idx_TIXI_dir = idx_TIXI_dir_vec(1);
+            TiXI_folder_name = list_dir(idx_TIXI_dir).name;
+            TiXI_path_found = true;
+            TiXI_path = [ possible_paths{i}, '/', TiXI_folder_name ];
+            for l = 1:length(TiXI_subfolder)
+                if exist( [ TiXI_path, TiXI_subfolder{l} ], 'dir' ) 
+                    % add to path TIXI subdirectory
+                    addpath( [ TiXI_path, TiXI_subfolder{l} ] );
+                    TiXI_matlab_path_found = true;
+                end 
+            end
         end
     end
 end
