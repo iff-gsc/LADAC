@@ -44,7 +44,8 @@ section_id = -1;
 active_section = section_id_start;
 
 % Check if the distance is a multiple of the total length of the trajectory
-dist_remaining = abs(dist - fix(dist/traj.arc_length) * traj.arc_length);
+dist_achieved =  fix(divideFinite(dist,traj.arc_length)) * traj.arc_length;
+dist_remaining = abs(dist - dist_achieved);
 
 % Check the direction of travel
 if(sign(dist) >= 0)

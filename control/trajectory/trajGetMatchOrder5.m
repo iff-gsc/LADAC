@@ -46,7 +46,7 @@ end
 
 % return values
 section_idx = ones(1,superiorfloat(position));
-error_sqr = inf(superiorfloat(position));
+error_sqr = realmax(superiorfloat(position));
 t = zeros(1,1,superiorfloat(position));
 
 % aircraft's position
