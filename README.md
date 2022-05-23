@@ -29,7 +29,7 @@ This is the main motivation and objective of LADAC:
   2. You may also need some MATLAB toolboxes like Curve Fitting Toolbox,
 	   Aerospace Blockset, Aerospace Toolbox, MATLAB Coder, MATLAB Compiler, 
 	   Simulink Control Design, Simulink Coder depending on what you want to do
-- Clone LADAC (generally the main branch should be used).
+- Clone LADAC including its submodules (generally the main branch should be used).
   - If your project is a Git repository, you should add LADAC as a submodule:
     ```
     git add submodule https://github.com/iff-gsc/ladac.git
@@ -38,9 +38,9 @@ This is the main motivation and objective of LADAC:
     ```
     git clone --recursive https://github.com/iff-gsc/ladac.git
     ```
-- Add LADAC to the Matlab path (in Matlab Command Window):
+- Add LADAC folder to the Matlab path (in Matlab Command Window):
     ```
-    addpath(genpath('LADAC'));
+    addpath(genpath('ladac'));
     ```
 
 
@@ -56,7 +56,7 @@ This is the main motivation and objective of LADAC:
    - Look for "LADAC" at the highest level (you may have to refresh the Library Browser by right-clicking or pressing F5).
      This will probably only work if you use the supported Matlab version.
    - Check whether all sub-areas of LADAC appear and if you can add blocks to your Simulink file.
-     Alternatively, you can add blocks by opening `LADAC.slx` (you can click through the sub-areas and add blocks by copy and paste).
+     Alternatively, you can add blocks by opening `ladac_lib.slx` (you can click through the sub-areas and add blocks by copy and paste).
 
 
 ## How to use?
@@ -89,7 +89,8 @@ with different control methods.
 The environment library contains modules to compute environmental
 parameters such as wind, atmospheric parameters and ground forces.
 - [**Equations of motion**](equations_of_motion)  
-The equations of motion library contains multiple implementations of rigid-body equations of motion.
+The equations of motion library contains multiple implementations of rigid-body
+and flexible-body equations of motion.
 - [**Flight parameters**](flight_parameters)  
 The flight parameters library allows the computation of flight parameters
 such as aerodynamic angles, flight path angles or time-derivatives of Euler angles.
@@ -97,9 +98,6 @@ such as aerodynamic angles, flight path angles or time-derivatives of Euler angl
 The propulsion library contains sublibraries to model propellers, motors or batteries.
 - [**Sensors**](sensors)  
 The sensor library contains models that compute outputs for different sensors.
-- [**Structure**](structure)  
-The structure library contains an implementation of flexible aircraft equations of motion
-that can also be coupled with an aerodynamics model (aeroelasticity).
 - [**Utilities**](utilities)  
 The utilities library contains multiple sublibraries with miscellaneous functions
 such as axes transformation, interfaces to external programs and unit conversions
