@@ -2,6 +2,7 @@
 
 This project is a library with functions for aircraft dynamics and control
 for Matlab/Simulink.
+Examples of how to use LADAC are available in [LADAC-Examples](https://github.com/iff-gsc/LADAC-Examples).
 
 
 ## Motivation
