@@ -85,9 +85,9 @@ void Wind::plot(double downShift, QVector<QVector<double>> pos, double velocity)
 
         start_pt = Math::local2Global(start_pt,shift,rotationMatrix);
 
-        end_pt.setX(pos[0][i]-m_scaling*m_V_Wb_i[0][i]);
-        end_pt.setY(pos[1][i]-m_scaling*m_V_Wb_i[1][i]);
-        end_pt.setZ(0-m_scaling*m_V_Wb_i[2][i]);
+        end_pt.setX(pos[0][i]+m_scaling*m_V_Wb_i[0][i]);
+        end_pt.setY(pos[1][i]+m_scaling*m_V_Wb_i[1][i]);
+        end_pt.setZ(0+m_scaling*m_V_Wb_i[2][i]);
         end_pt = Math::local2Global(end_pt,shift,rotationMatrix);
 
         //glPointSize ( 1.0f );
