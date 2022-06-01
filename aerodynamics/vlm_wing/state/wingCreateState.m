@@ -65,6 +65,8 @@ state.aero.local_inflow.alpha_75  	= zeros( 1, n_panel );
 state.aero.local_inflow.beta     	= zeros( 1, n_panel );
 state.aero.local_inflow.alpha_25    = zeros( 1, n_panel );
 state.aero.local_inflow.V_25      	= zeros( 3, n_panel );
+% dimensionless pitch rate
+state.aero.local_inflow.q           = zeros( 1, n_panel );
 
 %% unsteady aerodynamics
 % unsteady, transsonic aerodynamics

@@ -35,16 +35,19 @@ wing.state.aero.local_inflow.V_75 = velocityFromRot( V_Ab, wing.state.body.omega
 
 % local aerodynamic angles
 [ wing.state.aero.local_inflow.alpha_75, wing.state.aero.local_inflow.beta ] = ...
-    aeroAngles( wing.state.aero.local_inflow.V_25 );
+    aeroAngles( wing.state.aero.local_inflow.V_75 );
 
 % approx. airspeed and angle of attack at 25% chord
 wing.state.aero.local_inflow.V_25 = wing.state.aero.local_inflow.V_75;
 wing.state.aero.local_inflow.V_25(3,:) = ...
-    wing.state.aero.local_inflow.V_25(3,:) + ...
+    wing.state.aero.local_inflow.V_25(3,:) - ...
     wing.state.geometry.ctrl_pt_dt.local_incidence .* wing.geometry.ctrl_pt.c/2;
 wing.state.aero.local_inflow.V_25(:) = ...
-    wing.state.aero.local_inflow.V_25 + wing.state.external.V_Wb_dt ...
-    .* repmat( wing.geometry.ctrl_pt.c ./ vecnorm( wing.state.aero.local_inflow.V_75, 2, 1 ), 3, 1 );
+    wing.state.aero.local_inflow.V_25 - wing.state.external.V_Wb_dt ...
+    .* repmat( wing.geometry.ctrl_pt.c/2 ./ vecnorm( wing.state.aero.local_inflow.V_75, 2, 1 ), 3, 1 );
 wing.state.aero.local_inflow.alpha_25 = aeroAngles( wing.state.aero.local_inflow.V_25 );
+
+% dimensionless pitch rate
+wing.state.aero.local_inflow.q = 2 * (wing.state.aero.local_inflow.alpha_75 - wing.state.aero.local_inflow.alpha_25);
 
 end
