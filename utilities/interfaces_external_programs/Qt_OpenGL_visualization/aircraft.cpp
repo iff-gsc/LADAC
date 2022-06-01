@@ -344,7 +344,7 @@ QVector3D Wing::getPointFlapAt(int i, int side) {
     }
     // rotate about flap rotation axis
     QVector3D axis = this->getPointTrailAt(ii+1,0) - this->getPointTrailAt(ii,1);
-    QQuaternion flap_quat = QQuaternion::fromAxisAndAngle(axis,m_flap_deflection[flap_idx]+twist_i);
+    QQuaternion flap_quat = QQuaternion::fromAxisAndAngle(axis,m_flap_deflection[flap_idx]+57.3*twist_i);
     QVector3D flap_vector;
     flap_vector.setX(-rel_shift_flap*chord_i);
     flap_vector.setY(0);
