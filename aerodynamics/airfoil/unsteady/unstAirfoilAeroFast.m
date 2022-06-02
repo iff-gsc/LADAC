@@ -141,7 +141,7 @@ x_dt = A.*x + B_alpha.*repmat(alpha,8,1) + B_q.*repmat(q,8,1);
 c_L_c = c_11 .* x(1,:) + c_12 .* x(2,:);
 c_m_c = c_21 .* x(1,:) + c_22 .* x(2,:) + c_27 .* x(7,:);
 c_L_nc = c_13 .* x(3,:) + c_14 .* x(4,:) + 4./Ma .* alpha + 1./Ma .* q;
-c_m_nc = c_25 .* x(5,:) + c_26 .* x(6,:) + c_28 .* x(8,:) - 1./Ma .* alpha - 7/12*Ma .* q;
+c_m_nc = c_25 .* x(5,:) + c_26 .* x(6,:) + c_28 .* x(8,:) - 1./Ma .* alpha - 7./(12*Ma) .* q;
 alpha_E = c_31 .* x(1,:) + c_32 .* x(2,:);
 
 end

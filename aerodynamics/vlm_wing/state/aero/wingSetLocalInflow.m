@@ -12,6 +12,10 @@ function wing = wingSetLocalInflow( wing, pos_ref_c )
 % 
 % Outputs:
 % 	wing           	wing struct, see wingCreate
+% 
+% Literature:
+%   [1] Leishman, J. G., & Nguyen, K. Q. (1990). State-space representation
+%       of unsteady airfoil behavior. AIAA journal, 28(5), 836-844.
 
 % Disclamer:
 %   SPDX-License-Identifier: GPL-2.0-only
@@ -47,7 +51,7 @@ wing.state.aero.local_inflow.V_25(:) = ...
     .* repmat( wing.geometry.ctrl_pt.c/2 ./ vecnorm( wing.state.aero.local_inflow.V_75, 2, 1 ), 3, 1 );
 wing.state.aero.local_inflow.alpha_25 = aeroAngles( wing.state.aero.local_inflow.V_25 );
 
-% dimensionless pitch rate
+% dimensionless pitch rate [1], Nomenclature and Eq. between (18) and (19)
 wing.state.aero.local_inflow.q = 2 * (wing.state.aero.local_inflow.alpha_75 - wing.state.aero.local_inflow.alpha_25);
 
 end
