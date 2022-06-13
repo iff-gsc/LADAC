@@ -168,7 +168,8 @@ c_D_st = airfoilAnalytic0515AlCd( fcd, rad2deg(alpha) );
 
 % C_C_f = (c_D_st_E-c_D_0) .*  ( sqrt(f_ss) - sqrt(f_s) );
 
-c_D = unstAirfoilAeroCd( c_D_st, c_N, alpha, alpha_E_0 );
+c_D = unstAirfoilAeroCdNoFlutter( c_D_st, c_N, alpha, c_L_st_f );
+
 
 %% pitching moment coefficient
 

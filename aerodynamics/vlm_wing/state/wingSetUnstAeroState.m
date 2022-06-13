@@ -60,11 +60,6 @@ switch wing.config.airfoil_method
         % effective angle of attack for an equivalent uncambered airfoil
         alpha_inf_0(:) = wing.state.aero.circulation.alpha_eff - deg2rad(alpha_0)';
 
-        % reduce effective dimensionless pitch rate due to wing downwash
-        factor_3d = max( 0.1, min( 1, 1 - wing.state.aero.circulation.alpha_ind ./ alpha_inf_0 ) );
-        idx_nzero = abs(alpha_inf_0)>1e-5;
-        q(idx_nzero) = q(idx_nzero) .* factor_3d(idx_nzero);
-        
         % linear unsteady aerodynamics (potential flow) according to [1]
         [ wing.state.aero.unsteady.c_L_c, wing.state.aero.unsteady.c_m_c, ...
             wing.state.aero.unsteady.c_L_nc, wing.state.aero.unsteady.c_m_nc, ...
@@ -92,16 +87,11 @@ switch wing.config.airfoil_method
 
         % avoided new variable
         wing.state.aero.unsteady.c_m_c = wing.state.aero.unsteady.c_m_c - wing.state.aero.unsteady.c_m_nc;
-    
+            
     case 'simple'
 
         % effective angle of attack for an equivalent uncambered airfoil
         alpha_inf_0(:) = wing.state.aero.circulation.alpha_eff - deg2rad(wing.airfoil.simple.alpha_0);
-        
-        % reduce effective pitch rate due to wing downwash
-        factor_3d = max( 0.1, min( 1, 1 - wing.state.aero.circulation.alpha_ind ./ alpha_inf_0 ) );
-        idx_nzero = abs(alpha_inf_0)>1e-5;
-        q(idx_nzero) = q(idx_nzero) .* factor_3d(idx_nzero);
         
         % clean airfoil coefficients
         c_L_alpha = wing.airfoil.simple.c_L_alpha ./ ...
