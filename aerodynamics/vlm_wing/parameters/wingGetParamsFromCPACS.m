@@ -96,9 +96,7 @@ prm.nu = prm.nu + prm.rot_x;
 
 alpha_0_camber = camber_rel ./ ( 1 - camber_pos );
 alpha_0_camber_50 = interp1(pos_matrix_25(2,:),alpha_0_camber,0.5*pos_matrix_25(2,end));
-prm.epsilon = prm.epsilon + 0*(alpha_0_camber(2:end)-alpha_0_camber_50);
-% prm.epsilon(:) = prm.epsilon * 0.05;
-% prm.epsilon(:) = 0;
+prm.epsilon = prm.epsilon + (alpha_0_camber(2:end)-alpha_0_camber_50);
 
 
     function [x_frd,y_frd,z_frd] = tiglWingGetChordPoint_frd( handle, wing_idx, segment_idx, eta, xsi )
