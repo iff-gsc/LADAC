@@ -15,8 +15,9 @@ function wing = wingSetLocalCoeff( wing )
 %   [1] Phillips, W. F., & Snyder, D. O. (2000). Modern adaption of
 %       Prandtl's classic lifting-line theory. Jounal of Aircraft, 37(4),
 %       662-670.
+%   [2] Leishman, J. G., & Nguyen, K. Q. (1990). State-space representation
+%       of unsteady airfoil behavior. AIAA journal, 28(5), 836-844.
 % 
-
 % Disclamer:
 %   SPDX-License-Identifier: GPL-2.0-only
 % 
@@ -49,7 +50,7 @@ if ~wing.config.is_unsteady
             fcm = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcm, wing.state.aero.circulation.Ma, wing.airfoil.analytic.ncm, wing.airfoil.analytic.ocm );
             fcl = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcl, wing.state.aero.circulation.Ma, wing.airfoil.analytic.ncl, wing.airfoil.analytic.ocl );
             [ c_L_alpha, alpha_0 ] = airfoilAnalytic0515ClAlphaMax( fcl, wing.state.aero.circulation.Ma(:) );
-            f_st = airfoilDynStallFst( wing.state.aero.circulation.c_L(:), c_L_alpha, wing.state.aero.circulation.alpha_eff(:) - alpha_0 );
+            f_st = airfoilDynStallFst( wing.state.aero.circulation.c_L(:), c_L_alpha, rad2deg( wing.state.aero.circulation.alpha_eff(:) ) - alpha_0 );
             wing.state.aero.coeff_loc.c_m_airfoil(:) = airfoilAnalyticBlCm( fcm, f_st, wing.state.aero.circulation.c_L(:) );
         case 'simple'
             % drag coefficient
@@ -58,6 +59,11 @@ if ~wing.config.is_unsteady
             % local airfoil pitching moment coefficient w.r.t. local c/4
             wing.state.aero.coeff_loc.c_m_airfoil = airfoilAnalyticSimpleCm(wing.airfoil.simple,wing.state.aero.circulation.c_L);
     end
+    
+    % quasi-steady pitch damping derived from [2], eq. (A15) and (A13)
+    % to do: consider wing downwash in dimensionless pitch rate
+    wing.state.aero.coeff_loc.c_m_airfoil(:) = wing.state.aero.coeff_loc.c_m_airfoil ...
+        - pi/8./sqrtReal(1-wing.state.aero.circulation.Ma.^2) .* wing.state.aero.local_inflow.q;
     
     % flap moment
     wing.state.aero.coeff_loc.c_m_airfoil = wing.state.aero.coeff_loc.c_m_airfoil ...
@@ -85,11 +91,11 @@ if ~wing.config.is_unsteady
 else
     
     % unsteady coefficients
-    normal_vector(:) = cross( wing.state.aero.unsteady.v_i, zeta, 1 );
+    normal_vector(:) = cross( wing.state.aero.circulation.v_i, zeta, 1 );
     normal_vector = normal_vector./repmat((vecnorm(normal_vector,2,1)),3,1);
     wing.state.aero.coeff_loc.c_XYZ_b = repmat( wing.state.aero.unsteady.c_L_c ...
         + wing.state.aero.unsteady.c_L_nc, 3, 1 ) .* normal_vector ...
-        + repmat( wing.state.aero.unsteady.c_D, 3, 1 ) .* wing.state.aero.unsteady.v_i;
+        + repmat( wing.state.aero.unsteady.c_D, 3, 1 ) .* wing.state.aero.circulation.v_i./repmat(vecnorm(wing.state.aero.circulation.v_i,2,1),3,1);
     % local airfoil pitching moment coefficient w.r.t. local c/4
     wing.state.aero.coeff_loc.c_m_airfoil(:) = wing.state.aero.unsteady.c_m_c ...
         + wing.state.aero.unsteady.c_m_nc;

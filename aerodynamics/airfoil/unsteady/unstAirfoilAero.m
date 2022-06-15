@@ -3,6 +3,11 @@ function [A,B,C,D] = unstAirfoilAero( V, Ma, c, C_L_alpha, x_ac ) %#codegen
 %   unsteady transsonic airfoil behavior according to [1]. The model has 8
 %   states, two inputs and three outputs (the effective angle of attack was
 %   added as a third output).
+%   Important note:
+%   The state vector is defined differently than in [1], because otherwise
+%   the airspeed should not be varied! Transformation: x_better = A * x
+%   Thanks to the transformation the amplitude of the state vector does not
+%   really depend on the airspeed anymore.
 % 
 % Inputs:
 %   V           airspeed (scalar), in m/s
@@ -87,27 +92,27 @@ a_77    = -b_5*fac;
 a_88    = -1./(K_q_M.*T_I);
 
 % [1], eq. (18)
-c_11    = C_L_alpha .* fac * A_1 * b_1;
-c_12    = C_L_alpha .* fac * A_2 * b_2;
+c_11    = C_L_alpha * A_1;
+c_12    = C_L_alpha * A_2;
 % [1], eq. (19) and (20)
-c_13    = 4./Ma .* a_33;
+c_13    = -4./Ma;
 % [1], eq. (A3) and (A4)
-c_14    = 1./Ma .* a_44;
+c_14    = -1./Ma;
 % [1], eq. (11) and (12)
 c_21    = c_11 .* ( 0.25 - x_ac );
 c_22    = c_12 .* ( 0.25 - x_ac );
 % [1], eq. (A14) and (A16)
-c_28    = -7./(12*Ma) .* a_88;
+c_28    = 7./(12*Ma);
 % [1], eq. (A8)
-c_25    = -1./Ma*A_3.*a_55;
-c_26    = -1./Ma*A_4.*a_66;
+c_25    = 1./Ma*A_3;
+c_26    = 1./Ma*A_4;
 % [1], eq. (A15)
-c_27    = -pi./(8*beta)*b_5.*fac;
+c_27    = -pi./(8*beta);
 
 % https://arc.aiaa.org/doi/pdf/10.2514/6.1989-1319
 % eq. (14)
-c_31 = fac .* A_1 * b_1;
-c_32 = fac .* A_2 * b_2;
+c_31 = A_1;
+c_32 = A_2;
 
 % [1], below eq. (21)
 num_vectors = length(V);
@@ -120,7 +125,8 @@ for i = 1:num_vectors
     B(:,:,i) = [ ...
                 1, 1, 1, 0, 1, 1, 0, 0; ...
                 0.5, 0.5, 0, 1, 0, 0, 1, 1 ...
-                ]';
+                ]' ...
+                .* repmat( -diag(A(:,:,i)), 1, 2 );
     C(:,:,i) = [ ...
                 c_11(i), c_12(i), c_13(i), c_14(i), 0, 0, 0, 0; ...
                 c_21(i), c_22(i), 0, 0, c_25(i), c_26(i), c_27(i), c_28(i); ...
@@ -128,14 +134,9 @@ for i = 1:num_vectors
                 ];
     D(:,:,i) = [ ...
                 4/Ma(i), 1/Ma(i); ...
-                -1/Ma(i), -7/12*Ma(i); ...
+                -1/Ma(i), -7/(12*Ma(i)); ...
                 0, 0 ...
                 ];
 end
-Bv = [ ...
-    1, 1, 1, 0, 1, 1, 0, 0; ...
-    0.5, 0.5, 0, 1, 0, 0, 1, 1 ...
-    ]';
-B = repmat( Bv, 1, 1, num_vectors );
 
 end

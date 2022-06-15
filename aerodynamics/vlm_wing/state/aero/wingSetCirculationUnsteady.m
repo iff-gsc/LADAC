@@ -38,12 +38,14 @@ abs_V_i = zeros( 1, wing.n_panel );
 
 % compute u_n ([5], nomenclatrue, Fig. 3) in aircraft frame
 u_n = wingGetNormalVectorFromGeometry( wing.state.geometry );
-u_n_VLM = u_n;
 
 % compute unit vector in direction of freestream ([5],
 % nomenclature, above eq. 12)
-v_inf = - wing.state.aero.local_inflow.V ./ repmat( vecnorm(wing.state.aero.local_inflow.V,2), size(wing.state.aero.local_inflow.V,1), 1 );
-
+if wing.config.is_unsteady
+    v_inf = - wing.state.aero.local_inflow.V_25 ./ repmat( vecnorm(wing.state.aero.local_inflow.V_25,2), size(wing.state.aero.local_inflow.V_25,1), 1 );
+else
+    v_inf = - wing.state.aero.local_inflow.V_75 ./ repmat( vecnorm(wing.state.aero.local_inflow.V_75,2), size(wing.state.aero.local_inflow.V_75,1), 1 );
+end
 % rotation axis for normal vector to adjust the angle of attack / incidence
 wing.state.aero.circulation.rot_axis = cross( -v_inf, u_n, 1 );
 
@@ -88,7 +90,11 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
     % small for small angles of attack)
     wing.state.aero.circulation.v_i = v_inf + u_n .* repmat( w_ind, 3, 1 );
     % absolute local airspeed vector
-    abs_V_i(:) = vecnorm( wing.state.aero.circulation.v_i .* wing.state.aero.local_inflow.V, 2 );
+    if wing.config.is_unsteady
+        abs_V_i(:) = vecnorm( wing.state.aero.circulation.v_i .* wing.state.aero.local_inflow.V_25, 2 );
+    else
+        abs_V_i(:) = vecnorm( wing.state.aero.circulation.v_i .* wing.state.aero.local_inflow.V_75, 2 );
+    end
     % Reynolds number and Mach number
     wing.state.aero.circulation.Re	= reynoldsNumber( wing.state.external.atmosphere.rho, abs_V_i, wing.state.geometry.ctrl_pt.c, wing.state.external.atmosphere.mu );
     wing.state.aero.circulation.Ma	= abs_V_i / wing.state.external.atmosphere.a .* cos(wing.interim_results.sweep); 

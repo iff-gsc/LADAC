@@ -87,6 +87,7 @@ for i = 1:length(Ma_vec)
     % compute phase of frequency response with respect to alpha
     ang_G_N_pitch = unwrap( angle( squeeze(G_c(1,:,:)) ) - angle( squeeze(G_a(1,:,:)) ) );
     ang_G_m_pitch = unwrap( angle( squeeze(G_c(2,:,:)) ) - angle( squeeze(G_a(1,:,:)) ) );
+    ang_G_m_pitch(ang_G_m_pitch>pi) = ang_G_m_pitch(ang_G_m_pitch>pi) - 2*pi;
     
     
     % plot data for one Mach number
@@ -111,7 +112,7 @@ for i = 1:length(Ma_vec)
     hold on
     
     subplot(2,1,2)
-    plot( k, ang_G_m_pitch )
+    plot( k, ang_G_m_pitch * 180/pi )
     xlabel('k')
     ylabel('\angle C_m (deg)')
     hold on

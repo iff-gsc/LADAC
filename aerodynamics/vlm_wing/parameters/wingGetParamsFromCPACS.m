@@ -30,14 +30,19 @@ pos_matrix_25 = zeros( 3, num_segments+1 );
 pos_matrix_75 = zeros( 3, num_segments+1 );
 pos_matrix_trail = zeros( 3, num_segments+1 );
 
+camber_rel = zeros( 1, num_segments+1 );
+camber_pos = zeros( 1, num_segments+1 );
+
 % prm.norm_vec = zeros( 3, num_segments+1 );
 
 for i = 0:num_segments
     if i == 0
         [x_lead,y_lead,z_lead] = tiglWingGetChordPoint_frd( tiglHandle, wing_idx, i+1, 0, 0 );
+        [a,b,c]=tiglWingGetUpperPoint(tiglHandle,wing_idx,i+1,0,0);
         [x_25,y_25,z_25] = tiglWingGetChordPoint_frd( tiglHandle, wing_idx, i+1, 0, 0.25 );
         [x_75,y_75,z_75] = tiglWingGetChordPoint_frd( tiglHandle, wing_idx, i+1, 0, 0.75 );
         [x_trail,y_trail,z_trail] = tiglWingGetChordPoint_frd( tiglHandle, wing_idx, i+1, 0, 1 );
+        [cam_rel,cam_pos] = tiglWingGetCamber( tiglHandle, wing_idx, i+1, 0 );
         % The norm vector seems to be not correct. It seems that the
         % "chord" in the tiglWingGetChordNormal function is not a straight
         % line from the leading edge to the trailing edge.
@@ -48,6 +53,7 @@ for i = 0:num_segments
         [x_25,y_25,z_25] = tiglWingGetChordPoint_frd( tiglHandle, wing_idx, i, 1, 0.25 );
         [x_75,y_75,z_75] = tiglWingGetChordPoint_frd( tiglHandle, wing_idx, i, 1, 0.75 );
         [x_trail,y_trail,z_trail] = tiglWingGetChordPoint_frd( tiglHandle, wing_idx, i, 1, 1 );
+        [cam_rel,cam_pos] = tiglWingGetCamber( tiglHandle, wing_idx, i, 1 );
 %         [ prm.norm_vec(1,i+1), prm.norm_vec(2,i+1), prm.norm_vec(3,i+1) ] = ...
 %             tiglWingGetChordNormal_frd(tiglHandle,wing_idx,i,1,0.25);
     end
@@ -56,6 +62,9 @@ for i = 0:num_segments
     pos_matrix_25(:,i+1) = [ x_25; y_25; z_25 ];
     pos_matrix_75(:,i+1) = [ x_75; y_75; z_75 ];
     pos_matrix_trail(:,i+1) = [ x_trail; y_trail; z_trail ];
+    
+    camber_rel(i+1) = cam_rel;
+    camber_pos(i+1) = cam_pos;
 
     if prm.is_symmetrical
         sym_factor = 2;
@@ -69,7 +78,7 @@ for i = 0:num_segments
         prm.lambda(i) = atan( -(pos_matrix_25(1,i+1)-pos_matrix_25(1,i)) / (pos_matrix_25(2,i+1)-pos_matrix_25(2,i)) );
         prm.nu(i) = atan( -(pos_matrix_25(3,i+1)-pos_matrix_25(3,i)) / (pos_matrix_25(2,i+1)-pos_matrix_25(2,i)) );
         prm.epsilon(i) = atan( -( pos_matrix_lead(3,i+1) - pos_matrix_trail(3,i+1) ) / ( pos_matrix_lead(1,i+1) - pos_matrix_trail(1,i+1) ) ) - ...
-            atan( -( pos_matrix_lead(3,i) - pos_matrix_trail(3,i) ) / ( pos_matrix_lead(1,i) - pos_matrix_trail(1,i) ) );
+            atan( -( pos_matrix_lead(3,1) - pos_matrix_trail(3,1) ) / ( pos_matrix_lead(1,1) - pos_matrix_trail(1,1) ) );
     end
     
     % not used yet
@@ -85,6 +94,11 @@ prm.rot_x = atan( (pos_matrix_25(3,end)-pos_matrix_25(3,1)) / (pos_matrix_25(2,e
 
 prm.nu = prm.nu + prm.rot_x;
 
+alpha_0_camber = camber_rel ./ ( 1 - camber_pos );
+alpha_0_camber_50 = interp1(pos_matrix_25(2,:),alpha_0_camber,0.5*pos_matrix_25(2,end));
+prm.epsilon = prm.epsilon + (alpha_0_camber(2:end)-alpha_0_camber_50);
+
+
     function [x_frd,y_frd,z_frd] = tiglWingGetChordPoint_frd( handle, wing_idx, segment_idx, eta, xsi )
         [x_bru,y_bru,z_bru] = tiglWingGetChordPoint( handle, wing_idx, segment_idx, eta, xsi );
         x_frd = -x_bru;
@@ -97,6 +111,36 @@ prm.nu = prm.nu + prm.rot_x;
         x_frd = -x_bru;
         y_frd = y_bru;
         z_frd = -z_bru;
+    end
+
+    function [camber_rel,camber_pos] = tiglWingGetCamber( tiglHandle, wing_idx, segment_idx, eta )
+        len_cam = 101;
+        xu = zeros(1,len_cam);
+        zu = zeros(1,len_cam);
+        xl = zeros(1,len_cam);
+        zl = zeros(1,len_cam);
+        xsi_vec = linspace(0,1,len_cam);
+        for ii = 1:len_cam
+            xsi = xsi_vec(ii);
+            [xu(ii),~,zu(ii)] = tiglWingGetUpperPoint( tiglHandle, wing_idx, segment_idx, eta, xsi );
+            [xl(ii),~,zl(ii)] = tiglWingGetLowerPoint( tiglHandle, wing_idx, segment_idx, eta, xsi );
+        end
+        chord_length = norm( [xu(1);zu(1)] - [xu(end);zu(end)], 2 );
+        xm = xu(1) + xsi_vec * (xu(end)-xu(1));
+        zm = interp1([xu(1),xu(end)],[zu(1),zu(end)],xm);
+        camber_u = vecnorm( [xu;zu] - [xm;zm], 2, 1 );
+        camber_l = vecnorm( [xl;zl] - [xm;zm], 2, 1 );
+        [camber_u_max,camber_u_idx] = max(camber_u);
+        [camber_l_max,camber_l_idx] = max(camber_l);
+        if camber_u_max >= camber_l_max
+            camber_max = camber_u_max;
+            camber_idx = camber_u_idx;
+        else
+            camber_max = camber_l_max;
+            camber_idx = camber_l_idx;
+        end
+        camber_rel = camber_max / chord_length;
+        camber_pos = xsi_vec(camber_idx);       
     end
 
 

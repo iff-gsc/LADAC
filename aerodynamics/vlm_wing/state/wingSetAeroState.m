@@ -26,7 +26,7 @@ beta_rot = 0;
 V_Ab = zeros(3,1);
 if wing.config.is_infl_recomputed
     wing.interim_results.dimless_induced_vel_beta = ...
-        wingGetDimlessIndVel( -wing.state.aero.local_inflow.V, wing.state.geometry );
+        wingGetDimlessIndVel( -wing.state.aero.local_inflow.V_75, wing.state.geometry );
 else
     V_Ab(:) = dcmBaFromAeroAngles( wing.state.body.alpha, wing.state.body.beta ) ...
         * [ wing.state.body.V; 0; 0 ];

@@ -10,15 +10,11 @@ function wing = wingSetGeometryState( wing, ...
 % *************************************************************************
 
 is_structure_vel = false;
-is_structure_accel = false;
 
 for i = 1:length(varargin)
     if strcmp(varargin{i},'structure_vel')
         modal_vel_state = varargin{i+1};
         is_structure_vel = true;
-    elseif strcmp(varargin{i},'structure_accel')
-        modal_accel = varargin{i+1};
-        is_structure_accel = true;
     end
 end
 
@@ -36,9 +32,5 @@ if is_structure_vel
     wing.state.geometry.ctrl_pt_dt = wingSetPosition( wing.state.geometry.ctrl_pt, geometry_c_dt, 4, true );
 end
 
-if is_structure_accel
-    geometry_c_dt2 = wing.aeroelasticity.T_cs * modal_accel;
-    wing.state.geometry.ctrl_pt_dt2 = wingSetPosition( wing.state.geometry.ctrl_pt_dt2, geometry_c_dt2, 4, true );
-end
 
 end

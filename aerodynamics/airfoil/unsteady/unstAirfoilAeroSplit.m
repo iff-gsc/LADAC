@@ -1,5 +1,5 @@
-function [A,B,C7,D7] = unstProfileAeroSplit( V, Ma, c, C_L_alpha, x_ac ) %#codegen
-% unstProfileAero computes the matrices of a state-space representation for
+function [A,B,C7,D7] = unstAirfoilAeroSplit( V, Ma, c, C_L_alpha, x_ac ) %#codegen
+% unstAirfoilAeroSplit computes the matrices of a state-space representation for
 %   unsteady transsonic airfoil behavior according to [1] splitted into
 %   the circulatory and noncirculatory part. The model has 8
 %   states, two inputs and seven outputs.
@@ -12,6 +12,11 @@ function [A,B,C7,D7] = unstProfileAeroSplit( V, Ma, c, C_L_alpha, x_ac ) %#codeg
 %   5. circulatory part of the pitching moment coefficient
 %   6. noncirculatory part of the normal force coefficient
 %   7. noncirculatory part of the pitching moment coefficient
+%   Important note:
+%   The state vector is defined differently than in [1], because otherwise
+%   the airspeed should not be varied! Transformation: x_better = A * x
+%   Thanks to the transformation the amplitude of the state vector does not
+%   really depend on the airspeed anymore.
 % 
 % Inputs:
 %   V           airspeed (scalar), in m/s

@@ -7,8 +7,8 @@
 % 
 % Literature:
 %   [1] Schlichting, H.; Truckenbrodt, E.; "Aerodynamik des FLugzeugs -
-%       Zweiter Band: Aerodynamik des Tragflügels (Teil II), des Rumpfes,
-%       der Flügel-Rumpf-Anordnung und der Leitwerke", 3. Auflage,
+%       Zweiter Band: Aerodynamik des Tragflï¿½gels (Teil II), des Rumpfes,
+%       der Flï¿½gel-Rumpf-Anordnung und der Leitwerke", 3. Auflage,
 %       Springer-Verlag, Berlin, Heidelberg, 2001
 % 
 
@@ -59,7 +59,7 @@ for i=1:n_panel
 end
 w_A_local = V_A_local(3,:);
 
-infl_coeff = wingGetDimlessIndVel( -wing.state.aero.local_inflow.V, wing.state.geometry );
+infl_coeff = wingGetDimlessIndVel( -wing.state.aero.local_inflow.V_75, wing.state.geometry );
 Gamma = squeeze(infl_coeff(3,:,:)) \ w_A_local';
 l = wingGetSpatialVectorAlongBoundSegment( wing.geometry.vortex );
 

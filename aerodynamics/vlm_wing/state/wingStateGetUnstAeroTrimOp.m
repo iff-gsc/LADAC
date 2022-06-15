@@ -11,10 +11,6 @@ function [x,X,z,z2] = wingStateGetUnstAeroTrimOp( wing_state, wing_airfoil, wing
 
 n_panel = size( wing_state.aero.unsteady.x, 2 );
 
-v_inf = repmat([-1;0;0],1,n_panel);
-spanwise_vector = wingGetDimLessSpanwiseLengthVector(wing_state.geometry.vortex);
-sweep = pi/2 - acos( abs( dot( -spanwise_vector, -v_inf, 1 ) ) ./ ( vecnorm(-v_inf,2,1) .* vecnorm(spanwise_vector,2,1) ) );
-
 %%%
 c_L_alpha = 0; alpha_inf_0 = 0; c_L_alpha_max = 0; alpha_0 = 0; fcl = 0;
 %%%
@@ -25,7 +21,7 @@ switch wing_config.airfoil_method
         fcl = airfoilAnalytic0515Ma( wing_airfoil.analytic.wcl, wing_state.aero.circulation.Ma, wing_airfoil.analytic.ncl, wing_airfoil.analytic.ocl );
         % get points on lift curve
         [c_L_alpha_max,alpha_0] = airfoilAnalytic0515ClAlphaMax( fcl, wing_state.aero.circulation.Ma(:) );
-        c_L_alpha = c_L_alpha_max' .* cos(sweep);
+        c_L_alpha = c_L_alpha_max';
         % effective angle of attack for an equivalent uncambered airfoil
         alpha_inf_0 = wing_state.aero.circulation.alpha_eff - deg2rad(alpha_0)';
     case 'simple'
@@ -33,10 +29,10 @@ switch wing_config.airfoil_method
         alpha_inf_0 = wing_state.aero.circulation.alpha_eff - deg2rad(wing_airfoil.simple.alpha_0);
         % clean airfoil coefficients
         c_L_alpha = wing_airfoil.simple.c_L_alpha ./ ...
-            sqrtReal(1-wing_state.aero.circulation.Ma.^2).*cos(sweep);
+            sqrtReal(1-wing_state.aero.circulation.Ma.^2);
 end
 
-abs_V_i = vecnorm( wing_state.aero.local_inflow.V, 2 );
+abs_V_i = vecnorm( wing_state.aero.local_inflow.V_75, 2 );
 
 x_ac = 0.25 * ones( 1, n_panel );
 

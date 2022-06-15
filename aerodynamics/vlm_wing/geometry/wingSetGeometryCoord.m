@@ -42,7 +42,7 @@ wing_25_local_line_length = vecnorm( diff(params.xyz_25.*[0;1;1],1,2),2,1 );
 wing_25_total_line_length = sum( wing_25_local_line_length );
 
 
-delta_alpha_1 = cumsum([0,params.epsilon]);
+delta_alpha_1 = [0,params.epsilon];
 
 xyz_25_local = params.xyz_25 - [params.x;0;params.z];
 xyz_75_local = params.xyz_75 - [params.x;0;params.z];
@@ -63,7 +63,7 @@ else
     xyz_25 = xyz_25_local;
     xyz_75 = xyz_75_local;
     c       = params.c;
-    delta_alpha = delta_alpha_1;
+    delta_alpha = params.i + delta_alpha_1;
     eta_length = 1;
     eta_25 = [ 0, cumsum( wing_25_local_line_length ) ] / wing_25_total_line_length;
     eta_segments_device = params.eta_segments_device;
