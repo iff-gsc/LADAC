@@ -13,7 +13,10 @@ Therefore, it can be used, for example, to validate other aerodynamic models or 
 ## Installation
 
 - You need [LADAC](../../README.md)
-
+- You need Tornado and add the folder to your Matlab path:
+  ```
+  git clone https://github.com/iff-gsc/Tornado.git
+  ```
 
 ## Example
 
