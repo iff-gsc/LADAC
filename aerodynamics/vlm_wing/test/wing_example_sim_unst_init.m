@@ -11,9 +11,7 @@ clear all
 
 wing = wingCreate(wing_parametric( 10, 0.5, 0.1, 0.01 ),30,'is_unsteady',true);
 
-wing_state_bus = struct2bus_(wing.state);
-
-atmosphereBus = struct2bus_(isAtmosphere(0));
+struct2bus(wing.state,'wing_state_bus');
 
 open('wing_example_unst_sim')
 
