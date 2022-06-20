@@ -88,14 +88,6 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 
 %% decode variable input arguments
 
-is_structure_state  = false;
-is_unst_airfoil_state = false;
-is_dyn_stall_state  = false;
-is_unst_flap_state  = false;
-is_unst_act2_state  = false;
-is_tau_v_state      = false;
-is_alpha_ind_fb     = false;
-
 atmosphere      = isAtmosphere(0);
 
 V_Wb            = zeros( size(wing.state.external.V_Wb) );
@@ -112,48 +104,35 @@ tau_v           = zeros(size(wing.state.aero.unsteady.tau_v));
 
 alpha_ind       = zeros(size(wing.state.aero.circulation.alpha_ind));
 
+
+
 for i = 1:length(varargin)
     if strcmp(varargin{i},'atmosphere')
         atmosphere = varargin{i+1};
-    elseif strcmp(varargin{i},'wind')
+    elseif strcmp(varargin{i},'V_Wb')
         % idx_max: codegen workaround (yes, either me or Matlab is dumb)
-        idx_min = min(numel(V_Wb),numel(varargin{i+1}));
-        V_Wb(1:idx_min) = varargin{i+1}(1:idx_min);
-        idx_min = min(numel(V_Wb_dt),numel(varargin{i+2}));
-        V_Wb_dt(1:idx_min) = varargin{i+2}(1:idx_min);
-    elseif strcmp(varargin{i},'structure_pos') && wing.config.is_flexible
-        idx_min = min(numel(structure_pos),numel(varargin{i+1}));
-        structure_pos(1:idx_min) = varargin{i+1}(1:idx_min);
-        is_structure_state(:) = true;
-    elseif strcmp(varargin{i},'structure_vel') && wing.config.is_flexible
-        idx_min = min(numel(structure_vel),numel(varargin{i+1}));
-        structure_vel(1:idx_min) = varargin{i+1}(1:idx_min);
+        V_Wb(:) = varargin{i+1};
+    elseif strcmp(varargin{i},'V_Wb_dt')
+        V_Wb_dt(:) = varargin{i+1};
+    elseif strcmp(varargin{i},'structure_pos')
+        structure_pos(:) = varargin{i+1};
+    elseif strcmp(varargin{i},'structure_vel')
+        structure_vel(:) = varargin{i+1};
     elseif strcmp(varargin{i},'unst_airfoil_state')
-        idx_min = min(numel(unst_aero_state),numel(varargin{i+1}));
-        unst_aero_state(1:idx_min) = varargin{i+1}(1:idx_min);
-        is_unst_airfoil_state(:) = true;
+        unst_aero_state(:) = varargin{i+1};
     elseif strcmp(varargin{i},'dyn_stall_state')
-        idx_min = min(numel(dyn_stall_state),numel(varargin{i+1}));
-        dyn_stall_state(1:idx_min) = varargin{i+1}(1:idx_min);
-        is_dyn_stall_state(:) = true;
+        dyn_stall_state(:) = varargin{i+1};
     elseif strcmp(varargin{i},'unst_flap_state')
-        idx_min = min(numel(unst_flap_state),numel(varargin{i+1}));
-        unst_flap_state(1:idx_min) = varargin{i+1}(1:idx_min);
-        is_unst_flap_state(:) = true;
+        unst_flap_state(:) = varargin{i+1};
     elseif strcmp(varargin{i},'unst_act2_state')
-        idx_min = min(numel(unst_act2_state),numel(varargin{i+1}));
-        unst_act2_state(1:idx_min) = varargin{i+1}(1:idx_min);
-        is_unst_act2_state(:) = true;
+        unst_act2_state(:) = varargin{i+1};
     elseif strcmp(varargin{i},'tau_v')
-        idx_min = min(numel(tau_v),numel(varargin{i+1}));
-        tau_v(1:idx_min) = varargin{i+1}(1:idx_min);
-        is_tau_v_state(:) = true;
+        tau_v(:) = varargin{i+1};
     elseif strcmp(varargin{i},'alpha_ind')
-        idx_min = min(numel(alpha_ind),numel(varargin{i+1}));
-        alpha_ind(1:idx_min) = varargin{i+1}(1:idx_min);
-        is_alpha_ind_fb(:) = true;
+        alpha_ind(:) = varargin{i+1};
     end
 end
+
 
 %% set current wing state
 
@@ -166,12 +145,8 @@ wing.state.external = wingSetExternal( wing.state.external, V_Wb, V_Wb_dt, ...
 
 % set flexible wing state
 if wing.config.is_flexible
-    if is_structure_state
-        wing = wingSetGeometryState( wing, structure_pos, ...
-            'structure_vel', structure_vel );
-    else
-        error('Structure state was not set.')
-    end
+    wing = wingSetGeometryState( wing, structure_pos, ...
+        'structure_vel', structure_vel );
 end
 
 % actuator deflection
@@ -179,29 +154,15 @@ wing = wingSetActuators( wing, actuators_pos, actuators_rate );
 
 % unsteady aerodynamics states
 if wing.config.is_unsteady
-    if is_unst_airfoil_state
-        wing.state.aero.unsteady.x = unst_aero_state;
-    else
-        error('Unsteady airfoil state was not specified although it was configured.')
-    end
-    if is_dyn_stall_state
-        wing.state.aero.unsteady.X = dyn_stall_state;
-    end
-    if is_unst_flap_state
-        wing.state.aero.unsteady.z = unst_flap_state;
-    end
-    if is_unst_act2_state
-        wing.state.aero.unsteady.z2 = unst_act2_state;
-    end
-    if is_tau_v_state
-        wing.state.aero.unsteady.tau_v = tau_v;
-    end
+    wing.state.aero.unsteady.x = unst_aero_state;
+    wing.state.aero.unsteady.X = dyn_stall_state;
+    wing.state.aero.unsteady.z = unst_flap_state;
+    wing.state.aero.unsteady.z2 = unst_act2_state;
+    wing.state.aero.unsteady.tau_v = tau_v;
 end
 
 % feedback of last alpha_ind to speed up next iteration
-if is_alpha_ind_fb
-    wing.state.aero.circulation.alpha_ind = alpha_ind;
-end
+wing.state.aero.circulation.alpha_ind = alpha_ind;
 
 % compute aerodynamic state
 wing = wingSetAeroState( wing, pos_ref_c );
