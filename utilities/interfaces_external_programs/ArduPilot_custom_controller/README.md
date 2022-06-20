@@ -38,6 +38,8 @@ The ArduCopter test is explained first, the ArduPlane test is explained afterwar
    ```
    cd <path_to_ardupilot>
    git checkout -b matlab_test 999c269
+   git submodule set-url modules/libcanard https://github.com/ArduPilot/archived-libcanard.git
+   git submodule set-url modules/uavcan https://github.com/ArduPilot/archived-uavcan.git
    git submodule update --init --recursive
    ```
 2. Copy and apply the ArduCopter patch to your local ArduPilot repository.
@@ -87,6 +89,8 @@ Step 1-3 must be adjusted as follows. For the remaining steps please follow the 
    ```
    cd <path_to_ardupilot>
    git checkout -b matlab_test 6711c479
+   git submodule set-url modules/libcanard https://github.com/ArduPilot/archived-libcanard.git
+   git submodule set-url modules/uavcan https://github.com/ArduPilot/archived-uavcan.git
    git submodule update --init --recursive
    ```
 2. Copy and apply the ArduPlane patch to your local ArduPilot repository.
