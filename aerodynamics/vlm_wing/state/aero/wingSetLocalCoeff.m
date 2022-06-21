@@ -34,7 +34,7 @@ c = wing.params.S/wing.params.b;
 if ~wing.config.is_unsteady
     % Compute the aerodynamic force coefficients in aircraft frame
     % similar to [1], eq. 25.
-    normal_vector(:) = crossFast( wing.state.aero.circulation.v_i, zeta, 1 );
+    normal_vector(:) = crossFast( wing.state.aero.circulation.v_i, zeta );
     normal_vector = normal_vector./repmat((vecnorm(normal_vector,2,1)),3,1);
     wing.state.aero.coeff_loc.c_XYZ_b = repmat( wing.state.aero.circulation.c_L, 3, 1 ) .* normal_vector;
     c_D = zeros(1,wing.n_panel);
