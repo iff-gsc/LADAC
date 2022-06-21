@@ -1,3 +1,4 @@
+function [ alpha, beta ] = aeroAngles( V_Ab ) %#codegen
 % aeroAngles computes the angle of attack and sideslip angle
 %   The angle of attack and the sideslip angle are computed according to
 %   the ISO 1151 (or LN9300).
@@ -26,18 +27,10 @@
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-function [ alpha, beta ] = aeroAngles( V_Ab ) %#codegen
-
 % compute the angle of attack according to [1, page 78]
 alpha = atan2( V_Ab(3,:), V_Ab(1,:) );
 
-% compute the argument of the asin function
-argBeta = V_Ab(2,:) ./ vecnorm( V_Ab, 2, 1 );
-% maximum absolute argument of the asin function (avoid complex numbers)
-a = 1;
-argBeta = max( min( argBeta, a), -a);
-% compute the sideslip angle according to [1, page 78] and avoid complex 
-% numbers
-beta = real( asin( argBeta ) );
+% compute the sideslip angle according to [1, page 78]
+beta = asinReal( V_Ab(2,:) ./ vecnorm( V_Ab, 2, 1 ) );
 
 end

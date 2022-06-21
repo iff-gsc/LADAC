@@ -15,7 +15,8 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 %   flag            Indicates that the next input is a specific variable
 %                   that can be passed optionally:
 %                       'atmosphere'        Next variable is atmosphere,
-%                       'wind'              Next variables are V_Wb, V_Wb_dt,
+%                       'V_Wb'              Next variable is V_Wb,
+%                       'V_Wb_dt'           Next variable is V_Wb_dt,
 %                       'structure_pos'     Next variable is structure_pos,
 %                       'structure_vel'     Next variable is structure_vel,
 %                       'unst_aero_state'   Next variable is unst_aero_state,
@@ -26,7 +27,7 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 %                       'Delta_alpha'       Next variable is Delta_alpha,
 %                       'alpha_ind'         Next variable is alpha_ind.
 % 
-%   atmosphere          atmosphere struct (see isaAtmosphere)
+%   atmosphere          atmosphere struct (see isAtmosphere)
 %   V_Wb                wind velocity at each control point
 %                       (wing.state.external.V_Wb)
 %   V_Wb_dt             wind acceleration at each control point
