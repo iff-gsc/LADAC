@@ -24,7 +24,7 @@ function c_m_flap = airfoilFlapMoment(c_L_flap,lambda_k) %#codegen
 % *************************************************************************
 
 % [1], eq. (6.106)
-c_m_d_eta = -2*sqrt(lambda_k.*(1-lambda_k).^3);
+c_m_d_eta = -2*sqrt(lambda_k.*powerFast(1-lambda_k,3));
 
 % [1], eq. (6.105)
 alpha_d_eta = -2/pi*( sqrt(lambda_k.*(1-lambda_k))+asin(sqrt(lambda_k)) );

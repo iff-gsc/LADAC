@@ -29,8 +29,8 @@ function [F_10,F_11]= airfoilFlapEffectiveness(E)
 e = 1-2*E;
 
 % [1], eq. (3)
-F_10 = sqrt(1-e.^2) + acos(e);
-F_11 = (1-2*e).*acos(e) + (2-e).*sqrt(1-e.^2);
+F_10 = sqrt(1-powerFast(e,2)) + acos(e);
+F_11 = (1-2*e).*acos(e) + (2-e).*sqrt(1-powerFast(e,2));
 
 end
 

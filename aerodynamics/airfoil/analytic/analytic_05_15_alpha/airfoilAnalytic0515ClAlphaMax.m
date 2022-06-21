@@ -33,7 +33,7 @@ else
     Ma = varargin{1};
 end
 
-betaMa = 1./sqrtReal(1-(fcl(:,5).*Ma).^2);
+betaMa = 1./sqrtReal(1-powerFast(fcl(:,5).*Ma,2));
 
 f1 = fcl(:,2);
 
@@ -43,7 +43,7 @@ c_L_alpha = f1.*betaMa;
 alpha0 = fcl(:,1);
 % add one iteration to improve alpha0 accuracy
 x = fcl(:,6) .* ( pi/90*(alpha0-fcl(:,4)));
-x = x + x.^3/3 + x.^5/5;
+x = x + powerFast(x,3)/3 + powerFast(x,5)/5;
 alpha0 = alpha0 ...
     + fcl(:,3) .* ( 1 + tanh( x ) ) ...
     ./ -c_L_alpha;

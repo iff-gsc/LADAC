@@ -95,7 +95,7 @@ switch wing.config.airfoil_method
         
         % clean airfoil coefficients
         c_L_alpha = wing.airfoil.simple.c_L_alpha ./ ...
-            sqrtReal(1-wing.state.aero.circulation.Ma.^2);
+            sqrtReal(1-powerFast(wing.state.aero.circulation.Ma,2));
         x_ac = wing.airfoil.simple.x_ac;
         
         [ wing.state.aero.unsteady.c_L_c, wing.state.aero.unsteady.c_m_c, ...

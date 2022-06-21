@@ -73,15 +73,17 @@ b_2     = 0.312;
 kappa_1 = 0.85;
 kappa_2 = 0.73;
 
+Ma2 = powerFast(Ma,2);
+
 % [1], see Nomenclature
-beta2   = 1 - Ma.^2;
+beta2   = 1 - Ma2;
 beta    = sqrtReal(beta2);
 
 % summarization of variables
 fac     = 2*V./c.*beta2;
 
 % [1], between eq. (16) and eq. (17)
-term_2  = pi*beta.*Ma.^2*(A_1*b_1+A_2*b_2);
+term_2  = pi*beta.*Ma2*(A_1*b_1+A_2*b_2);
 K_alpha = kappa_1 ./ ( (1-Ma) + term_2 );
 T_I = c./a;
 % [1], eq. (A2)
@@ -89,7 +91,7 @@ K_q     = kappa_2 ./ ( (1-Ma) + 2*term_2 );
 % [1], eq. (A6)
 K_alpha_M = (A_3*b_4+A_4*b_3)./(b_3*b_4*(1-Ma));
 % [1], eq. (A12)
-K_q_M   = 7./(15*(1-Ma)+3*pi*beta.*Ma.^2*b_5);
+K_q_M   = 7./(15*(1-Ma)+3*pi*beta.*Ma2*b_5);
 
 % [1], eq. (17)
 a_11    = fac * -b_1;

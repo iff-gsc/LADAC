@@ -119,7 +119,7 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
                     wing.state.aero.circulation.alpha_eff, wing.state.aero.circulation.Ma );
         end
         % flap lift
-        wing.state.aero.circulation.c_L_flap(:) = 2*pi./sqrtReal(1-wing.state.aero.circulation.Ma.^2)...
+        wing.state.aero.circulation.c_L_flap(:) = 2*pi./sqrtReal(1-powerFast(wing.state.aero.circulation.Ma,2))...
             .*wing.state.aero.circulation.delta_qs;
         % 2nd actuator lift
         c_L_act2 = zeros(size(c_L_visc));

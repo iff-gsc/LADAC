@@ -27,8 +27,8 @@ function f_st = airfoilDynStallFst( c_L_st, c_L_alpha, Delta_alpha ) %#codegen
 % avoid division by zero: inices
 idx = abs(Delta_alpha) <= 0.5;
 
-f_st = min( 1, ( 2*(sqrtReal( max( 0, c_L_st(:) ./ ( c_L_alpha.*Delta_alpha(:).*cos(pi/2/90*Delta_alpha(:)) ) ) ) ) - 1 ).^2 );
-        
+f_st = powerFast( 2*(sqrtReal( max( 0, c_L_st(:) ./ ( c_L_alpha.*Delta_alpha(:).*cos(pi/2/90*Delta_alpha(:)) ) ) ) ) - 1, 2 );
+f_st(f_st>1) = 1;        
 f_st(abs(Delta_alpha) > 70) = 0;
 
 % avoid division by zero: set f_st to 1

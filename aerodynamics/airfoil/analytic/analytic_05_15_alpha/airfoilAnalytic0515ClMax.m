@@ -39,7 +39,7 @@ else
     Ma = varargin{1};
 end
 
-betaM = 1./sqrtReal( 1-( fcl(:,5).*Ma ).^2 );
+betaM = 1./sqrtReal( 1-powerFast( fcl(:,5).*Ma, 2 ) );
 
 % assume that linear part is really linear and not a sine function (else
 % iteration would be required)

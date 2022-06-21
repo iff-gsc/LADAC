@@ -34,17 +34,18 @@ Ma = V_A ./ fuselage.state.external.atmosphere.a;
 
 dx = abs( diff( fuselage.geometry.border_pos(1,:) ) );
 
-beta_Ma = sqrtReal( 1 - Ma^2 );
+beta_Ma = sqrtReal( 1 - powerFast(Ma,2) );
 compr_fac = 1 / beta_Ma;
 
 radius = fuselage.geometry.width/2;
+radius2 = powerFast(radius,2);
 % volumes of frustums
-volume = pi/3 * dx .* ( radius(1:end-1).^2 + radius(1:end-1).*radius(2:end) + radius(2:end).^2 );
+volume = pi/3 * dx .* ( radius2(1:end-1) + radius(1:end-1).*radius(2:end) + radius2(2:end) );
 total_volume = sum( volume );
 volume23 = volume.^(2/3);
 total_volume_23 = total_volume^(2/3);
 
-b2 = fuselage.geometry.width_visc.^2;
+b2 = powerFast(fuselage.geometry.width_visc,2);
 
 % compressible correction, [1], eq. (9.80d)
 alpha = fuselage.state.aero.local_inflow.alpha * compr_fac;
@@ -59,7 +60,7 @@ if fuselage.config.is_unsteady
     % time constant
     b12 = 0.45;
     c = max(fuselage.params.width);
-    T_unsteady(:) = 1 / ( (2*V_A/c)*beta_Ma^2*b12 );
+    T_unsteady(:) = 1 / ( (2*V_A/c)*powerFast(beta_Ma,2)*b12 );
     alB2_dx = diff( alpha .* b2 ) ./ dx;
     beB2_dx = diff( beta .* b2 ) ./ dx;
 else
@@ -68,7 +69,7 @@ else
 end
 
 % local ram air
-q = fuselage.state.external.atmosphere.rho/2 * V_abs.^2;
+q = fuselage.state.external.atmosphere.rho/2 * powerFast(V_abs,2);
 
 if fuselage.config.is_unsteady
     lift = - pi/2 * q .* alB2_dx .* dx;

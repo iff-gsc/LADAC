@@ -111,7 +111,7 @@ c_N_fs = airfoilDynStallClFs( c_L_st_f, c_N_alpha_max, alpha_0_rad, alpha_E, f_s
 
 % [1], eq. (27) (last term was added for very high angles of attack)
 % [3], eq. (23)
-c_N_f = c_N_alpha_max .* ((1+sqrtReal(f_ss))/2).^2 .* (alpha_E(:));% .* cos((alpha_E-alpha_0));
+c_N_f = c_N_alpha_max .* powerFast((1+sqrtReal(f_ss))/2,2) .* (alpha_E(:));% .* cos((alpha_E-alpha_0));
 % [2], eq. (22) (probably easier?)
 % C_N_f = C_N_alpha_max * (alpha_E-alpha_0) * f_ss ... %.* cos(pi/2/90*(alpha_E-alpha_0) ...
 %     + C_N_fs .* (1-f_ss) + pi/fac*alpha_dt;
@@ -133,7 +133,7 @@ tau_v_dt(is_leading_edge_shock) = fac(is_leading_edge_shock);
 is_vortex_accumulating(is_leading_edge_shock & tau_v<T_vl) = 1;
 
 % [3], eq. (27)
-K_N = (1+sqrtReal(f_ss)).^2/4;
+K_N = powerFast(1+sqrtReal(f_ss),2)/4;
 % [3], eq. (26)
 c_v = zeros(size(c_N_C));
 c_v(is_vortex_accumulating) = c_N_C(is_vortex_accumulating) .* (1-K_N(is_vortex_accumulating));

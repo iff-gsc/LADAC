@@ -21,6 +21,6 @@ function c_D = airfoilAnalyticSimpleCd( airfoil, alpha )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-c_D = airfoil.c_D0 + airfoil.c_D1*alpha + airfoil.c_D2*alpha.^2;
+c_D = airfoil.c_D0 + airfoil.c_D1*alpha + airfoil.c_D2*powerFast(alpha,2);
 
 end
