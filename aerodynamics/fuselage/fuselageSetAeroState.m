@@ -14,8 +14,8 @@ function fuselage = fuselageSetAeroState( fuselage, xyz_cg )
 % 
 % Literature:
 %   [1] Schlichting, H., & Truckenbrodt, E. (2001). Aerodynamik des
-%       Flugzeuges. Zweiter Band: Aerodynamik des Tragflügels (Teil II),
-%       des Rumpfes, der Flügel-Rumpf-Anordnung und der Leitwerke. 3.
+%       Flugzeuges. Zweiter Band: Aerodynamik des Tragflï¿½gels (Teil II),
+%       des Rumpfes, der Flï¿½gel-Rumpf-Anordnung und der Leitwerke. 3.
 %       Auflage. Springer-Verlag Berlin Heidelberg.
 
 % Disclamer:
@@ -95,6 +95,6 @@ fuselage.state.aero.C_XYZ_b_i(:) = fuselage.state.aero.R_Ab_i ./ ...
 fuselage.state.aero.R_Ab(:) = sum( fuselage.state.aero.R_Ab_i, 2 );
 fuselage.state.aero.C_XYZ_b(:) = fuselage.state.aero.R_Ab / ( total_volume_23 * mean(q) );
 r_ref = fuselage.geometry.cntrl_pos - repmat( xyz_cg, 1, fuselage.n_segments );
-fuselage.state.aero.Q_Ab(:) = sum (cross( r_ref, fuselage.state.aero.R_Ab_i ), 2 );
+fuselage.state.aero.Q_Ab(:) = sum (crossFast( r_ref, fuselage.state.aero.R_Ab_i ), 2 );
 
 end

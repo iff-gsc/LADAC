@@ -47,7 +47,7 @@ else
     v_inf = - wing.state.aero.local_inflow.V_75 ./ repmat( vecnorm(wing.state.aero.local_inflow.V_75,2), size(wing.state.aero.local_inflow.V_75,1), 1 );
 end
 % rotation axis for normal vector to adjust the angle of attack / incidence
-wing.state.aero.circulation.rot_axis = cross( -v_inf, u_n, 1 );
+wing.state.aero.circulation.rot_axis = crossFast( -v_inf, u_n );
 
 % influence coefficients
 A = zeros( wing.n_panel, wing.n_panel );

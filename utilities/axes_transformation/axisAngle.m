@@ -24,7 +24,7 @@ axis = axis ./ repmat( vecnorm( axis, 2, 1 ), 3, 1 );
 
 cos_angle = cos(angle);
 
-v_rot = repmat(cos_angle,3,1).*v + repmat(sin(angle),3,1).*cross(axis,v) ...
+v_rot = repmat(cos_angle,3,1).*v + repmat(sin(angle),3,1).*crossFast(axis,v) ...
     + repmat( (1-cos_angle) .* dot(axis,v), 3,1) .* axis;
 
 end

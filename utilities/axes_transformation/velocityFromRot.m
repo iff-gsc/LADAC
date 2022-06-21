@@ -37,6 +37,6 @@ function V_py_x = velocityFromRot( V_xy_x, omega_xy_x, r_p_x )%#codegen
 num_vectors = size( r_p_x, 2 );
 % computation of the velocity of point p relative to frame y represented in
 % frame x [1, p. 21]
-V_py_x = repmat(V_xy_x,1,num_vectors) + cross( repmat(omega_xy_x,1,num_vectors), r_p_x, 1 );
+V_py_x = repmat(V_xy_x,1,num_vectors) + crossFast( repmat(omega_xy_x,1,num_vectors), r_p_x );
 
 end
