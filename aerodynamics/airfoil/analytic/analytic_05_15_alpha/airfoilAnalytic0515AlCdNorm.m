@@ -6,7 +6,7 @@ function c_D = airfoilAnalytic0515AlCdNorm(fcd,x,alpha_q,c_d_q)
 % Inputs:
 %   fcd             analytic function parameters array (see outputs of
 %                   airfoilAnalytic0515AlFit)
-%   x               angle of attack (column vector)
+%   x               angle of attack (row vector)
 %   alpha_q         query points of angle of attack
 %   c_d_q           query points of drag coefficient
 % 
@@ -22,7 +22,7 @@ function c_D = airfoilAnalytic0515AlCdNorm(fcd,x,alpha_q,c_d_q)
 % *************************************************************************
 
 
-c_D = 1 ./ interp1(alpha_q(:),c_d_q(:),x,'pchip') .* ...
+c_D = 1 ./ interp1(alpha_q(:)',c_d_q(:)',x,'pchip') .* ...
     airfoilAnalytic0515AlCd( fcd, x );
 
 

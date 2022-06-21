@@ -11,9 +11,9 @@ function [Delta_c_L,Delta_c_D,Delta_c_m] = airfoilMicroTabDeltaCoeff( ...
 %                       elements)
 % 
 % Outputs:
-%   Delta_c_L           Delta lift coefficient (Nx1 array)
-%   Delta_c_D           Delta drag coefficient (Nx1 array)
-%   Delta_c_m           Delta pitching moment coefficient (Nx1 array)
+%   Delta_c_L           Delta lift coefficient (1xN array)
+%   Delta_c_D           Delta drag coefficient (1xN array)
+%   Delta_c_m           Delta pitching moment coefficient (1xN array)
 % 
 % See also:
 %   airfoilMicroTabLoadParams, airfoilMicroTabStateDeriv
@@ -37,8 +37,8 @@ fdcd = airfoilAnalytic0515Ma( micro_tab.net.wcd, circulation.Ma, ...
     micro_tab.net.ncd, micro_tab.net.ocd );
 fdcm = airfoilAnalytic0515Ma( micro_tab.net.wcm, circulation.Ma, ...
     micro_tab.net.ncm, micro_tab.net.ocm );
-Delta_c_L = airfoilAnalytic0515De( fdcl, [circulation.alpha_eff(:),state(:)] )';
-Delta_c_D = airfoilAnalytic0515De( fdcd, [circulation.alpha_eff(:),state(:)] )';
-Delta_c_m = airfoilAnalytic0515De( fdcm, [circulation.alpha_eff(:),state(:)] )';
+Delta_c_L = airfoilAnalytic0515De( fdcl, [circulation.alpha_eff;state] );
+Delta_c_D = airfoilAnalytic0515De( fdcd, [circulation.alpha_eff;state] );
+Delta_c_m = airfoilAnalytic0515De( fdcm, [circulation.alpha_eff;state] );
     
 end

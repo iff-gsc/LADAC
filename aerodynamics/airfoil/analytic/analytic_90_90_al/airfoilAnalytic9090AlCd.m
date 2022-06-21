@@ -1,4 +1,4 @@
-function c_D = airfoilAnalytic9090AlCd(beta,x)
+function c_D = airfoilAnalytic9090AlCd(beta,alpha)
 % analytic function for the drag coefficient for angle of attack / alpha 
 % 
 % Inputs:
@@ -17,8 +17,6 @@ function c_D = airfoilAnalytic9090AlCd(beta,x)
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-
-alpha = x(:,1);
 
 
 c_D0 = beta(1);

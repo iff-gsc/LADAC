@@ -3,13 +3,13 @@ function f_st = airfoilDynStallFst( c_L_st, c_L_alpha, Delta_alpha ) %#codegen
 %   This function can be run for N airfoils/conditions at once.
 % 
 % Inputs:
-%   c_L_st          values of the static lift curve (Nx1 array)
-%   c_L_alpha       (maximum) lift curve slope (Nx1 array), in 1/deg
-%   Delta_alpha     angle of attack minus zero lift angle of attack (Nx1
+%   c_L_st          values of the static lift curve (1xN array)
+%   c_L_alpha       (maximum) lift curve slope (1xN array), in 1/deg
+%   Delta_alpha     angle of attack minus zero lift angle of attack (1xN
 %                   array), in deg
 % 
 % Outputs:
-%   f_st            separation point (Nx1 array), dimensionless
+%   f_st            separation point (1xN array), dimensionless
 % 
 % Literature:
 %   [1] https://backend.orbit.dtu.dk/ws/portalfiles/portal/7711084/ris_r_1354.pdf
@@ -27,7 +27,7 @@ function f_st = airfoilDynStallFst( c_L_st, c_L_alpha, Delta_alpha ) %#codegen
 % avoid division by zero: inices
 idx = abs(Delta_alpha) <= 0.5;
 
-f_st = powerFast( 2*(sqrtReal( max( 0, c_L_st(:) ./ ( c_L_alpha.*Delta_alpha(:).*cos(pi/2/90*Delta_alpha(:)) ) ) ) ) - 1, 2 );
+f_st = powerFast( 2*(sqrtReal( c_L_st ./ ( c_L_alpha.*Delta_alpha.*cos(pi/2/90*Delta_alpha) ) ) ) - 1, 2 );
 f_st(f_st>1) = 1;        
 f_st(abs(Delta_alpha) > 70) = 0;
 

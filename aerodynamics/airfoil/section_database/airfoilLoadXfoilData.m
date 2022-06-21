@@ -78,13 +78,13 @@ for current_line_idx = 1:num_lines
         % only extract the required columns (alpha, CL, CD, CM)
         for i = 1:length(dataArray)
             if contains(dataArray{i}(1),'alpha')
-                data.alpha = str2double(dataArray{i}(2:end));
+                data.alpha = str2double(dataArray{i}(2:end))';
             elseif contains(dataArray{i}(1),'CL')
-                data.c_L = str2double(dataArray{i}(2:end));
+                data.c_L = str2double(dataArray{i}(2:end))';
             elseif contains(dataArray{i}(1),'CD')
-                data.c_D = str2double(dataArray{i}(2:end));
+                data.c_D = str2double(dataArray{i}(2:end))';
             elseif contains(dataArray{i}(1),'CM')
-                data.c_m = str2double(dataArray{i}(2:end));
+                data.c_m = str2double(dataArray{i}(2:end))';
             end
         end
         

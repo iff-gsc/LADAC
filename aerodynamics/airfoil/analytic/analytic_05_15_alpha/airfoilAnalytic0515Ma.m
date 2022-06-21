@@ -16,7 +16,7 @@ function fMa = airfoilAnalytic0515Ma( weights, Ma, numNeurons, numOutputs )
 % 
 % Outputs:
 %   fMa             concentrated coefficients of analytic function for all
-%                   Mach numbers (Mx(numOutputs) array)
+%                   Mach numbers ((numOutputs)xM array)
 % 
 % See also: airfoilAnalytic0515NeunFit, airfoilAnalytic0515AlCl
 % 
@@ -34,17 +34,20 @@ idx1 = numOutputs;
 % end of first layer
 idx2 = idx1 + numNeurons*2;
 
-fMa = repmat( weights(1:idx1), length(Ma), 1 );
+num_inputs = length(Ma);
+bias_in = ones(1,num_inputs);
+
+weights1 = reshape( weights(idx1+1:idx2), [], 2 );
+% for higher speed, add output scaling to weights here
+weights2 = diag( weights(1:idx1) ) * reshape( weights(idx2+1:end), [], numNeurons+1 );
 
 % forward propagation
-inputHiddenLayer = matrixMultiplyNd( reshape( weights(idx1+1:idx2), [], 2 ), ...
-    cat( 1, reshape(Ma,1,1,[]), ones(1,1,length(Ma)) ) );
+inputHiddenLayer = weights1(:,1) * Ma(:)';
+inputHiddenLayer = inputHiddenLayer + weights1(:,2) * bias_in;
 
 outputHiddenLayer = tanh( inputHiddenLayer );
 
-fMa = fMa .* reshape( ...
-    matrixMultiplyNd( reshape( weights(idx2+1:end), [], numNeurons+1 ), ...
-    cat( 1, outputHiddenLayer, ones(1,1,size(outputHiddenLayer,3)) ) ), ...
-    numOutputs, [] )';
+fMa = weights2(:,1:end-1) * outputHiddenLayer;
+fMa = fMa + weights2(:,end) * bias_in;
 
 end

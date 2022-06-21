@@ -4,8 +4,8 @@ function c_D = airfoilAnalytic9090AlCdNorm(beta,x,alpha_q,c_d_q)
 % 
 % Inputs:
 %   beta            parameter vector
-%   xy              concentrated vectors of angle of attack (first column)
-%                   and drag coefficient (second column)
+%   xy              concentrated vectors of angle of attack (first row)
+%                   and drag coefficient (second row)
 % 
 % Outputs:
 %   c_D             drag coefficient vector
@@ -19,7 +19,7 @@ function c_D = airfoilAnalytic9090AlCdNorm(beta,x,alpha_q,c_d_q)
 % *************************************************************************
 
 
-c_D = 1 ./ interp1(alpha_q(:),c_d_q(:),x(:,1),'pchip') .* ...
+c_D = 1 ./ interp1(alpha_q,c_d_q,x(1,:),'pchip') .* ...
     airfoilAnalytic9090AlCd( beta, x );
 
 

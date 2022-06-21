@@ -15,8 +15,8 @@ function [c_N_alpha,alpha_0] = airfoilAnalyticBlClAlphaMax(fcl)
 %           	airfoilAnalyticBlAlCn)
 % 
 % Outputs:
-%   c_N_alpha 	maximum lift curve slope (Nx1 array), in 1/deg
-%   alpha0      zero lift angle of attack (Nx1 array), in deg
+%   c_N_alpha 	maximum lift curve slope (1xN array), in 1/deg
+%   alpha0      zero lift angle of attack (1xN array), in deg
 % 
 
 % Disclamer:

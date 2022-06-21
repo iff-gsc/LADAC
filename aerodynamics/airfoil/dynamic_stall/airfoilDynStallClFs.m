@@ -4,14 +4,14 @@ function c_L_fs = airfoilDynStallClFs( c_L_st, c_L_alpha, alpha0, alpha, f_st ) 
 %   This function can be run for N airfoils/conditions at once.
 % 
 % Inputs:
-%   c_L_st          values of the static lift curve (Nx1 array)
-%   c_L_alpha       (maximum) lift curve slope (Nx1 array), in 1/[alpha]
-%   alpha           angle of attack (Nx1 array) in deg or rad
-%   alpha0          zero lift angle of attack (Nx1 array) in [alpha]
-%   f_st            separation point (Nx1 array), dimensionless
+%   c_L_st          values of the static lift curve (1xN array)
+%   c_L_alpha       (maximum) lift curve slope (1xN array), in 1/[alpha]
+%   alpha           angle of attack (1xN array) in deg or rad
+%   alpha0          zero lift angle of attack (1xN array) in [alpha]
+%   f_st            separation point (1xN array), dimensionless
 % 
 % Outputs:
-%   c_L_fs         	separation point (Nx1 array), dimensionless
+%   c_L_fs         	separation point (1xN array), dimensionless
 % 
 % Literature:
 %   [1] https://backend.orbit.dtu.dk/ws/portalfiles/portal/7711084/ris_r_1354.pdf
@@ -28,7 +28,7 @@ function c_L_fs = airfoilDynStallClFs( c_L_st, c_L_alpha, alpha0, alpha, f_st ) 
 
 Delta_alpha = alpha-alpha0;
 idx = abs(Delta_alpha) <= 0.5;
-c_L_fs = zeros(length(c_L_st),1);
+c_L_fs = zeros(size(alpha));
 is_attached = f_st > 1 - 1e-5;
 c_L_fs(~is_attached) = ( c_L_st(~is_attached) - c_L_alpha(~is_attached) .* Delta_alpha(~is_attached) .*cos(pi/2/90*Delta_alpha(~is_attached)) .* f_st(~is_attached) ) ./ ( 1 - f_st(~is_attached) );
 c_L_fs(is_attached) = c_L_st(is_attached)/2;

@@ -53,9 +53,9 @@ liftCurve = @airfoilAnalyticBlAlCn;
 momentCurve = @airfoilAnalyticBlCm;
 
 % lift coefficient options
-optsCn.Lower = [ 0.03 -7 5 0.75 0.75 0.8 ];
-optsCn.StartPoint = [ 0.11 0 15 1.5 1.5 0.95 ];
-optsCn.Upper = [ 0.3 7 25 20 20 1 ];
+optsCn.Lower = [ 0.03 -7 5 0.75 0.75 0.8 ]';
+optsCn.StartPoint = [ 0.11 0 15 1.5 1.5 0.95 ]';
+optsCn.Upper = [ 0.3 7 25 20 20 1 ]';
 
 options = optimoptions('lsqcurvefit');
 options.MaxFunctionEvaluations = 50000;
@@ -63,14 +63,14 @@ options.MaxFunctionEvaluations = 50000;
 % fit lift coefficient
 % x = alpha_deg;
 idx = alpha_deg>=-4 & alpha_deg <= 4;
-x = [alpha_deg;repmat(alpha_deg(idx),100,1)];
-c_Nx = [c_N;repmat(c_N(idx),100,1)];
-fcn = lsqcurvefit( liftCurve, optsCn.StartPoint, x, c_Nx(:), optsCn.Lower, optsCn.Upper, options );
+x = [alpha_deg,repmat(alpha_deg(idx),1,100)];
+c_Nx = [c_N,repmat(c_N(idx),1,100)];
+fcn = lsqcurvefit( liftCurve, optsCn.StartPoint, x, c_Nx, optsCn.Lower, optsCn.Upper, options );
 
 % pitching moment coefficient options
-optsCm.Lower = [ -0.3 -0.2 -0.6 0 0.5 ];
-optsCm.StartPoint = [ 0 0 0 0.03 2 ];
-optsCm.Upper = [ 0.3 0.2 0.1 0.7 5 ];
+optsCm.Lower = [ -0.3 -0.2 -0.6 0 0.5 ]';
+optsCm.StartPoint = [ 0 0 0 0.03 2 ]';
+optsCm.Upper = [ 0.3 0.2 0.1 0.7 5 ]';
 
 % options = optimoptions('lsqcurvefit','OptimalityTolerance',1e-16,'FunctionTolerance',1e-16,'Display','iter-detailed');
 options = optimoptions('lsqcurvefit');
@@ -78,8 +78,8 @@ options.MaxFunctionEvaluations = 50000;
 
 % fit pitching moment coefficient
 [c_L_alpha_max,alpha_0] = airfoilAnalyticBlClAlphaMax( fcn );
-f_st = airfoilDynStallFst(c_N(:),c_L_alpha_max,alpha_deg-alpha_0);
-fcm = lsqcurvefit(  @(xxx,data) momentCurve(xxx,data,c_N(:)), optsCm.StartPoint, f_st, c_m, optsCm.Lower, optsCm.Upper, options );
+f_st = airfoilDynStallFst(c_N,c_L_alpha_max,alpha_deg-alpha_0);
+fcm = lsqcurvefit(  @(xxx,data) momentCurve(xxx,data,c_N), optsCm.StartPoint, f_st, c_m, optsCm.Lower, optsCm.Upper, options );
 
 
 if visualize
@@ -88,7 +88,7 @@ if visualize
 
     figure
     subplot(2,2,1)
-    plot(alpha_deg,c_N(:),'x')
+    plot(alpha_deg,c_N,'x')
     hold on
     c_L_eval = airfoilAnalyticBlAlCn(fcn,alpha_eval);
     plot(alpha_eval,c_L_eval)
@@ -99,7 +99,7 @@ if visualize
     legend('data','analytic function','location','southeast')
     
     subplot(2,2,3)
-    plot(alpha_deg,c_m(:),'x')
+    plot(alpha_deg,c_m,'x')
     hold on
     [c_L_alpha,alpha_0] = airfoilAnalyticBlClAlphaMax(fcn);
     f_eval = airfoilDynStallFst( c_L_eval, c_L_alpha, alpha_eval-alpha_0 );

@@ -114,7 +114,7 @@ netPrm.weightsRangeMin = -.10;
 netPrm.weightsRangeMax = +.10;
 %% Intervall parameter
 % Intervall for the training
-netPrm.numPatterns = 5;
+netPrm.numPatterns = 8;
 % Recordintervall for the net data
 netPrm.patternInterval = 1;
 % Number of saved pattern

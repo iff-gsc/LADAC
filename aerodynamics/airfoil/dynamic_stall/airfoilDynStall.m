@@ -89,29 +89,29 @@ b_12_4  = fac*2./T_f;
 
 %% lift coefficient
 
-[c_N_alpha_max,alpha_0] = airfoilAnalytic0515ClAlphaMax( fcl, Ma(:) );
+[c_N_alpha_max,alpha_0] = airfoilAnalytic0515ClAlphaMax( fcl, Ma );
 c_N_alpha_max = rad2deg(c_N_alpha_max);
 alpha_0_rad = deg2rad(alpha_0);
 
 % [1], eq. (18) or [2], in the text above eq. (21)
-C_N_s = X(1,:)';
+C_N_s = X(1,:);
 
 % [1], eq. (24) or [2], in the text above eq. (21)
 alpha_f = C_N_s ./ c_N_alpha_max;
 
 % [1], in text above eq. (25)
-c_L_st_f = airfoilAnalytic0515AlCl( fcl, [ rad2deg(alpha_f+alpha_0_rad), Ma(:) ] );
+c_L_st_f = airfoilAnalytic0515AlCl( fcl, [ rad2deg(alpha_f+alpha_0_rad); Ma ] );
 
 f_s = airfoilDynStallFst( c_L_st_f, deg2rad(c_N_alpha_max), rad2deg(alpha_f) );
 
 % [1], eq. (26)
-f_ss = X(2,:)';
+f_ss = X(2,:);
 
 c_N_fs = airfoilDynStallClFs( c_L_st_f, c_N_alpha_max, alpha_0_rad, alpha_E, f_s );
 
 % [1], eq. (27) (last term was added for very high angles of attack)
 % [3], eq. (23)
-c_N_f = c_N_alpha_max .* powerFast((1+sqrtReal(f_ss))/2,2) .* (alpha_E(:));% .* cos((alpha_E-alpha_0));
+c_N_f = c_N_alpha_max .* powerFast((1+sqrtReal(f_ss))/2,2) .* (alpha_E);% .* cos((alpha_E-alpha_0));
 % [2], eq. (22) (probably easier?)
 % C_N_f = C_N_alpha_max * (alpha_E-alpha_0) * f_ss ... %.* cos(pi/2/90*(alpha_E-alpha_0) ...
 %     + C_N_fs .* (1-f_ss) + pi/fac*alpha_dt;
@@ -122,12 +122,12 @@ c_N_f = c_N_alpha_max .* powerFast((1+sqrtReal(f_ss))/2,2) .* (alpha_E(:));% .* 
 c_N_C = c_N_f;
 
 % [1], eq. (31)
-c_N_v = X(3,:)';
+c_N_v = X(3,:);
 % [1], eq. (37)
 c_N = c_N_f + c_N_v;
 
 % leading edge shock condition
-c_L_max = airfoilAnalytic0515ClMax( fcl, Ma(:) );
+c_L_max = airfoilAnalytic0515ClMax( fcl, Ma );
 is_leading_edge_shock( C_N_s>c_L_max | ( tau_v>1e-3 & c_N_v>1e-3 ) ) = 1;
 tau_v_dt(is_leading_edge_shock) = fac(is_leading_edge_shock);
 is_vortex_accumulating(is_leading_edge_shock & tau_v<T_vl) = 1;
@@ -142,7 +142,7 @@ c_v(is_vortex_accumulating) = c_N_C(is_vortex_accumulating) .* (1-K_N(is_vortex_
 % difficult, difficult, difficult, ...
 
 % [2], eq. (24)
-alpha_E_0 = alpha_E(:) + alpha_0_rad;
+alpha_E_0 = alpha_E + alpha_0_rad;
 Delta_c_D_ind = sin( alpha - alpha_E_0 ) .* c_N;
 % Delta_c_D_ind = c_N * sin(alpha);
 
@@ -185,9 +185,9 @@ c_m = c_m_p + c_M_f + c_m_v;
 %% update state space model
 
 % to do: u = [ C_N_p(t); f'(t); C_v_dt; f_qs(t) ]
-u = [ C_N_p'; f_s'; c_v' ];
+u = [ C_N_p; f_s; c_v ];
 
-X_dt = cat( 1, a_99', a_10_10', a_11_11' ) .* X ...
-    + cat( 1, b_9_1', b_10_2', b_11_3' ) .* u;
+X_dt = [ a_99; a_10_10; a_11_11 ] .* X ...
+    + [ b_9_1; b_10_2; b_11_3 ] .* u;
 
 end

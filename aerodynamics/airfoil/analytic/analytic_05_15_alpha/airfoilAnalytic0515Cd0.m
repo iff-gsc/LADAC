@@ -7,7 +7,7 @@ function [c_D_0,alpha_0] = airfoilAnalytic0515Cd0(fcd)
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-c_D_0 = fcd(:,1);
-alpha_0 = fcd(:,3);
+c_D_0 = fcd(1,:);
+alpha_0 = fcd(3,:);
 
 end

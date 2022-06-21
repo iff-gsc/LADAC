@@ -8,10 +8,10 @@ function c_m = airfoilAnalytic0515AlCm(fcm,alpha)
 % Inputs:
 %   fcm         analytic function parameters array (see outputs of
 %               airfoilAnalytic0515AlFit)
-%   alpha       angle of attack (Nx1 array), in deg
+%   alpha       angle of attack (1xN array), in deg
 % 
 % Outputs:
-%   c_m         pitching moment coefficient (Nx1 array)
+%   c_m         pitching moment coefficient (1xN array)
 % 
 % Literature:
 %   [1] https://arc.aiaa.org/doi/pdfplus/10.2514/1.C034910
@@ -24,10 +24,10 @@ function c_m = airfoilAnalytic0515AlCm(fcm,alpha)
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-filter = 0.5 + 0.5*tanh( fcm(:,4) .* (pi/90*(alpha-fcm(:,5)) ) );
+filter = 0.5 + 0.5*tanh( fcm(4,:) .* (pi/90*(alpha-fcm(5,:)) ) );
 % own formula
-c_m = fcm(:,1) ...
-    + fcm(:,2) .* (alpha-fcm(:,3)).^2 .* ( 1 - filter ) ...
-    + filter .* fcm(:,6) .* sin(pi/90*alpha);
+c_m = fcm(1,:) ...
+    + fcm(2,:) .* (alpha-fcm(3,:)).^2 .* ( 1 - filter ) ...
+    + filter .* fcm(6,:) .* sin(pi/90*alpha);
 
 end

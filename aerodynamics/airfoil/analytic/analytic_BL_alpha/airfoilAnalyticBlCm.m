@@ -5,12 +5,12 @@ function c_m = airfoilAnalyticBlCm(fcm,f,c_L)
 % Inputs:
 %   fcm         analytic function parameters array (see outputs of
 %               airfoilAnalyticBlAlFit)
-%   f           separation point location (Nx1 array) (see output of
+%   f           separation point location (1xN array) (see output of
 %               airfoilDynStallFst), dimensionless
-%   c_L         lift coefficient (Nx1 array), dimensionless
+%   c_L         lift coefficient (1xN array), dimensionless
 % 
 % Outputs:
-%   c_m         pitching moment coefficient (Nx1 array), dimensionless
+%   c_m         pitching moment coefficient (1xN array), dimensionless
 % 
 % Literature:
 %   [1] https://arc.aiaa.org/doi/pdf/10.2514/6.1989-1319
@@ -25,9 +25,9 @@ function c_m = airfoilAnalyticBlCm(fcm,f,c_L)
 
 
 % [1], eq. (22)
-c_m = fcm(:,1) + ( ...
-    fcm(:,2) ...
-    + fcm(:,3) .* abs(1-f) + ...
-    + fcm(:,4) .* sin(pi*f.^(fcm(:,5))) ) .* c_L;
+c_m = fcm(1,:) + ( ...
+    fcm(2,:) ...
+    + fcm(3,:) .* abs(1-f) + ...
+    + fcm(4,:) .* sin(pi*f.^(fcm(5,:))) ) .* c_L;
 
 end
