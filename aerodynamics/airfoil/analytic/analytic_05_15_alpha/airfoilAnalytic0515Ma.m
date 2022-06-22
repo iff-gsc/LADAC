@@ -28,26 +28,14 @@ function fMa = airfoilAnalytic0515Ma( weights, Ma, numNeurons, numOutputs )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-% normalization factors
-idx1 = numOutputs;
-
-% end of first layer
-idx2 = idx1 + numNeurons*2;
-
 num_inputs = length(Ma);
 bias_in = ones(1,num_inputs);
 
-weights1 = reshape( weights(idx1+1:idx2), [], 2 );
-% for higher speed, add output scaling to weights here
-weights2 = diag( weights(1:idx1) ) * reshape( weights(idx2+1:end), [], numNeurons+1 );
-
 % forward propagation
-inputHiddenLayer = weights1(:,1) * Ma(:)';
-inputHiddenLayer = inputHiddenLayer + weights1(:,2) * bias_in;
+inputHiddenLayer = weights.weights1 * [Ma;bias_in];
 
 outputHiddenLayer = tanh( inputHiddenLayer );
 
-fMa = weights2(:,1:end-1) * outputHiddenLayer;
-fMa = fMa + weights2(:,end) * bias_in;
+fMa = weights.weights2 * [ outputHiddenLayer; bias_in ];
 
 end

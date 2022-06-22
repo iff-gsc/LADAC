@@ -14,4 +14,19 @@ function micro_tab = airfoilMicroTabLoadParams( filename )
 
 run( filename );
 
+micro_tab.net.wcl = mergeOutputLayer( micro_tab.net.wcl, micro_tab.net.ncl, micro_tab.net.ocl );
+micro_tab.net.wcd = mergeOutputLayer( micro_tab.net.wcd, micro_tab.net.ncd, micro_tab.net.ocd );
+micro_tab.net.wcm = mergeOutputLayer( micro_tab.net.wcm, micro_tab.net.ncm, micro_tab.net.ocm );
+
+end
+
+function wcl = mergeOutputLayer( weights, numNeurons, numOutputs )
+
+idx1 = numOutputs;
+idx2 = idx1 + numNeurons*2;
+weights1 = reshape( weights(idx1+1:idx2), [], 2 );
+weights2 = diag( weights(1:idx1) ) * reshape( weights(idx2+1:end), [], numNeurons+1 );
+wcl.weights1 = weights1;
+wcl.weights2 = weights2;
+
 end
