@@ -55,8 +55,6 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 % Syntax:
 %   % default:
 %   wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuators_rate, xyz_cg )
-%   % pass rigid body rotational acceleration:
-%   wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuators_rate, xyz_cg, 'omega_dt', omega_dt )
 %   % pass atmosphere:
 %   wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuators_rate, xyz_cg, 'atmosphere', atmosphere )
 %   % pass wind:
@@ -87,83 +85,42 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-%% decode variable input arguments
-
-atmosphere      = isAtmosphere(0);
-
-V_Wb            = zeros( size(wing.state.external.V_Wb) );
-V_Wb_dt         = zeros( size(wing.state.external.V_Wb_dt) );
-
-structure_pos   = zeros( size(wing.aeroelasticity.T_vs,2), 1 );
-structure_vel   = zeros( size(wing.aeroelasticity.T_vs,2), 1 );
-
-unst_aero_state = zeros(size(wing.state.aero.unsteady.x));
-dyn_stall_state = zeros(size(wing.state.aero.unsteady.X));
-unst_flap_state = zeros(size(wing.state.aero.unsteady.z));
-unst_act2_state = zeros(size(wing.state.aero.unsteady.z2));
-tau_v           = zeros(size(wing.state.aero.unsteady.tau_v));
-
-alpha_ind       = zeros(size(wing.state.aero.circulation.alpha_ind));
-
-
+%% parse variable input arguments
 
 for i = 1:length(varargin)
     if strcmp(varargin{i},'atmosphere')
-        atmosphere = varargin{i+1};
+        wing.state.external.atmosphere = varargin{i+1};
     elseif strcmp(varargin{i},'V_Wb')
-        % idx_max: codegen workaround (yes, either me or Matlab is dumb)
-        V_Wb(:) = varargin{i+1};
+        wing.state.external.V_Wb(:) = varargin{i+1};
     elseif strcmp(varargin{i},'V_Wb_dt')
-        V_Wb_dt(:) = varargin{i+1};
-    elseif strcmp(varargin{i},'structure_pos')
-        structure_pos(:) = varargin{i+1};
-    elseif strcmp(varargin{i},'structure_vel')
-        structure_vel(:) = varargin{i+1};
-    elseif strcmp(varargin{i},'unst_airfoil_state')
-        unst_aero_state(:) = varargin{i+1};
-    elseif strcmp(varargin{i},'dyn_stall_state')
-        dyn_stall_state(:) = varargin{i+1};
-    elseif strcmp(varargin{i},'unst_flap_state')
-        unst_flap_state(:) = varargin{i+1};
-    elseif strcmp(varargin{i},'unst_act2_state')
-        unst_act2_state(:) = varargin{i+1};
-    elseif strcmp(varargin{i},'tau_v')
-        tau_v(:) = varargin{i+1};
-    elseif strcmp(varargin{i},'alpha_ind')
-        alpha_ind(:) = varargin{i+1};
+        wing.state.external.V_Wb_dt(:) = varargin{i+1};
+    elseif strcmp(varargin{i},'structure_pos') && wing.config.is_flexible
+        wing = wingSetGeometryState( wing, 'pos', varargin{i+1} );
+    elseif strcmp(varargin{i},'structure_vel') && wing.config.is_flexible
+        wing = wingSetGeometryState( wing, 'vel', varargin{i+1} );
+    elseif strcmp(varargin{i},'unst_airfoil_state') && wing.config.is_unsteady
+        wing.state.aero.unsteady.x(:) = varargin{i+1};
+    elseif strcmp(varargin{i},'dyn_stall_state') && wing.config.is_unsteady
+        wing.state.aero.unsteady.X(:) = varargin{i+1};
+    elseif strcmp(varargin{i},'unst_flap_state') && wing.config.is_unsteady
+        wing.state.aero.unsteady.z(:) = varargin{i+1};
+    elseif strcmp(varargin{i},'unst_act2_state') && wing.config.is_unsteady
+        wing.state.aero.unsteady.z2(:) = varargin{i+1};
+    elseif strcmp(varargin{i},'tau_v') && wing.config.is_unsteady
+        wing.state.aero.unsteady.tau_v(:) = varargin{i+1};
+    elseif strcmp(varargin{i},'alpha_ind') && wing.config.is_unsteady
+        % feedback of last alpha_ind to speed up next iteration
+        wing.state.aero.circulation.alpha_ind(:) = varargin{i+1};
     end
 end
-
 
 %% set current wing state
 
 % set current rigid body state
 wing.state.body = wingSetBodyState( wing.state.body, alpha, beta, V, omega );
 
-% set external state
-wing.state.external = wingSetExternal( wing.state.external, V_Wb, V_Wb_dt, ...
-    atmosphere );
-
-% set flexible wing state
-if wing.config.is_flexible
-    wing = wingSetGeometryState( wing, structure_pos, ...
-        'structure_vel', structure_vel );
-end
-
 % actuator deflection
 wing = wingSetActuators( wing, actuators_pos, actuators_rate );
-
-% unsteady aerodynamics states
-if wing.config.is_unsteady
-    wing.state.aero.unsteady.x = unst_aero_state;
-    wing.state.aero.unsteady.X = dyn_stall_state;
-    wing.state.aero.unsteady.z = unst_flap_state;
-    wing.state.aero.unsteady.z2 = unst_act2_state;
-    wing.state.aero.unsteady.tau_v = tau_v;
-end
-
-% feedback of last alpha_ind to speed up next iteration
-wing.state.aero.circulation.alpha_ind = alpha_ind;
 
 % compute aerodynamic state
 wing = wingSetAeroState( wing, pos_ref_c );
