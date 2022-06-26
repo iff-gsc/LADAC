@@ -26,6 +26,6 @@ function x_ac = airfoilAnalyticBlXac(beta)
 
 
 % [1], below eq. (22)
-x_ac = 0.25 - beta(:,2);
+x_ac = 0.25 - beta(2,:);
 
 end

@@ -112,7 +112,15 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
             case 'analytic'
                 % clean airfoil lift
                 fcl = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcl, wing.state.aero.circulation.Ma, wing.airfoil.analytic.ncl, wing.airfoil.analytic.ocl );
-                c_L_visc(:) = airfoilAnalytic0515AlCl( fcl, [ rad2deg(wing.state.aero.circulation.alpha_eff(:)), wing.state.aero.circulation.Ma(:) ] );
+                if wing.config.is_stall
+                    c_L_visc(:) = airfoilAnalytic0515AlCl( fcl, [ rad2deg(wing.state.aero.circulation.alpha_eff); wing.state.aero.circulation.Ma ] );
+                else
+                    % get points on lift curve
+                    [c_L_alpha_max,alpha_0] = airfoilAnalytic0515ClAlphaMax( fcl, wing.state.aero.circulation.Ma );
+                    % effective angle of attack for an equivalent uncambered airfoil
+                    alpha_inf_0 = wing.state.aero.circulation.alpha_eff - deg2rad(alpha_0);
+                    c_L_visc(:) = rad2deg(c_L_alpha_max) .* alpha_inf_0;
+                end
             case 'simple'
                 % clean airfoil + flap lift
                 c_L_visc(:) = airfoilAnalyticSimpleCl( wing.airfoil.simple, ...
@@ -181,6 +189,8 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
     end
 end
 
+wing.state.aero.circulation.v_i_unit = wing.state.aero.circulation.v_i ...
+    ./repmat(vecnorm(wing.state.aero.circulation.v_i,2,1),3,1);
 wing.state.aero.circulation.Gamma(:) = wing.state.aero.circulation.gamma ...
     .* abs_V_i * span;
 wing.state.aero.circulation.c_L(:) = c_L_visc;

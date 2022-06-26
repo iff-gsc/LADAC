@@ -35,18 +35,23 @@ A_2 = 0.7;
 b_1 = 0.14;
 b_2 = 0.53;
 
-beta = sqrtReal(1-Ma.^2);
+beta    = sqrtReal(1-powerFast(Ma,2));
+beta2   = powerFast(beta,2);
+beta4   = powerFast(beta2,2);
+Vc      = 2*V./c;
+Vc2     = powerFast(Vc,2);
+Vc2_beta_4 = Vc2.*beta4;
 
 % [1], eq. (39)
 z_dt = zeros(2,length(V));
 z_dt(1,:) = z(2,:);
-z_dt(2,:) = -b_1*b_2*(2*V./c).^2.*beta.^4 .* z(1,:) + ...
-    -(b_1+b_2)*(2*V./c).*beta.^2 .* z(2,:) + delta_qs;
+z_dt(2,:) = -b_1*b_2*Vc2_beta_4 .* z(1,:) + ...
+    -(b_1+b_2)*Vc.*beta2 .* z(2,:) + delta_qs;
 
 % [1], eq. (40)
 c_L_c = 2*pi./beta .* ( ...
-    (b_1*b_2)*(2*V./c).^2.*beta.^4 .* z(1,:) + ...
-    (A_1*b_1+A_2*b_2)*(2*V./c).*beta.^2 .* z(2,:) ...
+    (b_1*b_2)*Vc2_beta_4 .* z(1,:) + ...
+    (A_1*b_1+A_2*b_2)*Vc.*beta2 .* z(2,:) ...
     );
 
 end

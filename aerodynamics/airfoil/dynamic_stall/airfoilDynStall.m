@@ -1,4 +1,4 @@
-function [ X_dt, c_L, c_m, c_D, f_s, c_N_alpha_max, tau_v_dt, is_leading_edge_shock ] = airfoilDynStall( X, Ma, C_N_p, c_m_p, alpha_E, fcl, fcd, fcm, V, c, alpha, tau_v ) %#codegen
+function [ X_dt, c_L, c_m, c_D, f_s, c_N_alpha_max, tau_v_dt, is_leading_edge_shock ] = airfoilDynStall( X, Ma, C_N_p, c_m_p, alpha_E, fcl, fcd, fcm, V, c, alpha, tau_v, is_le_shock ) %#codegen
 % airfoilDynStall implements a dynamic stall model based on [1] and [2] for
 %   airfoils.
 %   It is based on the analytic aerodynamic coefficients functions in the
@@ -53,6 +53,7 @@ function [ X_dt, c_L, c_m, c_D, f_s, c_N_alpha_max, tau_v_dt, is_leading_edge_sh
 
 % nondimensional time (see [1], eq. 32 and subsequent text) derivative w.r.t. time
 tau_v_dt = zeros(size(C_N_p));
+c_v = zeros(size(C_N_p));
 % init leading edge shock condition
 is_leading_edge_shock = false(size(C_N_p));
 is_vortex_accumulating = false(size(C_N_p));
@@ -69,23 +70,27 @@ T_f = 3;
 T_v = 6;
 T_vl = 7.5*0.3;
 
-% [1], eq. (17)
-a_99    = -fac./T_P;
-% [1], eq. (25)
-a_10_10 = -fac./T_f;
-% [1], eq. (30)
-a_11_11 = -fac./T_v;
+A = zeros(3,size(X,2));
+
+
+% a_99 [1], eq. (17)
+A(1,:)  = -fac./T_P;
+% a_10_10 [1], eq. (25)
+A(2,:) = -fac./T_f;
+% a_11_11 [1], eq. (30)
+A(3,:)  = -fac./T_v;
 % [1], eq. (35)
-a_12_12 = -fac./T_f;
+% a_12_12 = -fac./T_f;
 
 % [1], eq. (17)
-b_9_1 	= fac./T_P;
+% b_9_1 	= -a_99;
 % [1], eq. (25)
-b_10_2 	= fac./T_f;
+% b_10_2 	= -a_10_10;
 % [1], eq. (30)
-b_11_3  = fac./T_v;
+% b_11_3  = -a_11_11;
 % [1], eq. (35)
-b_12_4  = fac*2./T_f;
+% b_12_4  = fac*2./T_f;
+
 
 %% lift coefficient
 
@@ -105,9 +110,9 @@ c_L_st_f = airfoilAnalytic0515AlCl( fcl, [ rad2deg(alpha_f+alpha_0_rad); Ma ] );
 f_s = airfoilDynStallFst( c_L_st_f, deg2rad(c_N_alpha_max), rad2deg(alpha_f) );
 
 % [1], eq. (26)
-f_ss = X(2,:);
+f_ss = 1 - X(2,:);
 
-c_N_fs = airfoilDynStallClFs( c_L_st_f, c_N_alpha_max, alpha_0_rad, alpha_E, f_s );
+% c_N_fs = airfoilDynStallClFs( c_L_st_f, c_N_alpha_max, alpha_0_rad, alpha_E, f_s );
 
 % [1], eq. (27) (last term was added for very high angles of attack)
 % [3], eq. (23)
@@ -126,24 +131,27 @@ c_N_v = X(3,:);
 % [1], eq. (37)
 c_N = c_N_f + c_N_v;
 
-% leading edge shock condition
-c_L_max = airfoilAnalytic0515ClMax( fcl, Ma );
-is_leading_edge_shock( C_N_s>c_L_max | ( tau_v>1e-3 & c_N_v>1e-3 ) ) = 1;
-tau_v_dt(is_leading_edge_shock) = fac(is_leading_edge_shock);
-is_vortex_accumulating(is_leading_edge_shock & tau_v<T_vl) = 1;
+if is_le_shock
+    % leading edge shock condition
+    c_L_max = airfoilAnalytic0515ClMax( fcl, Ma );
+    is_leading_edge_shock( C_N_s>c_L_max | ( tau_v>1e-3 & c_N_v>1e-3 ) ) = 1;
+    tau_v_dt(is_leading_edge_shock) = fac(is_leading_edge_shock);
+    is_vortex_accumulating(is_leading_edge_shock & tau_v<T_vl) = 1;
 
-% [3], eq. (27)
-K_N = powerFast(1+sqrtReal(f_ss),2)/4;
-% [3], eq. (26)
-c_v = zeros(size(c_N_C));
-c_v(is_vortex_accumulating) = c_N_C(is_vortex_accumulating) .* (1-K_N(is_vortex_accumulating));
+
+    % [3], eq. (27)
+    K_N = powerFast(1+sqrtReal(f_ss),2)/4;
+    % [3], eq. (26)
+    c_v = c_N_C .* (1-K_N);
+    c_v(~is_vortex_accumulating) = 0;
+end
 
 %% drag coefficient
 % difficult, difficult, difficult, ...
 
 % [2], eq. (24)
-alpha_E_0 = alpha_E + alpha_0_rad;
-Delta_c_D_ind = sin( alpha - alpha_E_0 ) .* c_N;
+% alpha_E_0 = alpha_E + alpha_0_rad;
+% Delta_c_D_ind = sin( alpha - alpha_E_0 ) .* c_N;
 % Delta_c_D_ind = c_N * sin(alpha);
 
 % [3], eq. (25)
@@ -185,9 +193,10 @@ c_m = c_m_p + c_M_f + c_m_v;
 %% update state space model
 
 % to do: u = [ C_N_p(t); f'(t); C_v_dt; f_qs(t) ]
-u = [ C_N_p; f_s; c_v ];
+u = [ C_N_p; 1-f_s; c_v ];
 
-X_dt = [ a_99; a_10_10; a_11_11 ] .* X ...
-    + [ b_9_1; b_10_2; b_11_3 ] .* u;
+% X_dt = A .* X + B .* u;
+% Note: B = -A
+X_dt = A .* ( X - u );
 
 end

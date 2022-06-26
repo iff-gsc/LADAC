@@ -82,47 +82,55 @@ beta    = sqrtReal(beta2);
 % summarization of variables
 fac     = 2*V./c.*beta2;
 
+Ma_inv  = 1./Ma;
+Ma1     = 1-Ma;
+
 % [1], between eq. (16) and eq. (17)
 term_2  = pi*beta.*Ma2*(A_1*b_1+A_2*b_2);
-K_alpha = kappa_1 ./ ( (1-Ma) + term_2 );
+K_alpha = kappa_1 ./ ( Ma1 + term_2 );
 T_I = c./a;
 % [1], eq. (A2)
-K_q     = kappa_2 ./ ( (1-Ma) + 2*term_2 );
+K_q     = kappa_2 ./ ( Ma1 + 2*term_2 );
 % [1], eq. (A6)
-K_alpha_M = (A_3*b_4+A_4*b_3)./(b_3*b_4*(1-Ma));
+K_alpha_M = (A_3*b_4+A_4*b_3)./(b_3*b_4*Ma1);
 % [1], eq. (A12)
-K_q_M   = 7./(15*(1-Ma)+3*pi*beta.*Ma2*b_5);
+K_q_M   = 7./(15*Ma1+3*pi*beta.*Ma2*b_5);
+
+num_vectors = length(V);
+A = zeros(8,num_vectors);
 
 % [1], eq. (17)
-a_11    = fac * -b_1;
-a_22    = fac * -b_2;
+B1      = fac * -b_1;
+B2      = fac * -b_2;
+A(1,:)  = B1;
+A(2,:)  = B2;
 % [1], eq. (19)
-a_33    = -1./K_alpha./T_I;
+A(3,:)  = -1./K_alpha./T_I;
 % [1], eq. (A3)
-a_44    = -1./(K_q.*T_I);
+A(4,:)  = -1./(K_q.*T_I);
 % [1], eq. (A9)
-a_55    = -1./(b_3*K_alpha_M.*T_I);
-a_66    = -1./(b_4*K_alpha_M.*T_I);
+A(5,:)  = -1./(b_3*K_alpha_M.*T_I);
+A(6,:)  = -1./(b_4*K_alpha_M.*T_I);
 % [1], eq. (A13)
-a_77    = -b_5*fac;
+A(7,:)  = -b_5*fac;
 % [1], eq. (A14)
-a_88    = -1./(K_q_M.*T_I);
+A(8,:)  = -1./(K_q_M.*T_I);
 
 % [1], eq. (18)
 c_11    = C_L_alpha * A_1;
 c_12    = C_L_alpha * A_2;
 % [1], eq. (19) and (20)
-c_13    = -4./Ma;
+c_13    = -4*Ma_inv;
 % [1], eq. (A3) and (A4)
-c_14    = -1./Ma;
+c_14    = -Ma_inv;
 % [1], eq. (11) and (12)
 c_21    = c_11 .* ( 0.25 - x_ac );
 c_22    = c_12 .* ( 0.25 - x_ac );
 % [1], eq. (A14) and (A16)
-c_28    = 7./(12*Ma);
+c_28    = 7/12*Ma_inv;
 % [1], eq. (A8)
-c_25    = 1./Ma*A_3;
-c_26    = 1./Ma*A_4;
+c_25    = Ma_inv*A_3;
+c_26    = Ma_inv*A_4;
 % [1], eq. (A15)
 c_27    = -pi./(8*beta);
 
@@ -131,24 +139,28 @@ c_27    = -pi./(8*beta);
 c_31 = A_1;
 c_32 = A_2;
 
-% [1], below eq. (21)
-
-num_vectors = length(V);
-
-A = [ a_11; a_22; a_33; a_44; a_55; a_66; a_77; a_88 ];
-
-B_alpha = -A .* repmat( [ 1, 1, 1, 0, 1, 1, 0, 0 ]', 1, num_vectors );
+B_alpha = -A;
+B_alpha([4,7,8],:) = 0;
             
-B_q = -A .* repmat( [ 0.5, 0.5, 0, 1, 0, 0, 1, 1 ]', 1, num_vectors );
+B_q = -A;
+B_q([3,5,6],:) = 0;
+B_q(1,:) = -B1*0.5;
+B_q(2,:) = -B2*0.5;
 
 % state equation
-x_dt = A.*x + B_alpha.*repmat(alpha,8,1) + B_q.*repmat(q,8,1);
+x_dt = A.*x;
+
+for i = 1:8
+    x_dt(i,:) = x_dt(i,:) + B_alpha(i,:).*alpha + B_q(i,:).*q;
+end
 
 % outputs
-c_L_c = c_11 .* x(1,:) + c_12 .* x(2,:);
-c_m_c = c_21 .* x(1,:) + c_22 .* x(2,:) + c_27 .* x(7,:);
-c_L_nc = c_13 .* x(3,:) + c_14 .* x(4,:) + 4./Ma .* alpha + 1./Ma .* q;
-c_m_nc = c_25 .* x(5,:) + c_26 .* x(6,:) + c_28 .* x(8,:) - 1./Ma .* alpha - 7./(12*Ma) .* q;
-alpha_E = c_31 .* x(1,:) + c_32 .* x(2,:);
+x1 = x(1,:);
+x2 = x(2,:);
+c_L_c = c_11 .* x1 + c_12 .* x2;
+c_m_c = c_21 .* x1 + c_22 .* x2 + c_27 .* x(7,:);
+c_L_nc = c_13 .* x(3,:) + c_14 .* x(4,:) + 4*Ma_inv .* alpha + Ma_inv .* q;
+c_m_nc = c_25 .* x(5,:) + c_26 .* x(6,:) + c_28 .* x(8,:) - Ma_inv .* alpha - 7/12*Ma_inv .* q;
+alpha_E = c_31 .* x1 + c_32 .* x2;
 
 end

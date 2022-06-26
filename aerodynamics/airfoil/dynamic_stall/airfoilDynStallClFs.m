@@ -30,8 +30,13 @@ Delta_alpha = alpha-alpha0;
 idx = abs(Delta_alpha) <= 0.5;
 c_L_fs = zeros(size(alpha));
 is_attached = f_st > 1 - 1e-5;
-c_L_fs(~is_attached) = ( c_L_st(~is_attached) - c_L_alpha(~is_attached) .* Delta_alpha(~is_attached) .*cos(pi/2/90*Delta_alpha(~is_attached)) .* f_st(~is_attached) ) ./ ( 1 - f_st(~is_attached) );
-c_L_fs(is_attached) = c_L_st(is_attached)/2;
+is_any_not_attached = any(~is_attached);
+if ~is_any_not_attached
+    c_L_fs(:) = c_L_st/2;
+else
+    c_L_fs(:) = ( c_L_st - c_L_alpha .* Delta_alpha .*cos(pi/2/90*Delta_alpha) .* f_st ) ./ ( 1 - f_st );
+    c_L_fs(is_attached) = c_L_st(is_attached)/2;
+end
 
 c_L_fs(idx) = c_L_st(idx)/2;
 

@@ -88,29 +88,31 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 %% parse variable input arguments
 
 for i = 1:length(varargin)
-    if strcmp(varargin{i},'atmosphere')
-        wing.state.external.atmosphere = varargin{i+1};
-    elseif strcmp(varargin{i},'V_Wb')
-        wing.state.external.V_Wb(:) = varargin{i+1};
-    elseif strcmp(varargin{i},'V_Wb_dt')
-        wing.state.external.V_Wb_dt(:) = varargin{i+1};
-    elseif strcmp(varargin{i},'structure_pos') && wing.config.is_flexible
-        wing = wingSetGeometryState( wing, 'pos', varargin{i+1} );
-    elseif strcmp(varargin{i},'structure_vel') && wing.config.is_flexible
-        wing = wingSetGeometryState( wing, 'vel', varargin{i+1} );
-    elseif strcmp(varargin{i},'unst_airfoil_state') && wing.config.is_unsteady
-        wing.state.aero.unsteady.x(:) = varargin{i+1};
-    elseif strcmp(varargin{i},'dyn_stall_state') && wing.config.is_unsteady
-        wing.state.aero.unsteady.X(:) = varargin{i+1};
-    elseif strcmp(varargin{i},'unst_flap_state') && wing.config.is_unsteady
-        wing.state.aero.unsteady.z(:) = varargin{i+1};
-    elseif strcmp(varargin{i},'unst_act2_state') && wing.config.is_unsteady
-        wing.state.aero.unsteady.z2(:) = varargin{i+1};
-    elseif strcmp(varargin{i},'tau_v') && wing.config.is_unsteady
-        wing.state.aero.unsteady.tau_v(:) = varargin{i+1};
-    elseif strcmp(varargin{i},'alpha_ind') && wing.config.is_unsteady
-        % feedback of last alpha_ind to speed up next iteration
-        wing.state.aero.circulation.alpha_ind(:) = varargin{i+1};
+    if ischar(varargin{i})
+        if isequal(varargin{i},'atmosphere')
+            wing.state.external.atmosphere = varargin{i+1};
+        elseif isequal(varargin{i},'V_Wb')
+            wing.state.external.V_Wb(:) = varargin{i+1};
+        elseif isequal(varargin{i},'V_Wb_dt')
+            wing.state.external.V_Wb_dt(:) = varargin{i+1};
+        elseif isequal(varargin{i},'structure_pos') && wing.config.is_flexible
+            wing = wingSetGeometryState( wing, 'pos', varargin{i+1} );
+        elseif isequal(varargin{i},'structure_vel') && wing.config.is_flexible
+            wing = wingSetGeometryState( wing, 'vel', varargin{i+1} );
+        elseif isequal(varargin{i},'unst_airfoil_state') && wing.config.is_unsteady
+            wing.state.aero.unsteady.x(:) = varargin{i+1};
+        elseif isequal(varargin{i},'dyn_stall_state') && wing.config.is_unsteady
+            wing.state.aero.unsteady.X(:) = varargin{i+1};
+        elseif isequal(varargin{i},'unst_flap_state') && wing.config.is_unsteady
+            wing.state.aero.unsteady.z(:) = varargin{i+1};
+        elseif isequal(varargin{i},'unst_act2_state') && wing.config.is_unsteady
+            wing.state.aero.unsteady.z2(:) = varargin{i+1};
+        elseif isequal(varargin{i},'tau_v') && wing.config.is_unsteady
+            wing.state.aero.unsteady.tau_v(:) = varargin{i+1};
+        elseif isequal(varargin{i},'alpha_ind') && wing.config.is_unsteady
+            % feedback of last alpha_ind to speed up next iteration
+            wing.state.aero.circulation.alpha_ind(:) = varargin{i+1};
+        end
     end
 end
 
