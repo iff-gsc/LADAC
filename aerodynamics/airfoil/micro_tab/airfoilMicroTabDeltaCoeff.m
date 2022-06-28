@@ -31,12 +31,9 @@ function [Delta_c_L,Delta_c_D,Delta_c_m] = airfoilMicroTabDeltaCoeff( ...
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-fdcl = airfoilAnalytic0515Ma( micro_tab.net.wcl, circulation.Ma, ...
-    micro_tab.net.ncl, micro_tab.net.ocl );
-fdcd = airfoilAnalytic0515Ma( micro_tab.net.wcd, circulation.Ma, ...
-    micro_tab.net.ncd, micro_tab.net.ocd );
-fdcm = airfoilAnalytic0515Ma( micro_tab.net.wcm, circulation.Ma, ...
-    micro_tab.net.ncm, micro_tab.net.ocm );
+fdcl = airfoilAnalytic0515Ma( micro_tab.net.wcl, circulation.Ma );
+fdcd = airfoilAnalytic0515Ma( micro_tab.net.wcd, circulation.Ma );
+fdcm = airfoilAnalytic0515Ma( micro_tab.net.wcm, circulation.Ma );
 Delta_c_L = airfoilAnalytic0515De( fdcl, [circulation.alpha_eff;state] );
 Delta_c_D = airfoilAnalytic0515De( fdcd, [circulation.alpha_eff;state] );
 Delta_c_m = airfoilAnalytic0515De( fdcm, [circulation.alpha_eff;state] );

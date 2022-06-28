@@ -18,12 +18,11 @@ c_L_alpha = 0; alpha_inf_0 = 0; c_L_alpha_max = 0; alpha_0 = 0; fcl = 0;
 switch wing_config.airfoil_method
     case 'analytic'
         % get coefficients of analytic functions for different Mach numbers
-        fcl = airfoilAnalytic0515Ma( wing_airfoil.analytic.wcl, wing_state.aero.circulation.Ma, wing_airfoil.analytic.ncl, wing_airfoil.analytic.ocl );
+        fcl = airfoilAnalytic0515Ma( wing_airfoil.analytic.wcl, wing_state.aero.circulation.Ma );
         % get points on lift curve
-        [c_L_alpha_max,alpha_0] = airfoilAnalytic0515ClAlphaMax( fcl, wing_state.aero.circulation.Ma(:) );
-        c_L_alpha = c_L_alpha_max';
+        [c_L_alpha,alpha_0] = airfoilAnalytic0515ClAlphaMax( fcl, wing_state.aero.circulation.Ma );
         % effective angle of attack for an equivalent uncambered airfoil
-        alpha_inf_0 = wing_state.aero.circulation.alpha_eff - deg2rad(alpha_0)';
+        alpha_inf_0 = wing_state.aero.circulation.alpha_eff - deg2rad(alpha_0);
     case 'simple'
         % effective angle of attack for an equivalent uncambered airfoil
         alpha_inf_0 = wing_state.aero.circulation.alpha_eff - deg2rad(wing_airfoil.simple.alpha_0);
@@ -67,13 +66,13 @@ switch wing_config.airfoil_method
             wing_state.geometry.ctrl_pt.c, rad2deg(c_L_alpha), x_ac, ...
             x, alpha_inf_0, q );
 
-        C_N_p = ( c_L_c + c_L_nc )';
+        C_N_p = ( c_L_c + c_L_nc );
         
         c_N_alpha_max = rad2deg(c_L_alpha_max);
 
         alpha_f = C_N_p ./ c_N_alpha_max;
         alpha_0_rad = deg2rad(alpha_0);
-        c_L_st_f = airfoilAnalytic0515AlCl( fcl, [ rad2deg(alpha_f+alpha_0_rad), wing_state.aero.circulation.Ma(:) ] );
+        c_L_st_f = airfoilAnalytic0515AlCl( fcl, [ rad2deg(alpha_f+alpha_0_rad); wing_state.aero.circulation.Ma ] );
 
         f_s = airfoilDynStallFst( c_L_st_f, deg2rad(c_N_alpha_max), rad2deg(alpha_f) );
 

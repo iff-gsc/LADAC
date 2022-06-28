@@ -1,4 +1,4 @@
-function fMa = airfoilAnalytic0515Ma( weights, Ma, numNeurons, numOutputs )
+function fMa = airfoilAnalytic0515Ma( weights, Ma )
 % airfoilAnalytic0515Ma returns the coefficients for analytic functions in
 % the airfoilAnalytic0515 project for different Mach number based on the
 % weights of a shallow (one hidden layer) neural network.
@@ -10,9 +10,6 @@ function fMa = airfoilAnalytic0515Ma( weights, Ma, numNeurons, numOutputs )
 %                   elements are no weights but maximum input values used
 %                   for normalization) (1xN array)
 %   Ma              vector of Mach numbers (Mx1 or 1xM array)
-%   numNeurons      total number of neural network neurons
-%   numOutputs      number of neural network outputs (equivalent to number
-%                   of analytic function ceofficients)
 % 
 % Outputs:
 %   fMa             concentrated coefficients of analytic function for all

@@ -111,7 +111,7 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
         switch wing.config.airfoil_method
             case 'analytic'
                 % clean airfoil lift
-                fcl = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcl, wing.state.aero.circulation.Ma, wing.airfoil.analytic.ncl, wing.airfoil.analytic.ocl );
+                fcl = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcl, wing.state.aero.circulation.Ma );
                 if wing.config.is_stall
                     c_L_visc(:) = airfoilAnalytic0515AlCl( fcl, [ rad2deg(wing.state.aero.circulation.alpha_eff); wing.state.aero.circulation.Ma ] );
                 else
