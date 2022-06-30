@@ -24,13 +24,13 @@ function f_st = airfoilDynStallFst( c_L_st, c_L_alpha, Delta_alpha ) %#codegen
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-% avoid division by zero: inices
-idx = abs(Delta_alpha) <= 0.5;
+abs_Delta_alpha = abs(Delta_alpha);
 
-f_st = min( 1, powerFast( 2*(sqrtReal( c_L_st ./ ( c_L_alpha.*Delta_alpha.*cos(pi/2/90*Delta_alpha) ) ) ) - 1, 2 ) );
-f_st(abs(Delta_alpha) > 70) = 0;
+f_st = powerFast( 2*(sqrtReal( c_L_st ./ ( c_L_alpha.*Delta_alpha.*cos(pi/2/90*Delta_alpha) ) ) ) - 1, 2 );
 
+f_st(f_st>1) = 1;
+f_st(abs_Delta_alpha > 70) = 0;
 % avoid division by zero: set f_st to 1
-f_st(idx) = 1;
+f_st(abs_Delta_alpha < 0.5) = 1;
 
 end

@@ -28,7 +28,7 @@ function EulerAngles  = dcm2Euler( M_bg ) %#codegen
 
 % compute the Euler angles according to [1, page 12]
 Phi = atan2( M_bg(2,3), M_bg(3,3) );
-Theta = -asin( M_bg(1,3) );
+Theta = -asinReal( M_bg(1,3) );
 Psi = atan2( M_bg(1,2), M_bg(1,1) );
 
 % build the vector of Euler angles

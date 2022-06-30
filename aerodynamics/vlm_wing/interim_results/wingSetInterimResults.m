@@ -10,7 +10,7 @@ function interim_results = wingSetInterimResults( wing )
 
 v_inf = repmat([-1;0;0],1,wing.n_panel);
 spanwise_vector = wingGetDimLessSpanwiseLengthVector(wing.geometry.vortex);
-interim_results.sweep = pi/2 - acos( abs( dot( -spanwise_vector, -v_inf, 1 ) ) ./ ( vecnorm(-v_inf,2,1) .* vecnorm(spanwise_vector,2,1) ) );
+interim_results.sweep = pi/2 - acosReal( abs( dot( -spanwise_vector, -v_inf, 1 ) ) ./ ( vecnorm(-v_inf,2,1) .* vecnorm(spanwise_vector,2,1) ) );
 
 spanwise_vector_yz = spanwise_vector;
 spanwise_vector_yz(1,:) = 0;

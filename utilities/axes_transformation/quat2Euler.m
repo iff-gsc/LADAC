@@ -35,16 +35,21 @@ q_bg = quatNormalize( q_bg );
 % extract components of vector
 q0 = q_bg(1); q1 = q_bg(2); q2 = q_bg(3); q3 = q_bg(4);
 
+q02 = powerFast(q0,2);
+q12 = powerFast(q1,2);
+q22 = powerFast(q2,2);
+q32 = powerFast(q3,2);
+
 % compute the required components of the DCM according to [1, page 12]
 c_23 = 2 * ( q2 * q3 + q0 * q1 );
-c_33 = q0^2 - q1^2 - q2^2 + q3^2;
+c_33 = q02 - q12 - q22 + q32;
 c_13 = 2 * ( q1 * q3 - q0 * q2 );
 c_12 = 2 * ( q1 * q2 + q0 * q3 );
-c_11 = q0^2 + q1^2 - q2^2 - q3^2;
+c_11 = q02 + q12 - q22 - q32;
 
 % compute the Euler angles according to [1, page 56] and [1, page 12]
 Phi = atan2( c_23, c_33 );
-Theta = - asin( min( max( -1, c_13 ), 1 ) );
+Theta = - asinReal(c_13);
 Psi = atan2( c_12, c_11 );
 
 % build the vector of Euler angles

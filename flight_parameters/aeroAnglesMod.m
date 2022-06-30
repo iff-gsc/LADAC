@@ -42,11 +42,9 @@ function [ alpha_M, beta_M ] = aeroAnglesMod( V_Ab ) %#codegen
 
 % compute the argument of the asin function
 argAlpha = V_Ab(3,:) ./ vecnorm( V_Ab, 2, 1 );
-% maximum absolute argument of the asin function (avoid complex numbers)
-a = 1;
-argAlpha = max( min( argAlpha, a), -a);
+
 % compute the modified angle of attack and avoid complex numbers
-alpha_M = real( asin( argAlpha ) );
+alpha_M = asinReal( argAlpha );
 
 % compute the modified sideslip angle
 beta_M = atan2( V_Ab(2,:), V_Ab(1,:) );
