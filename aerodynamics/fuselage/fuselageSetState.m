@@ -62,10 +62,9 @@ for i = 1:length(varargin)
             fuselage = fuselageSetGeometryState(fuselage,'pos',varargin{i+1});
         elseif isequal(varargin{i},'structure_vel') && fuselage.config.is_flexible
             fuselage = fuselageSetGeometryState(fuselage,'vel',varargin{i+1});
-        elseif isequal(varargin{i},'alpha_unsteady') && fuselage.config.is_unsteady
-            fuselage.state.aero.unsteady.alpha(:) = varargin{i+1};
-        elseif isequal(varargin{i},'beta_unsteady') && fuselage.config.is_unsteady
-            fuselage.state.aero.unsteady.alpha(:) = varargin{i+1};
+        elseif isequal(varargin{i},'unsteady') && fuselage.config.is_unsteady
+            fuselage.state.aero.R_Ab_i(:) = varargin{i+1};
+            fuselage.state.aero.R_Ab_i(1,:) = 0;
         end
     end
 end

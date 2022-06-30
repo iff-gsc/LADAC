@@ -72,21 +72,20 @@ end
 q = fuselage.state.external.atmosphere.rho/2 * powerFast(V_abs,2);
 
 if fuselage.config.is_unsteady
-    lift = - pi/2 * q .* alB2_dx .* dx;
-    side = - pi/2 * q .* beB2_dx .* dx;
-    fuselage.state.aero.R_Ab_i(3,:) = fuselage.state.aero.unsteady.alpha;
-    fuselage.state.aero.R_Ab_i(2,:) = fuselage.state.aero.unsteady.beta;
-    fuselage.state.aero.R_Ab_i(1,:) = - fuselage.params.C_D0 * q .* volume23;
-    fuselage.state.aero.unsteady.alpha_dt(:) = 1/T_unsteady * ( lift - ...
-    fuselage.state.aero.unsteady.alpha );
-    fuselage.state.aero.unsteady.beta_dt(:) = 1/T_unsteady * ( side - ...
-    fuselage.state.aero.unsteady.beta );
+    vertical_force = - pi/2 * q .* alB2_dx .* dx;
+    lateral_force = - pi/2 * q .* beB2_dx .* dx;
+    fuselage.state.aero.R_Ab_i_dt(3,:) = 1/T_unsteady * ...
+        ( vertical_force - fuselage.state.aero.R_Ab_i(3,:) );
+    fuselage.state.aero.R_Ab_i_dt(2,:) = 1/T_unsteady * ...
+        ( lateral_force - fuselage.state.aero.R_Ab_i(2,:) );
 else
     % [1], eq. (10.7)
     fuselage.state.aero.R_Ab_i(3,:) = - pi/2 * q .* alB2_dx .* dx;
     fuselage.state.aero.R_Ab_i(2,:) = - pi/2 * q .* beB2_dx .* dx;
-    fuselage.state.aero.R_Ab_i(1,:) = - fuselage.params.C_D0 * q .* volume23;
 end
+
+fuselage.state.aero.R_Ab_i(1,:) = - fuselage.params.C_D0 * q .* volume23;
+
 
 % local coefficients
 fuselage.state.aero.C_XYZ_b_i(:) = fuselage.state.aero.R_Ab_i ./ ...
