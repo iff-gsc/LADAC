@@ -63,6 +63,8 @@ function wing = wingCreate( params_file, n_panel, varargin )
 % default parameters
 is_unsteady = 0;
 is_flexible = 0;
+is_stall    = 0;
+is_le_shock = 0;
 spacing = 'like_chord';
 is_infl_recomputed = 0;
 is_elliptical = false;
@@ -95,6 +97,18 @@ for i = 1:length(varargin)
                 is_flexible = 1;
             else
                 error('Invalid option for parameter flexible.')
+            end
+        case 'stall'
+            if islogical(varargin{i+1})
+                is_stall = varargin{i+1};
+            else
+                error('Invalid option for parameter is_stall.');
+            end
+        case 'le_shock'
+            if islogical(varargin{i+1})
+                is_le_shock = varargin{i+1};
+            else
+                error('Invalid option for parameter le_shock.');
             end
         case 'is_infl_recomputed'
             if islogical(varargin{i+1})
@@ -167,11 +181,17 @@ else
 end
 
 
-%% should the computation be unsteady
+%% configuration
 
-wing.config.is_unsteady = is_unsteady;
-wing.config.is_flexible = is_flexible;
-wing.config.is_circulation_iteration = 1;
+wing.config.is_unsteady = double(is_unsteady);
+wing.config.is_flexible = double(is_flexible);
+wing.config.is_stall    = double(is_stall);
+wing.config.is_le_shock = double(is_le_shock);
+if wing.config.is_unsteady
+    wing.config.is_circulation_iteration = 0;
+else
+    wing.config.is_circulation_iteration = 1;
+end
 wing.config.airfoil_method = airfoil_method;
 wing.config.actuator_2_type = actuator_2_type;
 wing.config.is_infl_recomputed = is_infl_recomputed;
