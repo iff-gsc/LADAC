@@ -45,9 +45,9 @@ q = zeros( 1, n_panel );
 x = zeros( size( wing_state.aero.unsteady.x ) );
 
 [~,~,~,~,~,~,A,B_alpha,~] = unstAirfoilAeroFast( ...
-    abs_V_i, wing_state.aero.circulation.Ma, wing_state.geometry.ctrl_pt.c, c_L_alpha, x_ac, x, alpha_inf_0, q );
+    abs_V_i, wing_state.aero.circulation.Ma, wing_state.geometry.ctrl_pt.c, c_L_alpha, x_ac, x, alpha_inf_0 + wing_state.aero.circulation.alpha_ind, q );
 
-x = (x_dt - B_alpha.*repmat(alpha_inf_0,8,1)) ./ A;
+x = (x_dt - B_alpha.*repmat(alpha_inf_0 + wing_state.aero.circulation.alpha_ind,8,1)) ./ A;
 
 % for i = 1:size(wing_state.aero.unsteady.x,2)
 %     
@@ -66,7 +66,10 @@ switch wing_config.airfoil_method
         [ c_L_c, ~, c_L_nc, ~, ~, ~ ] = ...
             unstAirfoilAeroFast( abs_V_i, wing_state.aero.circulation.Ma, ...
             wing_state.geometry.ctrl_pt.c, c_L_alpha, x_ac, ...
-            x, alpha_inf_0, q );
+            x, alpha_inf_0 + wing_state.aero.circulation.alpha_ind, q );
+        
+        c_L_c = c_L_c - c_L_alpha .* wing_state.aero.circulation.alpha_ind;
+
 
         C_N_p = ( c_L_c + c_L_nc );
         
