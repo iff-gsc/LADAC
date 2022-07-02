@@ -83,18 +83,38 @@ function geometry = geometryPlanform( params, n_panel, is_elliptical )
 
     n_vortex = n_panel + 1;
     
-    % distance between control points = panel width, in m
-    segment_width = 2*params.y_segments_wing(end) / n_panel;
+    eta_partitions = unique( [ params.eta_segments_wing, ...
+        params.eta_segments_device ] );
+
+    % the number of panels for each partition is defined as follows:
+    % - detect the panel of the whole wing with the highest y-length
+    % - divide this panel in the middle
+    % - repeat until the desired number of panels in y direction is reached
+    eta_partitions_ny = eta_partitions;
+    if params.is_symmetrical
+        n_panel_side = floor(n_panel/2);
+    else
+        n_panel_side = n_panel;
+    end
+    ny_vec = ones( 1, n_panel );
+    while length(eta_partitions_ny) < n_panel_side + 1
+        [max_diff,idx_max_diff] = max(diff(eta_partitions_ny));
+        idx_max_diff_ny = max(find(eta_partitions<eta_partitions_ny(idx_max_diff+1)));
+        ny_vec(idx_max_diff_ny) = ny_vec(idx_max_diff_ny) + 1;
+        eta_partitions_ny = [eta_partitions_ny(1:idx_max_diff),mean(eta_partitions_ny(idx_max_diff:idx_max_diff+1)),eta_partitions_ny(idx_max_diff+1:end)];
+    end
     
     if params.is_symmetrical
-        y_vortex = -params.y_segments_wing(end) + ((1:n_vortex) - 1) * segment_width;
+        y_vortex = params.y_segments_wing(end) * [ -flip(eta_partitions_ny(2:end)), eta_partitions_ny ];
+        segment_width = diff( y_vortex );
         % y coordinate of control point of panel (in the middle of panel in y
         % direction), in m
         y_ctrl_pt = y_vortex(1:n_panel) + segment_width / 2;
         y_segments_wing = [ -flip(params.y_segments_wing(2:end)), params.y_segments_wing ];
         c_segments_wing = [ flip(params.c(2:end)), params.c ];
     else
-        segment_width = segment_width / 2;
+        y_vortex = params.y_segments_wing(end) * eta_partitions_ny ;
+        segment_width = diff( y_vortex );
         y_vortex = params.y_segments_wing(1) + ((1:n_vortex) - 1) * segment_width;
         y_ctrl_pt = y_vortex(1:n_panel) + segment_width / 2;
         y_segments_wing = params.y_segments_wing;
