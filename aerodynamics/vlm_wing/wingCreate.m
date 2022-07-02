@@ -63,7 +63,7 @@ function wing = wingCreate( params_file, n_panel, varargin )
 % default parameters
 is_unsteady = 0;
 is_flexible = 0;
-is_stall    = 0;
+is_stall    = 1;
 is_le_shock = 0;
 spacing = 'like_chord';
 is_infl_recomputed = 0;
