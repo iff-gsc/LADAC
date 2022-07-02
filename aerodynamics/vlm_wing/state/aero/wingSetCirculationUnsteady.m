@@ -151,12 +151,12 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
         c_L_visc = wing.state.aero.unsteady.c_L_c;
     end
     
-    % adjust the normal vector (if Delta_alpha ~= 0)
-    u_n_VLM = axisAngle( u_n, wing.state.aero.circulation.rot_axis, wing.state.aero.circulation.Delta_alpha );
     % influence coefficients matrix [4], eq. (12.7)
-    A(:) = dot( wing.interim_results.dimless_induced_vel_beta, repmat(u_n_VLM,1,1,wing.n_panel), 1 );
+    A(:) = dot( wing.interim_results.dimless_induced_vel_beta, repmat(u_n,1,1,wing.n_panel), 1 );
     
     if ~wing.config.is_unsteady
+        % adjust the normal vector (if Delta_alpha ~= 0)
+        u_n_VLM = axisAngle( u_n, wing.state.aero.circulation.rot_axis, wing.state.aero.circulation.Delta_alpha );
         % normal airspeed component for VLM
         v_ni_VLM = - dot( v_inf, u_n_VLM, 1 );
         % (dimensionless) circulation of VLM
