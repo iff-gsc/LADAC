@@ -41,13 +41,13 @@ function [ structure_red, omega_red, V, D ] = structureGetReduced( structure, N 
 [omega,idx_omega] = sort(sqrt(diag(abs(D))));
 
 % number of degrees of freedom for every node
-DOF = 0;
+DOF = 6;
 
 % get vector of reduced eigenfrequencies
 omega_red = omega((DOF+1):(DOF+N));
 
 % compute transformation matrix according to [1], eq. (8)
-T = V(:,idx_omega((DOF+1):(DOF+N)));
+T = V(:,idx_omega(1:(DOF+N)));
 
 % compute reduced stiffness matrix according to [1], eq. (11)
 Kr = T' * structure.K * T;

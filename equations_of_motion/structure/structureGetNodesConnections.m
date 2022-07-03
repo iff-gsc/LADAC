@@ -23,7 +23,7 @@ function M = structureGetNodesConnections( structure )
 
 K = structure.K;
 n_nodes = length( structure.xyz(1,:) );
-DOF = length(K)/n_nodes;
+DOF = 6;
 
 M = false( n_nodes, n_nodes );
 

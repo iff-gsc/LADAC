@@ -41,7 +41,7 @@ else
 end
 
 % compute new node positions
-state_vector = structure_red.modal.T(:,num_eigenmode);
+state_vector = structure_red.modal.T(:,num_eigenmode+6);
 Delta_x = state_vector(1:6:end);
 Delta_y = state_vector(2:6:end);
 Delta_z = state_vector(3:6:end);
