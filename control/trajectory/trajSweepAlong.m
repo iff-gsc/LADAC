@@ -44,7 +44,8 @@ section_id = -1;
 active_section = section_id_start;
 
 % Check if the distance is a multiple of the total length of the trajectory
-dist_remaining = abs(dist - fix(dist/traj.arc_length) * traj.arc_length);
+dist_achieved =  fix(divideFinite(dist,traj.arc_length)) * traj.arc_length;
+dist_remaining = abs(dist - dist_achieved);
 
 % Check the direction of travel
 if(sign(dist) >= 0)
@@ -75,15 +76,15 @@ if(sign(dist) >= 0)
             % each other. Therefore, the exact value is determined with a
             % few Newton iterations.
             
-            section_id = index;
+            section_id(:) = index;
             act_sec = traj.sections(section_id);
             
-            t = t_start;
+            t(:) = t_start;
             arc_len = arc_len_start;
             arc_len_diff = arc_len_start_diff;
             
             % Inital Newton step
-            t = t - (arc_len - dist_remaining - arc_len_start) / arc_len_diff;
+            t(:) = t - (arc_len - dist_remaining - arc_len_start) / arc_len_diff;
             
             for i = 1:2
                 % Update arc length and derivative
@@ -91,14 +92,14 @@ if(sign(dist) >= 0)
                     trajSectionGetArcLength(act_sec, t);
                 
                 % Newton iteration step
-                t = t - (arc_len - dist_remaining - arc_len_start) / arc_len_diff;
+                t(:) = t - (arc_len - dist_remaining - arc_len_start) / arc_len_diff;
             end
             
             break;
         else
             % Subtract the available distance entirely
             dist_remaining = dist_remaining - dist_available;
-            t_start = 0;
+            t_start(:) = 0;
         end
         
     end
@@ -128,15 +129,15 @@ else
             % each other. Therefore, the exact value is determined with a
             % few Newton iterations.
             
-            section_id = index;
+            section_id(:) = index;
             act_sec = traj.sections(section_id);
             
-            t = t_start;
+            t(:) = t_start;
             arc_len = arc_len_start;
             arc_len_diff = arc_len_start_diff;
             
             % Inital Newton step
-            t = t - (dist_remaining + arc_len - arc_len_start) / arc_len_diff;
+            t(:) = t - (dist_remaining + arc_len - arc_len_start) / arc_len_diff;
             
             for i = 1:2
                 % Update arc length and derivative
@@ -144,7 +145,7 @@ else
                     trajSectionGetArcLength(act_sec, t);
                 
                 % Newton iteration step
-                t = t - (dist_remaining + arc_len - arc_len_start) / arc_len_diff;
+                t(:) = t - (dist_remaining + arc_len - arc_len_start) / arc_len_diff;
             end                                
             
             break;
@@ -152,7 +153,7 @@ else
         else
             % Subtract the available distance entirely
             dist_remaining = dist_remaining - dist_available;
-            t_start = 1;
+            t_start(:) = 1;
         end
     end
 end
