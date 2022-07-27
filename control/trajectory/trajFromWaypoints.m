@@ -48,7 +48,7 @@ end
 
 % Configure trajectory struct with information about the path 
 traj.num_sections_set(:)   = num_of_splines;
-traj.is_repeated_course = cycle;
+traj.is_repeated_course(:) = cycle;
 traj.polynomial_degree  = degree;
 
 % Copy the coefficients into the spline trajectory
