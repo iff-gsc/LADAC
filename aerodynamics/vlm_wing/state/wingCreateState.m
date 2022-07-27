@@ -48,6 +48,8 @@ state.aero.circulation.v_i_unit     = zeros( 3, n_panel );
 state.aero.circulation.alpha_eff	= zeros( 1, n_panel );
 state.aero.circulation.alpha_ind    = zeros( 1, n_panel );
 state.aero.circulation.Delta_alpha  = zeros( 1, n_panel );
+% dimensionless pitch rate
+state.aero.circulation.q            = zeros( 1, n_panel );
 state.aero.circulation.Re           = zeros( 1, n_panel );
 state.aero.circulation.Ma           = zeros( 1, n_panel );
 state.aero.circulation.num_iter 	= 0;
@@ -79,12 +81,7 @@ state.aero.force_glob.Q_ref_b       = zeros(3,1);
 
 % local velocity due to rotation
 state.aero.local_inflow.V_75        = zeros( 3, n_panel );
-state.aero.local_inflow.alpha_75  	= zeros( 1, n_panel );
-state.aero.local_inflow.beta     	= zeros( 1, n_panel );
-state.aero.local_inflow.alpha_25    = zeros( 1, n_panel );
 state.aero.local_inflow.V_25      	= zeros( 3, n_panel );
-% dimensionless pitch rate
-state.aero.local_inflow.q           = zeros( 1, n_panel );
 
 %% unsteady aerodynamics
 % unsteady, transsonic aerodynamics

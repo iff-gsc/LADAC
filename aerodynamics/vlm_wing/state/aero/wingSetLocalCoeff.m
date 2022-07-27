@@ -67,7 +67,7 @@ if ~wing.config.is_unsteady
     % quasi-steady pitch damping derived from [2], eq. (A15) and (A13)
     % to do: consider wing downwash in dimensionless pitch rate
     wing.state.aero.coeff_loc.c_m_airfoil(:) = wing.state.aero.coeff_loc.c_m_airfoil ...
-        - pi/8./sqrtReal(1-powerFast(wing.state.aero.circulation.Ma,2)) .* wing.state.aero.local_inflow.q;
+        - pi/8./sqrtReal(1-powerFast(wing.state.aero.circulation.Ma,2)) .* wing.state.aero.circulation.q;
     
     % flap moment
     wing.state.aero.coeff_loc.c_m_airfoil = wing.state.aero.coeff_loc.c_m_airfoil ...

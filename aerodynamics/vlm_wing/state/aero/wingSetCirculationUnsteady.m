@@ -41,11 +41,24 @@ u_n = wingGetNormalVectorFromGeometry( wing.state.geometry );
 
 % compute unit vector in direction of freestream ([5],
 % nomenclature, above eq. 12)
+v_inf_25 = - wing.state.aero.local_inflow.V_25 ./ repmat( vecnorm(wing.state.aero.local_inflow.V_25,2), size(wing.state.aero.local_inflow.V_25,1), 1 );
+v_inf_75 = - wing.state.aero.local_inflow.V_75 ./ repmat( vecnorm(wing.state.aero.local_inflow.V_75,2), size(wing.state.aero.local_inflow.V_75,1), 1 );
+% normal components of free-stream flow [4], eq. (12.8)
+v_ni_25 = - dot( v_inf_25, u_n );
+v_ni_75 = - dot( v_inf_75, u_n );
+% angle of attack of free-stream
+alpha_inf_25 = acosReal(v_ni_25) - pi/2;
+alpha_inf_75 = acosReal(v_ni_75) - pi/2;
 if wing.config.is_unsteady
-    v_inf = - wing.state.aero.local_inflow.V_25 ./ repmat( vecnorm(wing.state.aero.local_inflow.V_25,2), size(wing.state.aero.local_inflow.V_25,1), 1 );
+    v_inf = v_inf_25;
+    alpha_inf = alpha_inf_25;
 else
-    v_inf = - wing.state.aero.local_inflow.V_75 ./ repmat( vecnorm(wing.state.aero.local_inflow.V_75,2), size(wing.state.aero.local_inflow.V_75,1), 1 );
+    v_inf = v_inf_75;
+    alpha_inf = alpha_inf_75;
 end
+% dimensionless pitch rate [1], Nomenclature and Eq. between (18) and (19)
+wing.state.aero.circulation.q = 2 * (alpha_inf_75 - alpha_inf_25);
+
 % rotation axis for normal vector to adjust the angle of attack / incidence
 wing.state.aero.circulation.rot_axis = crossFast( -v_inf, u_n );
 
@@ -56,11 +69,6 @@ A = zeros( wing.n_panel, wing.n_panel );
 spanwise_vector = wingGetDimLessSpanwiseLengthVector(wing.state.geometry.vortex);
 wing.interim_results.sweep = pi/2 - acosReal( abs( dot( -spanwise_vector, -v_inf, 1 ) ) ./ ( vecnorm(-v_inf,2,1) .* vecnorm(spanwise_vector,2,1) ) );
 span = sum(wingGetSegmentSpan(wing.state.geometry.vortex));
-
-% normal components of free-stream flow [4], eq. (12.8)
-v_ni = - dot( v_inf, u_n );
-% angle of attack of free-stream
-alpha_inf = acosReal(v_ni) - pi/2;
 
 % ** use overworked version of algorithm presented in [3], page 3 **
 

@@ -39,7 +39,7 @@ alpha_inf_0 = zeros( 1, wing.n_panel );
 abs_V_i = vecnorm( wing.state.aero.local_inflow.V_25, 2 );
 
 % dimensionless pitch rate [1], Nomenclature and Eq. between (18) and (19)
-q = wing.state.aero.local_inflow.q;
+q = wing.state.aero.circulation.q;
 
 % to do: explain why aerodynamic center is at 0.25c
 x_ac = 0.25 * ones( 1, wing.n_panel );
