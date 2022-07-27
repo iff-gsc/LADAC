@@ -68,7 +68,7 @@ void Wind::plot(double downShift, QVector<QVector<double>> pos, double velocity)
         length = m_V_Wb_i[0].length();
     }
 
-    glColor3f(0.3,0.35,0.9);
+    glColor3f(143.0/255.0,169.0/255.0,186.0/255.0);
 
     QVector3D shift(0,0,downShift);
     QGenericMatrix<3,3,double> rotationMatrix;
@@ -214,6 +214,7 @@ void Wing::setWing(StructWithFieldnames wing) {
     StructWithFieldnames actuators = wing.getSubStruct("actuators");
     StructWithFieldnames segments2 = actuators.getSubStruct("segments");
     QVector<double> origin = geometry.getSubData("origin");
+    StructWithFieldnames unsteady = aero.getSubStruct("unsteady");
     this->m_vortex.setVortex(vortex);
     this->m_cntrl_pt.setCntrlPt(cntrl_pt);
     this->m_coeffLocal.setCoeffLocal(coeffLocal);
@@ -221,6 +222,10 @@ void Wing::setWing(StructWithFieldnames wing) {
     QVector<double> flap_deflection_2x = segments2.getSubData("pos");
     for (int i=0; i<flap_deflection_2x.length()/2; i++) {
         m_flap_deflection.append(flap_deflection_2x[2*i]);
+    }
+    QVector<double> X = unsteady.getSubData("X");
+    for (int i=0; i<X.length()/3; i++) {
+        m_trailing_edge_sep_pt.append(X[3*i+1]);
     }
     this->setOrigin(origin);
     this->wind.setWind(wing);
@@ -401,54 +406,6 @@ void Wing::plot(QVector3D shift, QQuaternion rotation) {
 }
 
 void Wing::plot() {
-    // draw wing geometry
-    QVector3D pointLeadLeft;
-    QVector3D pointTrailLeft;
-    QVector3D pointLeadRight;
-    QVector3D pointTrailRight;
-    QVector3D pointFlapLeft;
-    QVector3D pointFlapRight;
-    QVector3D cntrl_pt;
-    QVector<QVector<double>> cntrl_pos{3};
-
-    glBegin(GL_LINE_STRIP);
-        glColor3f(0,0,0.1);
-        for (int i=0; i < m_cntrl_pt.m_x.length(); i++) {
-            pointLeadRight = this->getPointLeadAt(i+1);
-            pointTrailRight = this->getPointTrailAt(i+1,0);
-            pointLeadLeft = this->getPointLeadAt(i);
-            pointTrailLeft = this->getPointTrailAt(i,1);
-            glVertex3f(pointLeadLeft.x(),pointLeadLeft.y(),pointLeadLeft.z());
-            glVertex3f(pointLeadRight.x(),pointLeadRight.y(),pointLeadRight.z());
-            glVertex3f(pointTrailRight.x(),pointTrailRight.y(),pointTrailRight.z());
-            glVertex3f(pointTrailLeft.x(),pointTrailLeft.y(),pointTrailLeft.z());
-            glVertex3f(pointLeadLeft.x(),pointLeadLeft.y(),pointLeadLeft.z());
-            glVertex3f(pointLeadRight.x(),pointLeadRight.y(),pointLeadRight.z());
-            cntrl_pt.setX(m_cntrl_pt.m_x[i]);
-            cntrl_pt.setY(m_cntrl_pt.m_y[i]);
-            cntrl_pt.setZ(m_cntrl_pt.m_z[i]);
-            cntrl_pt = Math::local2Global(cntrl_pt,m_origin+m_shift,m_rotationMatrix);
-            cntrl_pos[0].append(cntrl_pt[0]);
-            cntrl_pos[1].append(cntrl_pt[1]);
-            cntrl_pos[2].append(cntrl_pt[2]);
-        }
-    glEnd();
-
-    glColor3f(0.7,0.3,0.1);
-    for (int i=0; i < m_cntrl_pt.m_x.length(); i++) {
-        pointTrailRight = this->getPointTrailAt(i+1,0);
-        pointFlapRight = this->getPointFlapAt(i+1,0);
-        pointFlapLeft = this->getPointFlapAt(i,1);
-        pointTrailLeft = this->getPointTrailAt(i,1);
-        glBegin(GL_LINE_STRIP);
-            glVertex3f(pointTrailLeft.x(),pointTrailLeft.y(),pointTrailLeft.z());
-            glVertex3f(pointTrailRight.x(),pointTrailRight.y(),pointTrailRight.z());
-            glVertex3f(pointFlapRight.x(),pointFlapRight.y(),pointFlapRight.z());
-            glVertex3f(pointFlapLeft.x(),pointFlapLeft.y(),pointFlapLeft.z());
-            glVertex3f(pointTrailLeft.x(),pointTrailLeft.y(),pointTrailLeft.z());
-        glEnd();
-    }
-
 
     // draw aerodynamic forces
     QVector3D pointCop;
@@ -469,11 +426,75 @@ void Wing::plot() {
         forceVector.setZ(forceVectorMat(2,0));
 
         pointCopPlusForce = pointCop + forceVector * (m_vortex.m_c[i]+m_vortex.m_c[i+1])/2 * 5;
+        QVector3D pointSeparationHelp = pointCop + m_trailing_edge_sep_pt[i]*(pointCopPlusForce-pointCop);
         // pointCopPlusForce = pointCop + forceVector * 10;
         glBegin(GL_LINE_STRIP);
-            glColor3f(0.8,0.8,0.3);
+            glColor4f(m_stallColor[0],m_stallColor[1],m_stallColor[2],m_stallAlpha);
             glVertex3f(pointCop.x(),pointCop.y(),pointCop.z());
+            glColor4f(m_forceColor[0],m_forceColor[1],m_forceColor[2],m_forceAlpha);
+            glVertex3f(pointSeparationHelp.x(),pointSeparationHelp.y(),pointSeparationHelp.z());
+            glColor4f(m_forceColor[0],m_forceColor[1],m_forceColor[2],m_forceAlpha);
             glVertex3f(pointCopPlusForce.x(),pointCopPlusForce.y(),pointCopPlusForce.z());
+        glEnd();
+    }
+    // draw wing geometry
+    QVector3D pointLeadLeft;
+    QVector3D pointTrailLeft;
+    QVector3D pointLeadRight;
+    QVector3D pointTrailRight;
+    QVector3D pointFlapLeft;
+    QVector3D pointFlapRight;
+    QVector3D cntrl_pt;
+    QVector<QVector<double>> cntrl_pos{3};
+
+    for (int i=0; i < m_cntrl_pt.m_x.length(); i++) {
+        pointLeadRight = this->getPointLeadAt(i+1);
+        pointTrailRight = this->getPointTrailAt(i+1,0);
+        pointLeadLeft = this->getPointLeadAt(i);
+        pointTrailLeft = this->getPointTrailAt(i,1);
+        glColor4f(m_faceColor[0],m_faceColor[1],m_faceColor[2],m_faceAlpha);
+        glBegin(GL_QUADS);
+            glVertex3f(pointLeadLeft.x(),pointLeadLeft.y(),pointLeadLeft.z());
+            glVertex3f(pointLeadRight.x(),pointLeadRight.y(),pointLeadRight.z());
+            glVertex3f(pointTrailRight.x(),pointTrailRight.y(),pointTrailRight.z());
+            glVertex3f(pointTrailLeft.x(),pointTrailLeft.y(),pointTrailLeft.z());
+        glEnd();
+        glColor4f(m_lineColor[0],m_lineColor[1],m_lineColor[2],m_lineAlpha);
+        glBegin(GL_LINE_STRIP);
+            glVertex3f(pointLeadLeft.x(),pointLeadLeft.y(),pointLeadLeft.z());
+            glVertex3f(pointLeadRight.x(),pointLeadRight.y(),pointLeadRight.z());
+            glVertex3f(pointTrailRight.x(),pointTrailRight.y(),pointTrailRight.z());
+            glVertex3f(pointTrailLeft.x(),pointTrailLeft.y(),pointTrailLeft.z());
+            glVertex3f(pointLeadLeft.x(),pointLeadLeft.y(),pointLeadLeft.z());
+        glEnd();
+        cntrl_pt.setX(m_cntrl_pt.m_x[i]);
+        cntrl_pt.setY(m_cntrl_pt.m_y[i]);
+        cntrl_pt.setZ(m_cntrl_pt.m_z[i]);
+        cntrl_pt = Math::local2Global(cntrl_pt,m_origin+m_shift,m_rotationMatrix);
+        cntrl_pos[0].append(cntrl_pt[0]);
+        cntrl_pos[1].append(cntrl_pt[1]);
+        cntrl_pos[2].append(cntrl_pt[2]);
+    }
+
+    for (int i=0; i < m_cntrl_pt.m_x.length(); i++) {
+        pointTrailRight = this->getPointTrailAt(i+1,0);
+        pointFlapRight = this->getPointFlapAt(i+1,0);
+        pointFlapLeft = this->getPointFlapAt(i,1);
+        pointTrailLeft = this->getPointTrailAt(i,1);
+        glColor4f(m_flapLineColor[0],m_flapLineColor[1],m_flapLineColor[2],m_flapLineAlpha);
+        glBegin(GL_LINE_STRIP);
+            glVertex3f(pointTrailLeft.x(),pointTrailLeft.y(),pointTrailLeft.z());
+            glVertex3f(pointTrailRight.x(),pointTrailRight.y(),pointTrailRight.z());
+            glVertex3f(pointFlapRight.x(),pointFlapRight.y(),pointFlapRight.z());
+            glVertex3f(pointFlapLeft.x(),pointFlapLeft.y(),pointFlapLeft.z());
+            glVertex3f(pointTrailLeft.x(),pointTrailLeft.y(),pointTrailLeft.z());
+        glEnd();
+        glColor4f(m_flapFaceColor[0],m_flapFaceColor[1],m_flapFaceColor[2],m_flapFaceAlpha);
+        glBegin(GL_QUADS);
+            glVertex3f(pointTrailLeft.x(),pointTrailLeft.y(),pointTrailLeft.z());
+            glVertex3f(pointTrailRight.x(),pointTrailRight.y(),pointTrailRight.z());
+            glVertex3f(pointFlapRight.x(),pointFlapRight.y(),pointFlapRight.z());
+            glVertex3f(pointFlapLeft.x(),pointFlapLeft.y(),pointFlapLeft.z());
         glEnd();
     }
 
@@ -541,15 +562,17 @@ void Fuselage::plot(QVector3D shift, QQuaternion rotation) {
 }
 
 void Fuselage::plot() {
-    // draw fuselage geometry
 
     QVector3D cntrl_pt;
     QVector3D border_pt;
+    QVector3D next_border_pt;
     QVector3D R_Ab_i_end;
 
     QVector<QVector<double>> border_pos = m_border_pt;
 
-    glColor3f(0,0,0.1);
+    QVector<QVector<double>> cycle1;
+    QVector<QVector<double>> cycle2;
+
     int length;
     if (m_border_pt.isEmpty()) {
         length = 0;
@@ -557,24 +580,7 @@ void Fuselage::plot() {
     else {
         length = m_border_pt[0].length();
     }
-    glBegin(GL_LINE_STRIP);
-    for (int i=0; i < length; i++) {
-        border_pt.setX(m_border_pt[0][i]);
-        border_pt.setY(m_border_pt[1][i]);
-        border_pt.setZ(m_border_pt[2][i]);
-        border_pt = Math::local2Global(border_pt,m_shift,m_rotationMatrix);
-        glVertex3f(border_pt.x(),border_pt.y(),border_pt.z());
-        if (i<length-1) {
-            cntrl_pt.setX(m_cntrl_pt[0][i]);
-            cntrl_pt.setY(m_cntrl_pt[1][i]);
-            cntrl_pt.setZ(m_cntrl_pt[2][i]);
-            cntrl_pt = Math::local2Global(cntrl_pt,m_shift,m_rotationMatrix);
-            glVertex3f(cntrl_pt.x(),cntrl_pt.y(),cntrl_pt.z());
-        }
-    }
-    glEnd();
-
-    for (int i=0; i < length; i++) {
+    for (int i=0; i < length-1; i++) {
         border_pt.setX(m_border_pt[0][i]);
         border_pt.setY(m_border_pt[1][i]);
         border_pt.setZ(m_border_pt[2][i]);
@@ -584,66 +590,99 @@ void Fuselage::plot() {
         border_pos[1][i] = border_pt.y();
         border_pos[2][i] = border_pt.z();
 
-        drawHollowCircle(border_pt,m_rotationMatrix,m_width[i]/2);
-    }
+        next_border_pt.setX(m_border_pt[0][i+1]);
+        next_border_pt.setY(m_border_pt[1][i+1]);
+        next_border_pt.setZ(m_border_pt[2][i+1]);
+        next_border_pt = Math::local2Global(next_border_pt,m_shift,m_rotationMatrix);
 
-    glColor3f(0.8,0.8,0.3);
-    double scaling = 0.0001;
-
-    for (int i=0; i < length; i++) {
-
-        // duplicate (to do)
         cntrl_pt.setX(m_cntrl_pt[0][i]);
         cntrl_pt.setY(m_cntrl_pt[1][i]);
         cntrl_pt.setZ(m_cntrl_pt[2][i]);
         cntrl_pt = Math::local2Global(cntrl_pt,m_shift,m_rotationMatrix);
 
-        scaling = (this->m_width[i]+m_width[i+1])/2;
-        R_Ab_i_end.setX(m_cntrl_pt[0][i]+scaling*m_c_XYZ_b_i[0][i]);
-        R_Ab_i_end.setY(m_cntrl_pt[1][i]+scaling*m_c_XYZ_b_i[1][i]);
-        R_Ab_i_end.setZ(m_cntrl_pt[2][i]+scaling*m_c_XYZ_b_i[2][i]);
+        // scaling = (m_width[i]+m_width[i+1])/2;
+        double scaling = 5;
+        R_Ab_i_end.setX(m_cntrl_pt[0][i]+scaling*m_c_XYZ_b_i[0][i]*(m_width[i]+m_width[i+1])/2);
+        R_Ab_i_end.setY(m_cntrl_pt[1][i]+scaling*m_c_XYZ_b_i[1][i]*(m_width[i]+m_width[i+1])/2);
+        R_Ab_i_end.setZ(m_cntrl_pt[2][i]+scaling*m_c_XYZ_b_i[2][i]*(m_width[i]+m_width[i+1])/2);
         R_Ab_i_end = Math::local2Global(R_Ab_i_end,m_shift,m_rotationMatrix);
 
+        // draw fuselage geometry: center line
+        glColor4f(m_lineColor[0],m_lineColor[1],m_lineColor[2],m_lineAlpha);
+        glBegin(GL_LINE_STRIP);
+            glVertex3f(border_pt.x(),border_pt.y(),border_pt.z());
+            glVertex3f(cntrl_pt.x(),cntrl_pt.y(),cntrl_pt.z());
+            glVertex3f(next_border_pt.x(),next_border_pt.y(),next_border_pt.z());
+        glEnd();
+
+        // draw aerodynamic forces
+        glColor4f(m_forceColor[0],m_forceColor[1],m_forceColor[2],m_forceAlpha);
         glBegin(GL_LINE_STRIP);
             glVertex3f(cntrl_pt.x(),cntrl_pt.y(),cntrl_pt.z());
             glVertex3f(R_Ab_i_end.x(),R_Ab_i_end.y(),R_Ab_i_end.z());
         glEnd();
-    }
+
+        // draw fuselage geometry: cycles
+        glColor4f(m_lineColor[0],m_lineColor[1],m_lineColor[2],m_lineAlpha);
+        cycle1 = drawHollowCircle(border_pt,m_rotationMatrix,m_width[i]/2);
+        cycle2 = drawHollowCircle(next_border_pt,m_rotationMatrix,m_width[i+1]/2);
+
+        // draw fuselage geometry: conic faces
+        glColor4f(m_faceColor[0],m_faceColor[1],m_faceColor[2],m_faceAlpha);
+        drawConicFace(cycle1, cycle2);
+
+        }
 
     m_wind.plot(20,border_pos,m_velocity);
 
 }
 
 
-void Fuselage::drawHollowCircle(QVector3D position, QGenericMatrix<3,3,double> orientation, double radius){
+QVector<QVector<double>> Fuselage::drawHollowCircle(QVector3D position, QGenericMatrix<3,3,double> orientation, double radius){
    int i;
-   int lineAmount = 100; //# of triangles used to draw circle
 
    double PI = 3.14159;
 
    //GLfloat radius = 0.8f; //radius
    double twicePi = 2.0f * PI;
 
-   QGenericMatrix<1,3,double> positionMat;
-
-   positionMat(0,0) = position.x();
-   positionMat(1,0) = position.y();
-   positionMat(2,0) = position.z();
+   QVector<QVector<double>> positionMat;
+   QVector<double> positionSub (3);
 
    QGenericMatrix<1,3,double> circlePt;
 
    glBegin(GL_LINE_LOOP);
-       for(i = 0; i <= lineAmount;i++) {
-           circlePt(2,0) = (radius * cos(i * twicePi / lineAmount));
-           circlePt(1,0) = (radius * sin(i * twicePi / lineAmount));
+       for(i = 0; i <= m_lineAmount;i++) {
+           circlePt(2,0) = (radius * cos(i * twicePi / m_lineAmount));
+           circlePt(1,0) = (radius * sin(i * twicePi / m_lineAmount));
            circlePt(0,0) = 0;
            circlePt = orientation * circlePt;
            circlePt(0,0) += position.x();
            circlePt(1,0) += position.y();
            circlePt(2,0) += position.z();
            glVertex3f( circlePt(0,0), circlePt(1,0), circlePt(2,0) );
+           positionSub[0] = circlePt(0,0);
+           positionSub[1] = circlePt(1,0);
+           positionSub[2] = circlePt(2,0);
+           positionMat.append(positionSub);
        }
    glEnd();
+   return positionMat;
+}
+
+void Fuselage::drawConicFace(QVector<QVector<double>> positionMat1, QVector<QVector<double>> positionMat2){
+   int i;
+
+   QGenericMatrix<1,3,double> circlePt;
+
+   for(i = 0; i <= m_lineAmount-1;i++) {
+       glBegin(GL_QUADS);
+           glVertex3f( positionMat1[i][0], positionMat1[i][1], positionMat1[i][2] );
+           glVertex3f( positionMat1[i+1][0], positionMat1[i+1][1], positionMat1[i+1][2] );
+           glVertex3f( positionMat2[i+1][0], positionMat2[i+1][1], positionMat2[i+1][2] );
+           glVertex3f( positionMat2[i][0], positionMat2[i][1], positionMat2[i][2] );
+       glEnd();
+   }
 }
 
 
