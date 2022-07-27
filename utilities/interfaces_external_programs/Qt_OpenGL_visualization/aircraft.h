@@ -108,6 +108,19 @@ private:
     QVector<double> m_flap_deflection;
     Wind wind;
     double m_velocity;
+    QVector<double> m_trailing_edge_sep_pt;
+    float m_lineColor[3] = {0.1,0.1,0.1};
+    float m_lineAlpha = 1.0;
+    float m_faceColor[3] = {0.99,0.99,0.99};
+    float m_faceAlpha = 0.5;
+    float m_forceColor[3] = {76.0/255.0,212.0/255.,38.0/255.0};
+    float m_forceAlpha = 1.0;
+    float m_flapLineColor[3] = {0.1,0.1,0.1};
+    float m_flapLineAlpha = 1.0;
+    float m_flapFaceColor[3] = {0.65,0.65,0.65};
+    float m_flapFaceAlpha = 0.5;
+    float m_stallColor[3] = {247.0/255.0,132.0/255.0,17.0/255.0};
+    float m_stallAlpha = 0.7;
 };
 
 
@@ -119,7 +132,8 @@ public:
     void setFuselage(StructWithFieldnames fuselage, QString name);
     void plot();
     void plot(QVector3D shift, QQuaternion rotation);
-    void drawHollowCircle(QVector3D position, QGenericMatrix<3,3,double> orientation, double radius);
+    QVector<QVector<double>> drawHollowCircle(QVector3D position, QGenericMatrix<3,3,double> orientation, double radius);
+    void drawConicFace(QVector<QVector<double>> positionMat1, QVector<QVector<double>> positionMat2);
     void setVelocity(double velocity);
 private:
     QVector<QVector<double>> m_cntrl_pt;
@@ -131,6 +145,13 @@ private:
     QGenericMatrix<3,3,double> m_rotationMatrix;
     Wind m_wind;
     double m_velocity;
+    int m_lineAmount = 100;
+    float m_lineColor[3] = {0.1,0.1,0.1};
+    float m_lineAlpha = 1.0;
+    float m_faceColor[3] = {0.99,0.99,0.99};
+    float m_faceAlpha = 0.5;
+    float m_forceColor[3] = {76.0/255.0,212.0/255.,38.0/255.0};
+    float m_forceAlpha = 1.0;
 };
 
 

@@ -56,8 +56,13 @@ void MainWindow::resizeGL(int w, int h)
 void MainWindow::paintGL()
 {
 
-    glClearColor(0.39f, 0.58f, 0.93f, 1.0f);
+    glClearColor(182.0/255.0,201.0/255.0,214.0/255.0, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glEnable( GL_BLEND );
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendEquation(GL_FUNC_ADD);
 
     // Reset model view matrix
     glMatrixMode(GL_MODELVIEW);
@@ -80,36 +85,6 @@ void MainWindow::paintGL()
     glPointSize(4.0f);
 
     m_client.m_aircraft.plot();
-
-    /*
-    // draw wing geometry
-
-    QVector<double> x = m_client.m_geometry.getFieldD("x");
-    QVector<double> y = m_client.m_geometry.getFieldD("y");
-    QVector<double> z = m_client.m_geometry.getFieldD("z");
-    QVector<double> c = m_client.m_geometry.getFieldD("c");
-    QVector<double> twist = m_client.m_geometry.getFieldD("twist");
-
-    glBegin(GL_LINE_STRIP);
-        glColor3f(0,0,0.1);
-        for (int i=0; i < x.length(); i++) {
-            QVector<double> p_lead = {x[i]+c[i]/4*cos(twist[i]),y[i],z[i]-c[i]/4*sin(twist[i])};
-            QVector<double> p_trail = {x[i]-c[i]*3/4*cos(twist[i]),y[i],z[i]+c[i]*3/4*sin(twist[i])};
-            if (i < x.length()-1) {
-                QVector<double> p_lead_2 = {x[i+1]+c[i+1]/4*cos(twist[i+1]),y[i+1],z[i+1]-c[i+1]/4*sin(twist[i+1])};
-                glVertex3f(p_lead_2[0],p_lead_2[1],p_lead_2[2]);
-            }
-            glVertex3f(p_lead[0],p_lead[1],p_lead[2]);
-            glVertex3f(p_trail[0],p_trail[1],p_trail[2]);
-            if (i < x.length()-1) {
-                QVector<double> p_trail_2 = {x[i+1]-c[i+1]*3/4*cos(twist[i+1]),y[i+1],z[i+1]+c[i+1]*3/4*sin(twist[i+1])};
-                QVector<double> p_lead_2 = {x[i+1]+c[i+1]/4*cos(twist[i+1]),y[i+1],z[i+1]-c[i+1]/4*sin(twist[i+1])};
-                glVertex3f(p_trail_2[0],p_trail_2[1],p_trail_2[2]);
-                glVertex3f(p_lead_2[0],p_lead_2[1],p_lead_2[2]);
-            }
-        }
-    glEnd();
-    */
 
 
     // draw axis frame
