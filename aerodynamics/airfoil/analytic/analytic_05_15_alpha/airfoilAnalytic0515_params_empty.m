@@ -24,7 +24,7 @@ airfoil.ocd = 6;
 
 
 % weights vector for pitching moment coefficient parameters
-airfoil.wcm  = [ zeros(1,6), zeros(1,2*1), zeros(1,2*5) ];
+airfoil.wcm  = [ zeros(1,5), zeros(1,2*1), zeros(1,2*5) ];
 % number of neurons in hidden layer
 airfoil.ncm = 1;
 % number of neural network outputs

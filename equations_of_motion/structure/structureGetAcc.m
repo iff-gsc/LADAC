@@ -32,6 +32,6 @@ function [eta_dt2,q_elastic] = structureGetAcc( structure_red, q, eta ) %#codege
 
 % [1], eq. (3.1)
 q_elastic = structure_red.K*eta;
-eta_dt2 = structure_red.M \ (q-q_elastic);
+eta_dt2 = structure_red.M_inv * (q-q_elastic);
 
 end

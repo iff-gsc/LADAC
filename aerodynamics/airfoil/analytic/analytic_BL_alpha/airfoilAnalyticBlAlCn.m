@@ -5,10 +5,10 @@ function c_N = airfoilAnalyticBlAlCn(fcn,x)
 % Inputs:
 %   fcn         analytic function parameters array (see output of
 %               airfoilAnalyticBlAlFit)
-%   x           angle of attack (Nx1 array), in deg
+%   x           angle of attack (1xN array), in deg
 % 
 % Outputs:
-%   c_N         normal force coefficient (Nx1 array), dimensionless
+%   c_N         normal force coefficient (1xN array), dimensionless
 % 
 % Literature:
 %   [1] https://arc.aiaa.org/doi/pdf/10.2514/6.1989-1319
@@ -28,7 +28,7 @@ S_1 = fcn(4);
 S_2 = fcn(5);
 eta = fcn(6);
 
-alpha = x(:);
+alpha = x(:)';
 
 % [1], eq. (21)
 f = zeros(size(alpha));

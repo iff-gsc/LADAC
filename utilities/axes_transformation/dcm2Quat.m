@@ -49,10 +49,10 @@ sign_m13_plus = sign( m_31 + m_13 );
 
 % compute the magnitude of the quaternion elements according to [1, page
 % 53]
-q_0 = 1/2 * sqrt( max( 0, 1 + m_11 + m_22 + m_33 ) );
-q_1 = 1/2 * sqrt( max( 0, 1 + m_11 - m_22 - m_33 ) );
-q_2 = 1/2 * sqrt( max( 0, 1 - m_11 + m_22 - m_33 ) );
-q_3 = 1/2 * sqrt( max( 0, 1 - m_11 - m_22 + m_33 ) );
+q_0 = 1/2 * sqrtReal( 1 + m_11 + m_22 + m_33 );
+q_1 = 1/2 * sqrtReal( 1 + m_11 - m_22 - m_33 );
+q_2 = 1/2 * sqrtReal( 1 - m_11 + m_22 - m_33 );
+q_3 = 1/2 * sqrtReal( 1 - m_11 - m_22 + m_33 );
 
 % determine sign of the quaternion elements according to [1, page 53]
 q_bg_unsigned = [ q_0; q_1; q_2; q_3 ];

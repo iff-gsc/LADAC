@@ -27,16 +27,13 @@ state.body = fuselageBodyStateInit();
 
 % local inflow struct
 state.aero.local_inflow	= fuselageLocalInflowInit(n_segments);
-% unsteady aerodynamic angles
-state.aero.unsteady.alpha_dt = state.aero.local_inflow.alpha(1:end-1);
-state.aero.unsteady.beta_dt = state.aero.local_inflow.beta(1:end-1);
-state.aero.unsteady.alpha   = state.aero.local_inflow.alpha(1:end-1);
-state.aero.unsteady.beta    = state.aero.local_inflow.beta(1:end-1);
 % aerodynamic force coefficients in body frame at each control point (3xS
 % array, where S is the number of segments), dimensionless
 state.aero.C_XYZ_b_i  	= zeros( 3, n_segments );
 % aerodynamic forces in body frame at each control point (3xS array), in N
 state.aero.R_Ab_i     	= zeros( 3, n_segments );
+% unsteady aerodynamic forces
+state.aero.R_Ab_i_dt    = zeros( 3, n_segments );
 % total aerodynamic force coefficients in body frame (3x1 array),
 % dimensionless
 state.aero.C_XYZ_b      = zeros( 3, 1 );

@@ -54,4 +54,10 @@ wing = wingSetLocalCoeff( wing );
 % compute global force coefficients
 wing = wingSetGlobalCoeff( wing );
 
+% compute local forces and moments
+wing = wingSetLocalForce( wing );
+
+% compute global force and moments
+wing = wingSetGlobalForce( wing, pos_ref_c );
+
 end

@@ -18,12 +18,12 @@ function [c_L_max,alpha_max] = airfoilAnalytic0515ClMax(fcl,varargin)
 % Inputs:
 %   fcl         analytic function parameters array (see outputs of
 %               airfoilAnalytic0515AlFit)
-%   Ma          Mach number (Nx1 array)
+%   Ma          Mach number (1xN array)
 % 
 % Outputs:
-%   c_L_max     lift coefficient (Nx1 array)
+%   c_L_max     lift coefficient (1xN array)
 %   alpha_max   angle of attack corresponding to the maximum lift
-%               coefficient (Nx1 array), in deg
+%               coefficient (1xN array), in deg
 % 
 
 % Disclamer:
@@ -39,30 +39,31 @@ else
     Ma = varargin{1};
 end
 
-betaM = 1./sqrtReal( 1-( fcl(:,5).*Ma ).^2 );
+betaM = 1./sqrtReal( 1-powerFast( fcl(5,:).*Ma, 2 ) );
 
 % assume that linear part is really linear and not a sine function (else
 % iteration would be required)
-c_L_alpha_lin = fcl(:,2).*betaM;
+c_L_alpha_lin = fcl(2,:).*betaM;
 
 % compute derivative w.r.t. x with wolframalpha.com
 %   -a*(1+tanh(b*(x-c)))
 % set derivative w.r.t. x equal to d (linear lift curve slope) and solve
 % for x
 %   solve(-a*b*sech^2(b*(x-c))=d,x)
+pi90 = pi/90;
 alpha_max_complex = complex( ...
-    - acosh( -1i*sqrt(complex(fcl(:,3))).*sqrt(pi/90*fcl(:,6))./sqrt( c_L_alpha_lin ) ) ...
-    + pi/90*fcl(:,6).*fcl(:,4) ...
+    - acosh( (-1i*sqrt(complex(fcl(3,:)))).*sqrt(pi90*fcl(6,:))./sqrt( c_L_alpha_lin ) ) ...
+    + (pi90*fcl(6,:).*fcl(4,:)) ...
     ) ...
-    ./ ( pi/90*fcl(:,6) );
+    ./ ( pi90*fcl(6,:) );
 
 % if there is no maximum due to stall, set it to 15deg
 max_found = abs( imag( alpha_max_complex ) ) < 1e-5;
-alpha_max = zeros(size(fcl,1),1);
+alpha_max = zeros(size(Ma));
 alpha_max(max_found) = real( alpha_max_complex(max_found) );
 alpha_max(~max_found) = 15;
 
 % maximum lift coefficient from corresponding angle of attack
-c_L_max = airfoilAnalytic0515AlCl( fcl, [alpha_max, Ma(:)] );
+c_L_max = airfoilAnalytic0515AlCl( fcl, [alpha_max; Ma] );
 c_L_max(~max_found) = 0.11*alpha_max(~max_found);
 end

@@ -30,13 +30,13 @@ function [phi,delta] = dcm2Lean( M_bg )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-phi = acos( max( -1, min( 1, M_bg(3,3) ) ) );
+phi = acosReal(M_bg(3,3));
 
 if M_bg(3,2) >= 0
     sign_m32 = -1;
 else
     sign_m32 = 1;
 end
-delta = atan2( sign_m32*sqrt( max( 0, sin(phi)^2 - M_bg(3,1)^2 ) ), -M_bg(3,1) );
+delta = atan2( sign_m32*sqrtReal( sin(phi)^2 - M_bg(3,1)^2 ), -M_bg(3,1) );
 
 end

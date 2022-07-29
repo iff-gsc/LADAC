@@ -49,7 +49,7 @@ function [dot_omega_Kb, dot_V_Kb] = ...
 
 % compute the time derivative of the angular velocity vector according to
 % [1, page 36 or 42]
-dot_omega_Kb = inv(I)* (Q_b - cross( omega_Kb, I * omega_Kb ) );
+dot_omega_Kb = I \ (Q_b - cross( omega_Kb, I * omega_Kb ) );
 
 % compute the time derivative of the velocity vector according to [1, page
 % 41 or 42]

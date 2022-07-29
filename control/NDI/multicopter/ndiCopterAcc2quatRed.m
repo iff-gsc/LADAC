@@ -32,7 +32,7 @@ function q_red = ndiCopterAcc2quatRed( a_g, g )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-a_g_xy = sqrt( a_g(1)^2 + a_g(2)^2 );
+a_g_xy = sqrtReal( powerFast(a_g(1),2) + powerFast(a_g(2),2) );
 
 % [1], eq. (50)
 phi_red = atan2( a_g_xy, a_g(3) + g );

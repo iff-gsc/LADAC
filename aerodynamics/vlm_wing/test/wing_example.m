@@ -30,7 +30,7 @@ actuators_rate = [ 0 0 0 0 ];
 
 wing = wingSetState(wing, alpha, beta, V, omega, ...
     actuators_pos, actuators_rate, xyz_cg, 'atmosphere', isAtmosphere(h), ...
-    'wind', zeros( 3, wing.n_panel ), zeros( 3, wing.n_panel ) );
+    'V_Wb', zeros( 3, wing.n_panel ), 'V_Wb_dt', zeros( 3, wing.n_panel ) );
 
 %% get aerodynamic forces and moments
 

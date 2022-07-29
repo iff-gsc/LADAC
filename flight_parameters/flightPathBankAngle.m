@@ -36,7 +36,7 @@
 function mu_K = flightPathBankAngle( gamma, Phi, Theta, beta_K ) %#codegen
 
 % compute the flight-path bank angle according to [2, page 9]
-mu_K = asin( (sin(gamma)*sin(beta_K)+sin(Phi)*cos(Theta)) / ...
+mu_K = asinReal( (sin(gamma)*sin(beta_K)+sin(Phi)*cos(Theta)) / ...
     (cos(beta_K)*cos(gamma)) );
 
 end

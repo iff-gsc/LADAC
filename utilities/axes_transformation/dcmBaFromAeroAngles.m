@@ -1,4 +1,4 @@
-% dcmBa computes the direction cosine matrix (DCM) from aerodynamic
+% dcmBaFromAeroAngles compute direction cosine matrix (DCM) from aerodynamic
 % angles alpha and beta
 %   The DCM (or rotation matrix) is used to transform a vector given in one
 %   frame to another frame by multiplication. The DCM M_ba transforms a 
@@ -29,7 +29,7 @@
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-function M_ba = dcmBa( alpha, beta ) %#codegen
+function M_ba = dcmBaFromAeroAngles( alpha, beta ) %#codegen
 
 % detect length of input
 len_alpha = length(alpha);

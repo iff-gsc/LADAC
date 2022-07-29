@@ -11,9 +11,7 @@ clear all
 
 wing = wingCreate('wing_params_Arkbird_simple',30);
 
-wing_state_bus = struct2bus_(wing.state);
-
-atmosphereBus = struct2bus_(isAtmosphere(0));
+struct2bus(wing.state,'wing_state_bus');
 
 open('wing_example_sim')
 

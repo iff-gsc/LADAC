@@ -20,11 +20,17 @@ function v_rot = axisAngle( v, axis, angle ) %#codegen
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-axis = axis ./ repmat( vecnorm( axis, 2, 1 ), 3, 1 );
+v_rot       = zeros( size(v) );
+axis_length = vecnorm( axis, 2, 1 );
+cos_angle   = cos(angle);
+cos_angle_1 = 1-cos_angle;
+sin_angle   = sin(angle);
+cross_prod  = crossFast(axis,v);
+dot_prod    = dot(axis,v);
+for i = 1:3
+    axis(i,:) = axis(i,:) ./ axis_length;
 
-cos_angle = cos(angle);
-
-v_rot = repmat(cos_angle,3,1).*v + repmat(sin(angle),3,1).*cross(axis,v) ...
-    + repmat( (1-cos_angle) .* dot(axis,v), 3,1) .* axis;
+    v_rot(i,:) = cos_angle.*v(i,:) + sin_angle.*cross_prod(i,:) ...
+        + cos_angle_1 .* dot_prod .* axis(i,:);
 
 end

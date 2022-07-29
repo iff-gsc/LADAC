@@ -39,7 +39,7 @@ alpha_inf_0 = zeros( 1, wing.n_panel );
 abs_V_i = vecnorm( wing.state.aero.local_inflow.V_25, 2 );
 
 % dimensionless pitch rate [1], Nomenclature and Eq. between (18) and (19)
-q = wing.state.aero.local_inflow.q;
+q = wing.state.aero.circulation.q;
 
 % to do: explain why aerodynamic center is at 0.25c
 x_ac = 0.25 * ones( 1, wing.n_panel );
@@ -50,15 +50,15 @@ switch wing.config.airfoil_method
     case 'analytic'
 
         % get coefficients of analytic functions for different Mach numbers
-        fcl = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcl, wing.state.aero.circulation.Ma, wing.airfoil.analytic.ncl, wing.airfoil.analytic.ocl );
-        fcd = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcd, wing.state.aero.circulation.Ma, wing.airfoil.analytic.ncd, wing.airfoil.analytic.ocd );
-        fcm = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcm, wing.state.aero.circulation.Ma, wing.airfoil.analytic.ncm, wing.airfoil.analytic.ocm );
+        fcl = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcl, wing.state.aero.circulation.Ma );
+        fcd = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcd, wing.state.aero.circulation.Ma );
+        fcm = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcm, wing.state.aero.circulation.Ma );
 
         % get points on lift curve
-        [c_L_alpha_max,alpha_0] = airfoilAnalytic0515ClAlphaMax( fcl, wing.state.aero.circulation.Ma(:) );
+        [c_L_alpha_max,alpha_0] = airfoilAnalytic0515ClAlphaMax( fcl, wing.state.aero.circulation.Ma );
 
         % effective angle of attack for an equivalent uncambered airfoil
-        alpha_inf_0(:) = wing.state.aero.circulation.alpha_eff - deg2rad(alpha_0)';
+        alpha_inf_0(:) = wing.state.aero.circulation.alpha_eff - deg2rad(alpha_0);
 
         % linear unsteady aerodynamics (potential flow) according to [1]
         [ wing.state.aero.unsteady.c_L_c, wing.state.aero.unsteady.c_m_c, ...
@@ -66,27 +66,42 @@ switch wing.config.airfoil_method
             wing.state.aero.unsteady.alpha_eff, wing.state.aero.unsteady.x_dt ...
             ] = ...
             unstAirfoilAeroFast( abs_V_i, wing.state.aero.circulation.Ma, ...
-            wing.state.geometry.ctrl_pt.c, rad2deg(c_L_alpha_max)', x_ac, ...
-            wing.state.aero.unsteady.x, alpha_inf_0, q );
+            wing.state.geometry.ctrl_pt.c, rad2deg(c_L_alpha_max), x_ac, ...
+            wing.state.aero.unsteady.x, alpha_inf_0 + wing.state.aero.circulation.alpha_ind, q );
         
-        % add circulatory and non-circulatory part to obtain total
-        % coefficients
-        C_N_p = wing.state.aero.unsteady.c_L_c + wing.state.aero.unsteady.c_L_nc;
-        c_m_p = wing.state.aero.unsteady.c_m_c + wing.state.aero.unsteady.c_m_nc;
+        % bypass 3d downwash
+        wing.state.aero.unsteady.alpha_eff = wing.state.aero.unsteady.alpha_eff ...
+            - wing.state.aero.circulation.alpha_ind;
+        wing.state.aero.unsteady.c_L_c = wing.state.aero.unsteady.c_L_c ...
+            - rad2deg(c_L_alpha_max) .* wing.state.aero.circulation.alpha_ind;
+        
+        if wing.config.is_stall
+            
+            % add circulatory and non-circulatory part to obtain total
+            % coefficients
+            C_N_p = wing.state.aero.unsteady.c_L_c + wing.state.aero.unsteady.c_L_nc;
+            c_m_p = wing.state.aero.unsteady.c_m_c + wing.state.aero.unsteady.c_m_nc;
 
-        % dynamic stall according to a mix of [2], [3] and [4]
-        [ wing.state.aero.unsteady.X_dt, wing.state.aero.unsteady.c_L_c(:), ...
-            wing.state.aero.unsteady.c_m_c(:), wing.state.aero.unsteady.c_D(:), ...
-            ~, ~, wing.state.aero.unsteady.tau_v_dt(:), ...
-            wing.state.aero.unsteady.is_leading_edge_shock(:) ...
-            ] = ...
-            airfoilDynStall( wing.state.aero.unsteady.X, wing.state.aero.circulation.Ma(:), ...
-            C_N_p(:), c_m_p(:), wing.state.aero.unsteady.alpha_eff(:), fcl, fcd, fcm, ...
-            abs_V_i(:), wing.state.geometry.ctrl_pt.c(:), wing.state.aero.circulation.alpha_eff(:), ...
-            wing.state.aero.unsteady.tau_v(:) );
+            % dynamic stall according to a mix of [2], [3] and [4]
+            [ wing.state.aero.unsteady.X_dt, wing.state.aero.unsteady.c_L_c(:), ...
+                wing.state.aero.unsteady.c_m_c(:), wing.state.aero.unsteady.c_D(:), ...
+                ~, ~, wing.state.aero.unsteady.tau_v_dt(:), ...
+                wing.state.aero.unsteady.is_leading_edge_shock(:) ...
+                ] = ...
+                airfoilDynStall( wing.state.aero.unsteady.X, wing.state.aero.circulation.Ma, ...
+                C_N_p, c_m_p, wing.state.aero.unsteady.alpha_eff, fcl, fcd, fcm, ...
+                abs_V_i, wing.state.geometry.ctrl_pt.c, wing.state.aero.circulation.alpha_eff, ...
+                wing.state.aero.unsteady.tau_v, wing.config.is_le_shock );
 
-        % avoided new variable
-        wing.state.aero.unsteady.c_m_c = wing.state.aero.unsteady.c_m_c - wing.state.aero.unsteady.c_m_nc;
+            % avoided new variable
+            wing.state.aero.unsteady.c_m_c = wing.state.aero.unsteady.c_m_c - wing.state.aero.unsteady.c_m_nc;
+        else
+            c_D_st = airfoilAnalytic0515AlCd( fcd, rad2deg(wing.state.aero.circulation.alpha_eff) );
+            c_L_st = rad2deg(c_L_alpha_max) .* alpha_inf_0;
+            wing.state.aero.unsteady.c_D(:) = ...
+                unstAirfoilAeroCdNoFlutter( c_D_st, wing.state.aero.unsteady.c_L_c, wing.state.aero.circulation.alpha_eff, c_L_st );
+            
+        end
             
     case 'simple'
 
@@ -95,7 +110,7 @@ switch wing.config.airfoil_method
         
         % clean airfoil coefficients
         c_L_alpha = wing.airfoil.simple.c_L_alpha ./ ...
-            sqrtReal(1-wing.state.aero.circulation.Ma.^2);
+            sqrtReal(1-powerFast(wing.state.aero.circulation.Ma,2));
         x_ac = wing.airfoil.simple.x_ac;
         
         [ wing.state.aero.unsteady.c_L_c, wing.state.aero.unsteady.c_m_c, ...
@@ -103,7 +118,13 @@ switch wing.config.airfoil_method
             wing.state.aero.unsteady.alpha_eff, wing.state.aero.unsteady.x_dt ] ...
             = unstAirfoilAeroFast( abs_V_i, wing.state.aero.circulation.Ma, ...
             wing.state.geometry.ctrl_pt.c, c_L_alpha, x_ac, wing.state.aero.unsteady.x, ...
-            alpha_inf_0, q );
+            alpha_inf_0 + wing.state.aero.circulation.alpha_ind, q );
+                
+        % bypass 3d downwash
+        wing.state.aero.unsteady.alpha_eff = wing.state.aero.unsteady.alpha_eff ...
+            - wing.state.aero.circulation.alpha_ind;
+        wing.state.aero.unsteady.c_L_c = wing.state.aero.unsteady.c_L_c ...
+            - c_L_alpha .* wing.state.aero.circulation.alpha_ind;
         
         c_D_st = airfoilAnalyticSimpleCd( wing.airfoil.simple, alpha_inf_0 );
         c_L_unst = wing.state.aero.unsteady.c_L_c + wing.state.aero.unsteady.c_L_nc;

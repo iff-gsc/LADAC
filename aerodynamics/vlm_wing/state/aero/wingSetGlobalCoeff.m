@@ -18,7 +18,8 @@ function wing = wingSetGlobalCoeff( wing ) %#codegen
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-V_rel = vecnorm( wing.state.aero.local_inflow.V_25, 2 )/wing.state.body.V;
+V_rel = vecnorm( wing.state.aero.local_inflow.V_25 .* wing.state.aero.circulation.v_i, 2 )/wing.state.body.V;
+V_rel_2 = powerFast(V_rel,2);
 
 segment_span    = wingGetSegmentSpan(wing.state.geometry.vortex);
 
@@ -26,11 +27,11 @@ segment_span    = wingGetSegmentSpan(wing.state.geometry.vortex);
 % panel-wise constant summation
 for i = 1:3
     wing.state.aero.coeff_glob.C_XYZ_b(i) = sum( ...
-        segment_span .* wing.state.aero.coeff_loc.c_XYZ_b(i,:) .* wing.state.geometry.ctrl_pt.c .* V_rel.^2 ...
+        segment_span .* wing.state.aero.coeff_loc.c_XYZ_b(i,:) .* wing.state.geometry.ctrl_pt.c .* V_rel_2 ...
         ) / wing.params.S;
     wing.state.aero.coeff_glob.C_lmn_b(i) = sum( ...
         wing.state.aero.coeff_loc.c_lmn_b(i,:) ...
-        .* segment_span  .* wing.state.geometry.ctrl_pt.c .* V_rel.^2 ...
+        .* segment_span  .* wing.state.geometry.ctrl_pt.c .* V_rel_2 ...
         ) / wing.params.S;
 end
 

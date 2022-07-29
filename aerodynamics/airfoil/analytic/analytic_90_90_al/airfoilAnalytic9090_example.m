@@ -17,8 +17,8 @@ delta = 0:0.2:2;
 Mach = [0.15,0.7,0.78];
 
 [fcl,fcd] = airfoilAnalytic9090AlFit( NACA0015.alpha, NACA0015.cl, NACA0015.cd, 0 );
-c_L = airfoilAnalytic9090AlCl( fcl, alpha_deg(:) );
-c_D = airfoilAnalytic9090AlCd( fcd, alpha_deg(:) );
+c_L = airfoilAnalytic9090AlCl( fcl, alpha_deg );
+c_D = airfoilAnalytic9090AlCd( fcd, alpha_deg );
 
 % plot
 figure

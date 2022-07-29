@@ -29,7 +29,7 @@ else
     Ma = varargin{1};
 end
 
-beta = 1 ./ sqrtReal( 1 - Ma.^2 );
+beta = 1 ./ sqrtReal( 1 - powerFast(Ma,2) );
 c_L = airfoil.c_L_alpha * beta .* ( alpha - airfoil.alpha_0 );
 
 end

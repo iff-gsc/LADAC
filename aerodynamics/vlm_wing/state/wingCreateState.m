@@ -44,9 +44,12 @@ state.aero.circulation.c_L          = zeros( 1, n_panel );
 state.aero.circulation.c_L_flap     = zeros( 1, n_panel );
 state.aero.circulation.delta_qs     = zeros( 1, n_panel );
 state.aero.circulation.v_i          = zeros( 3, n_panel );
+state.aero.circulation.v_i_unit     = zeros( 3, n_panel );
 state.aero.circulation.alpha_eff	= zeros( 1, n_panel );
 state.aero.circulation.alpha_ind    = zeros( 1, n_panel );
 state.aero.circulation.Delta_alpha  = zeros( 1, n_panel );
+% dimensionless pitch rate
+state.aero.circulation.q            = zeros( 1, n_panel );
 state.aero.circulation.Re           = zeros( 1, n_panel );
 state.aero.circulation.Ma           = zeros( 1, n_panel );
 state.aero.circulation.num_iter 	= 0;
@@ -59,14 +62,26 @@ state.aero.coeff_loc.c_m_airfoil    = zeros( 1, n_panel );
 % global coefficients
 state.aero.coeff_glob.C_XYZ_b       = zeros(3,1);
 state.aero.coeff_glob.C_lmn_b       = zeros(3,1);
+
+% local forces and moments
+% Local aerodynamic forces in body frame (b), in N
+state.aero.force_loc.R_i_b          = zeros( 3, n_panel );
+% Local aerodynamic moments with respect to the wing origin in body frame (b), in Nm
+state.aero.force_loc.Q_i_b          = zeros( 3, n_panel );
+% Local airfoil pitching moments with respect to the local c/4 positions, in Nm
+state.aero.force_loc.M_i_b          = zeros( 1, n_panel );
+
+% global forces and moments
+% Total/global aerodynamic force vector in body frame (b), in N
+state.aero.force_glob.R_b           = zeros(3,1);
+% Total/global aerodynamic moment vector in body frame (b) w.r.t. wing origin, in Nm
+state.aero.force_glob.Q_origin_b    = zeros(3,1);
+% Total/global aerodynamic moment vector in body frame (b) w.r.t. reference point, in Nm
+state.aero.force_glob.Q_ref_b       = zeros(3,1);
+
 % local velocity due to rotation
 state.aero.local_inflow.V_75        = zeros( 3, n_panel );
-state.aero.local_inflow.alpha_75  	= zeros( 1, n_panel );
-state.aero.local_inflow.beta     	= zeros( 1, n_panel );
-state.aero.local_inflow.alpha_25    = zeros( 1, n_panel );
 state.aero.local_inflow.V_25      	= zeros( 3, n_panel );
-% dimensionless pitch rate
-state.aero.local_inflow.q           = zeros( 1, n_panel );
 
 %% unsteady aerodynamics
 % unsteady, transsonic aerodynamics

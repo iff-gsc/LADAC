@@ -41,13 +41,26 @@ u_n = wingGetNormalVectorFromGeometry( wing.state.geometry );
 
 % compute unit vector in direction of freestream ([5],
 % nomenclature, above eq. 12)
+v_inf_25 = - wing.state.aero.local_inflow.V_25 ./ repmat( vecnorm(wing.state.aero.local_inflow.V_25,2), size(wing.state.aero.local_inflow.V_25,1), 1 );
+v_inf_75 = - wing.state.aero.local_inflow.V_75 ./ repmat( vecnorm(wing.state.aero.local_inflow.V_75,2), size(wing.state.aero.local_inflow.V_75,1), 1 );
+% normal components of free-stream flow [4], eq. (12.8)
+v_ni_25 = - dot( v_inf_25, u_n );
+v_ni_75 = - dot( v_inf_75, u_n );
+% angle of attack of free-stream
+alpha_inf_25 = acosReal(v_ni_25) - pi/2;
+alpha_inf_75 = acosReal(v_ni_75) - pi/2;
 if wing.config.is_unsteady
-    v_inf = - wing.state.aero.local_inflow.V_25 ./ repmat( vecnorm(wing.state.aero.local_inflow.V_25,2), size(wing.state.aero.local_inflow.V_25,1), 1 );
+    v_inf = v_inf_25;
+    alpha_inf = alpha_inf_25;
 else
-    v_inf = - wing.state.aero.local_inflow.V_75 ./ repmat( vecnorm(wing.state.aero.local_inflow.V_75,2), size(wing.state.aero.local_inflow.V_75,1), 1 );
+    v_inf = v_inf_75;
+    alpha_inf = alpha_inf_75;
 end
+% dimensionless pitch rate [1], Nomenclature and Eq. between (18) and (19)
+wing.state.aero.circulation.q = 2 * (alpha_inf_75 - alpha_inf_25);
+
 % rotation axis for normal vector to adjust the angle of attack / incidence
-wing.state.aero.circulation.rot_axis = cross( -v_inf, u_n, 1 );
+wing.state.aero.circulation.rot_axis = crossFast( -v_inf, u_n );
 
 % influence coefficients
 A = zeros( wing.n_panel, wing.n_panel );
@@ -56,11 +69,6 @@ A = zeros( wing.n_panel, wing.n_panel );
 spanwise_vector = wingGetDimLessSpanwiseLengthVector(wing.state.geometry.vortex);
 wing.interim_results.sweep = pi/2 - acosReal( abs( dot( -spanwise_vector, -v_inf, 1 ) ) ./ ( vecnorm(-v_inf,2,1) .* vecnorm(spanwise_vector,2,1) ) );
 span = sum(wingGetSegmentSpan(wing.state.geometry.vortex));
-
-% normal components of free-stream flow [4], eq. (12.8)
-v_ni = - dot( v_inf, u_n );
-% angle of attack of free-stream
-alpha_inf = acosReal(v_ni) - pi/2;
 
 % ** use overworked version of algorithm presented in [3], page 3 **
 
@@ -103,23 +111,32 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
     
     % quasi-steady flap deflection with sweep compensation
     [F_10,F_11] = airfoilFlapEffectiveness(wing.geometry.segments.flap_depth);
-    wing.state.aero.circulation.delta_qs = airfoilFlapDeltaQs(F_10,F_11,abs_V_i,wing.state.geometry.ctrl_pt.c,deg2rad(wing.state.actuators.segments.pos(1,:)),deg2rad(wing.state.actuators.segments.rate(1,:))) ...
-        .* cos(wing.interim_results.sweep).^2;
+    wing.state.aero.circulation.delta_qs = airfoilFlapDeltaQs( F_10, F_11,...
+        abs_V_i, wing.state.geometry.ctrl_pt.c, deg2rad(wing.state.actuators.segments.pos(1,:)), ...
+        deg2rad(wing.state.actuators.segments.rate(1,:)) );
     
     if ~wing.config.is_unsteady
         % static lift coefficient
         switch wing.config.airfoil_method
             case 'analytic'
                 % clean airfoil lift
-                fcl = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcl, wing.state.aero.circulation.Ma, wing.airfoil.analytic.ncl, wing.airfoil.analytic.ocl );
-                c_L_visc(:) = airfoilAnalytic0515AlCl( fcl, [ rad2deg(wing.state.aero.circulation.alpha_eff(:)), wing.state.aero.circulation.Ma(:) ] );
+                fcl = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcl, wing.state.aero.circulation.Ma );
+                if wing.config.is_stall
+                    c_L_visc(:) = airfoilAnalytic0515AlCl( fcl, [ rad2deg(wing.state.aero.circulation.alpha_eff); wing.state.aero.circulation.Ma ] );
+                else
+                    % get points on lift curve
+                    [c_L_alpha_max,alpha_0] = airfoilAnalytic0515ClAlphaMax( fcl, wing.state.aero.circulation.Ma );
+                    % effective angle of attack for an equivalent uncambered airfoil
+                    alpha_inf_0 = wing.state.aero.circulation.alpha_eff - deg2rad(alpha_0);
+                    c_L_visc(:) = rad2deg(c_L_alpha_max) .* alpha_inf_0;
+                end
             case 'simple'
                 % clean airfoil + flap lift
                 c_L_visc(:) = airfoilAnalyticSimpleCl( wing.airfoil.simple, ...
                     wing.state.aero.circulation.alpha_eff, wing.state.aero.circulation.Ma );
         end
         % flap lift
-        wing.state.aero.circulation.c_L_flap(:) = 2*pi./sqrtReal(1-wing.state.aero.circulation.Ma.^2)...
+        wing.state.aero.circulation.c_L_flap(:) = 2*pi./sqrtReal(1-powerFast(wing.state.aero.circulation.Ma,2))...
             .*wing.state.aero.circulation.delta_qs;
         % 2nd actuator lift
         c_L_act2 = zeros(size(c_L_visc));
@@ -143,12 +160,12 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
         c_L_visc = wing.state.aero.unsteady.c_L_c;
     end
     
-    % adjust the normal vector (if Delta_alpha ~= 0)
-    u_n_VLM = axisAngle( u_n, wing.state.aero.circulation.rot_axis, wing.state.aero.circulation.Delta_alpha );
     % influence coefficients matrix [4], eq. (12.7)
-    A(:) = dot( wing.interim_results.dimless_induced_vel_beta, repmat(u_n_VLM,1,1,wing.n_panel), 1 );
+    A(:) = dot( wing.interim_results.dimless_induced_vel_beta, repmat(u_n,1,1,wing.n_panel), 1 );
     
     if ~wing.config.is_unsteady
+        % adjust the normal vector (if Delta_alpha ~= 0)
+        u_n_VLM = axisAngle( u_n, wing.state.aero.circulation.rot_axis, wing.state.aero.circulation.Delta_alpha );
         % normal airspeed component for VLM
         v_ni_VLM = - dot( v_inf, u_n_VLM, 1 );
         % (dimensionless) circulation of VLM
@@ -181,6 +198,8 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
     end
 end
 
+wing.state.aero.circulation.v_i_unit = wing.state.aero.circulation.v_i ...
+    ./repmat(vecnorm(wing.state.aero.circulation.v_i,2,1),3,1);
 wing.state.aero.circulation.Gamma(:) = wing.state.aero.circulation.gamma ...
     .* abs_V_i * span;
 wing.state.aero.circulation.c_L(:) = c_L_visc;

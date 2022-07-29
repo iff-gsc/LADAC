@@ -8,11 +8,11 @@ function c_L = airfoilAnalytic0515AlCl(fcl,alMa)
 % Inputs:
 %   fcd         analytic function parameters array (see outputs of
 %               airfoilAnalytic0515AlFit)
-%   alMa        concentrated angle of attack and Mach number (Nx2 array), angle
+%   alMa        concentrated angle of attack and Mach number (2xN array), angle
 %               of attack in deg
 % 
 % Outputs:
-%   c_L   	lift coefficient (Nx1 array)
+%   c_L   	lift coefficient (1xN array)
 % 
 % Literature:
 %   [1] https://arc.aiaa.org/doi/pdfplus/10.2514/1.C034910
@@ -24,16 +24,16 @@ function c_L = airfoilAnalytic0515AlCl(fcl,alMa)
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-alpha = alMa(:,1);
-Ma = alMa(:,2);
+alpha = alMa(1,:);
+Ma = alMa(2,:);
 
-betaM = 1./sqrtReal( 1-( fcl(:,5).*Ma ).^2 );
+betaM = 1./sqrtReal( 1-powerFast( fcl(5,:).*Ma, 2 ) );
 
-x = fcl(:,6) .* ( pi/90*(alpha-fcl(:,4)));
+x = fcl(6,:) .* ( pi/90*(alpha-fcl(4,:)));
 % modification of the model in [1]
-x = x + x.^3/3 + x.^5/5;
+x = x + powerFast(x,3)/3 + powerFast(x,5)/5;
 % [1], page 3
-c_L = fcl(:,2).*betaM.*90/pi.*sin(pi/90*(alpha-fcl(:,1))) ...
-    + fcl(:,3) .* ( 1 + tanh( x ) );
+c_L = fcl(2,:).*betaM.*90/pi.*sin(pi/90*(alpha-fcl(1,:))) ...
+    + fcl(3,:) .* ( 1 + tanh( x ) );
 
 end

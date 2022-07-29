@@ -11,11 +11,11 @@ function Delta_coeff = airfoilAnalytic0515De(fdcx,alDe)
 %   fdcx       	analytic function parameters array (see outputs of
 %               airfoilAnalytic0515DeFit)
 %   alDe        concentrated vectors of angle of attack (first column, in deg)
-%               and actuator state (second column) (Nx2 array)
+%               and actuator state (second column) (2xN array)
 % 
 % Outputs:
 %   Delta_coeff     Delta coefficient; to be added to the coefficient of
-%                   of the clean airfoil (Nx1 array)
+%                   of the clean airfoil (1xN array)
 % 
 
 % Disclamer:
@@ -25,10 +25,10 @@ function Delta_coeff = airfoilAnalytic0515De(fdcx,alDe)
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-alpha = alDe(:,1);
-delta = alDe(:,2);
+alpha = alDe(1,:);
+delta = alDe(2,:);
 
-Delta_coeff = fdcx(:,1).*delta ...
-    .* ( 0.5 + 0.5 * tanh( - fdcx(:,3) .* (alpha-fdcx(:,2)) ) );
+Delta_coeff = fdcx(1,:).*delta ...
+    .* ( 0.5 + 0.5 * tanh( - fdcx(3,:) .* (alpha-fdcx(2,:)) ) );
 
 end
