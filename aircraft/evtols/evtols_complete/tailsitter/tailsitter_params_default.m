@@ -40,7 +40,7 @@ tailsitter.config.hitPoints_c = [ ...
                     ]';
 
 % propeller parameters
-tailsitter.map_grid = propMapLoadParams( 'propeller_map_based_params_default' );
+tailsitter.map_fit = propMapLoadParams( 'propeller_map_based_params_default' );
 
 % motor parameters
 tailsitter.motor = motorLoadParams( 'motor_bldc_params_default' );

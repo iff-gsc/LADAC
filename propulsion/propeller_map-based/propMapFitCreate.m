@@ -1,22 +1,18 @@
-function prop_fit = propMapFitCreate( DATA_APC, prop_name, is_plot )
+function prop_fit = propMapFitCreate( prop_name, is_plot )
 % PROPMAPFITCREATE create polynomial fit from propeller map data
 %   The polynomial fit is of order 5 depending on both airspeed and
 %   rotational speed.
 % 
 % Syntax:
-%   prop_fit = propMapFitCreate( DATA_APC, prop_name )
-%   prop_fit = propMapFitCreate( DATA_APC, prop_name, is_plot )
+%   prop_fit = propMapFitCreate( prop_name )
+%   prop_fit = propMapFitCreate( prop_name, is_plot )
 % 
 % Inputs:
-% 	 DATA_APC               An array of cell array which contains propeller
-%                           maps from APC for several propeller types.
-%                           This can be load from a mat file:
-%                           load('DATA_APC');
 %    prop_name              The name of one specific propeller type within
-%                           the first column of DATA_APC.
+%                           the first column of DATA_APC (string).
 %                           Use the following command to get all available
 %                           names:
-%                           name_list = propMapGetNameList(DATA_APC);
+%                           name_list = propMapGetNameList();
 %   is_plot                 (optional) show curve fit result or not (bool),
 %                           default is false.
 % 
@@ -34,12 +30,14 @@ function prop_fit = propMapFitCreate( DATA_APC, prop_name, is_plot )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
+load('DATA_APC');
+
 if nargin < 3
     is_plot = false;
 end
 
 % get scattered propeller map from cell array
-prop_map_scatter = propMapScatterCreate( DATA_APC, prop_name );
+prop_map_scatter = propMapScatterCreate( prop_name );
 
 % fit thrust
 [fitresult, ~] = propMapCurveFit( prop_map_scatter.RPM, ...
