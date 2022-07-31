@@ -39,7 +39,7 @@ tiltwing.config.collision_points_c = [ ...
 
 %% propellers, motors, battery
 
-tiltwing.map_grid = propMapLoadParams( 'propeller_map_based_params_default' );
+tiltwing.map_fit = propMapLoadParams( 'propeller_map_based_params_default' );
 tiltwing.motor = motorLoadParams( 'motor_bldc_params_default' );
 tiltwing.bat = batteryLoadParams( 'battery_params_default' );
 

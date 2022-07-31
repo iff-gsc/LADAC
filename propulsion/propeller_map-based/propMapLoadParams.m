@@ -14,8 +14,6 @@ function prop = propMapLoadParams( filename )
 
 run(filename);
 
-load('DATA_APC');
-
-prop.map_fit = propMapFitCreate(DATA_APC,prop.name);
+prop.map_fit = propMapFitCreate(prop.name);
 
 end

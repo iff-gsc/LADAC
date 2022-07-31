@@ -8,14 +8,11 @@
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-% load APC propeller maps database
-load('DATA_APC');
-
 % load propeller map for specified propeller
 prop_name = '9x9';
-prop_fit = propMapFitCreate( DATA_APC, prop_name );
-prop_scatter = propMapScatterCreate( DATA_APC, prop_name );
-prop_grid = propMapGridCreate( DATA_APC, prop_name );
+prop_fit = propMapFitCreate( prop_name );
+prop_scatter = propMapScatterCreate( prop_name );
+prop_grid = propMapGridCreate( prop_name );
 
 % plot propeller map
 figure
@@ -34,4 +31,4 @@ propMapGridPlot( prop_grid, 'torque' );
 
 
 % get list of available propellers
-name_list = propMapGetNameList(DATA_APC);
+name_list = propMapGetNameList();

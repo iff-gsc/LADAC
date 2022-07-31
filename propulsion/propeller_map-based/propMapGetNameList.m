@@ -1,23 +1,15 @@
-function list = propMapGetNameList( DATA_APC )
-% getPropellerMapNameList returns a list of propeller names available in a
-%   propeller database cell array.
+function list = propMapGetNameList()
+% getPropellerMapNameList name list of all available propeller maps
 % 
 % Syntax:
-%   list = propMapGetNameList( DATA_APC )
+%   list = propMapGetNameList()
 % 
 % Inputs:
-% 	 DATA_APC               An array of cell array which contains propeller
-%                           maps from APC for several propeller types.
-%                           This can be load from a mat file:
-%                           load('DATA_APC');
+%   -
 % 
 % Outputs:
 %   list                    names of all propellers in the propeller map
 %                           database (cell array of strings)
-% 
-% Example:
-%   load('DATA_APC')
-%   list = getPropellerMapNameList('DATA_APC');
 % 
 % See also:
 %   PROPMAPFITCREATE, PROPMAPGRIDCREATE, PROPMAPSCATTERCREATE
@@ -30,6 +22,7 @@ function list = propMapGetNameList( DATA_APC )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
+load('DATA_APC');
 list = unique([DATA_APC(:,1)]);
     
 end

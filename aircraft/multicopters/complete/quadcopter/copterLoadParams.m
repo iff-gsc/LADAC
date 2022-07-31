@@ -15,7 +15,6 @@ function copter = copterLoadParams( filename )
 run(filename);
 
 % initialize propeller map from propeller name
-load('DATA_APC');
-copter.prop.map_fit = propMapFitCreate( DATA_APC, copter.prop.name );
+copter.prop.map_fit = propMapFitCreate( copter.prop.name );
 
 end

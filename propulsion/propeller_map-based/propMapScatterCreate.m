@@ -1,21 +1,17 @@
-function prop_map_scatter = propMapScatterCreate(DATA_APC,prop_name)
+function prop_map_scatter = propMapScatterCreate(prop_name)
 % PROPMAPSCATTERCREATE create propeller map scatter from propeller map data
 %   The propeller map scatter stores all data points from the propeller map
 %   data plus one point at RPM=0, V=0, where thrust and torque are zero.
 % 
 % Syntax:
-%   prop_map_scatter = propMapScatterCreate( DATA_APC, prop_name )
+%   prop_map_scatter = propMapScatterCreate( prop_name )
 % 
 % Inputs:
-% 	 DATA_APC               An array of cell array which contains propeller
-%                           maps from APC for several propeller types.
-%                           This can be load from a mat file:
-%                           DATA_APC = load('DATA_APC');
 %    prop_name              The name of one specific propeller type within
 %                           the first column of DATA_APC.
 %                           Use the following command to get all available
 %                           names:
-%                           name_list = propMapGetNameList(DATA_APC);
+%                           name_list = propMapGetNameList();
 % 
 % Outputs:
 %   prop_map_scatter        propeller map scatter as defined by this
@@ -30,6 +26,8 @@ function prop_map_scatter = propMapScatterCreate(DATA_APC,prop_name)
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
+
+load('DATA_APC');
 
 ind = find(strcmp(DATA_APC(:,1),prop_name));
 DATAp = DATA_APC(ind,:);
@@ -54,6 +52,7 @@ for i = 1:num_rpm
 end
 
 Tau = P./(RPM*2*pi/60);
+Tau(isnan(Tau)) = 0;
 
 prop_map_scatter.RPM = RPM;
 prop_map_scatter.V = V;

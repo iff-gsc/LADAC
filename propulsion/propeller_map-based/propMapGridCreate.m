@@ -1,22 +1,21 @@
-function prop_map_grid = propMapGridCreate( DATA_APC, prop_name )
+function prop_map_grid = propMapGridCreate( prop_name )
 %PROPMAPGRIDCREATE   compute regressions of original APC propeller maps
 %   This function transforms the given APC propeller map with
 %   non-uniformly velocity breakpoint vectors to a propeller map where the 
 %   breakpoint vector is uniformly. This is done by polynomial regression.
-%   The inputs of the function are a cell of given propeller maps and the
-%   name of the propeller. Also a linear extrapolation of the APC propeller
-%   concerning the airspeed is performed based on the derivative at the
-%   borders of the map.
+%   Also a linear extrapolation of the APC propeller concerning the
+%   airspeed is performed based on the derivative at the borders of the
+%   map.
 %
 % Syntax:
-%   prop_map_grid = propMapGridCreate( DATA_APC, prop_name )
+%   prop_map_grid = propMapGridCreate( prop_name )
 %
 % Inputs:
-% 	 DATA_APC               APC propeller map database for several
-%                           propeller types (cell array):
-%                           load('DATA_APC)
 %    prop_name              The name of one specific propeller type within
 %                           the first column of DATA_APC. (string)
+%                           Use the following command to get all available
+%                           names:
+%                           name_list = propMapGetNameList();
 %
 % Outputs:
 %   prop_map_grid           propeller map grid (struct) with the following
@@ -41,6 +40,8 @@ function prop_map_grid = propMapGridCreate( DATA_APC, prop_name )
 % *************************************************************************
 
 %% extract the data of the specified propeller 
+
+load('DATA_APC');
 
 DATAp = DATA_APC;
 ind = find(strcmp(DATAp(:,1),prop_name));
