@@ -89,7 +89,14 @@ end
 
 function [fitresult, gof] = propMapCurveFit( RPM, V, Z, output_name, is_plot )
 
-warning('off', 'curvefit:prepareFittingData:removingNaNAndInf');
+% weighting parameter
+max_weight_ratio = 100;
+
+% smoothing iteration parameters
+rel_diff_allowed = 0.025;
+is_fit_good = false;
+num_iter_max = 1000;
+
 warning('off', 'curvefit:fit:equationBadlyConditioned');
 
 RPM_ext = [ RPM, zeros( 1, length(RPM) ) ];
@@ -100,13 +107,34 @@ Z_ext   = [ Z, zeros( 1, length(Z) ) ];
 % Set up fittype and options.
 ft = fittype( 'poly55' );
 opts = fitoptions( 'Method', 'LinearLeastSquares' );
-opts.Robust = 'LAR';
+% weights are max_weight_ratio at 0 RPM and 1 at max. RPM
+% (this weighting was chosen empirically to increase the relative accuracy
+% of the curve fit at low RPM)
+z_max = max(abs(zData));
+opts.Weights = 1 ./ ( abs(zData)/z_max + 1/max_weight_ratio );
 
-% Fit model to data.
+% Fit model to data and apply smoothing in case of high variance
+% (the smoothing was chosen empirically to increase the relative accuracy
+% of the curve fit at low RPM)
+for i = 1:num_iter_max
+    [fitresult, gof] = fit( [xData, yData], zData, ft, opts );
+    zEval = feval(fitresult,xData,yData);
+    diff_z = zData - zEval;
+    abs_diff_max = max(abs(diff_z));
+    rel_diff = abs_diff_max/z_max;
+    smoothing_function = 0.5 * (diff_z/abs_diff_max).^2;
+    if rel_diff > rel_diff_allowed
+        zData = zData - diff_z .* smoothing_function;
+    else
+        is_fit_good = true;
+        break;
+    end
+end
 
-[fitresult, gof] = fit( [xData, yData], zData, ft );
+if ~is_fit_good
+    warning('Fit probably not good due to too high variance in data');
+end
 
-warning('on', 'curvefit:prepareFittingData:removingNaNAndInf');
 warning('on', 'curvefit:fit:equationBadlyConditioned');
 
 if is_plot

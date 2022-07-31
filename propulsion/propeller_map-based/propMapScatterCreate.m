@@ -54,6 +54,7 @@ for i = 1:num_rpm
 end
 
 Tau = P./(RPM*2*pi/60);
+Tau(isnan(Tau)) = 0;
 
 prop_map_scatter.RPM = RPM;
 prop_map_scatter.V = V;
