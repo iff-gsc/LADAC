@@ -1,6 +1,6 @@
 function [V_Kb_dt,Omega_Kb_dt,eta_from_7_dt2] = ...
     flexibleBodyKineticsSimple( m, I_b, g, structure_red, m_nodes, ...
-    V_Kb, Omega_Kb, M_bg, eta_from_7, q, R_b, Q_b )
+    cg_nodes, V_Kb, Omega_Kb, M_bg, eta_from_7, q, R_b, Q_b )
 % flexibleBodyKineticsSimple compute state derivatives flexible equations
 %   of motion according to Waszak & Schmidt [1].
 %   All outputs are represented in "practical" mean axis system.
@@ -22,6 +22,7 @@ function [V_Kb_dt,Omega_Kb_dt,eta_from_7_dt2] = ...
 %                   the axis system of the structure must be parallel to
 %                   the body frame
 %   m_nodes         masses of the nodes (1xM array for M nodes), in kg
+%   cg_nodes        center of gravity offset of the nodes (3xM array), in m
 %   V_Kb            velocity vector (3x1 array) of the rigid body relative
 %                   to the earth represented in body-fixed frame, in m/s
 %   Omega_Kb        angular velocity vector (3x1 array) of the rigid body
@@ -51,9 +52,9 @@ function [V_Kb_dt,Omega_Kb_dt,eta_from_7_dt2] = ...
 %       aeroelastic vehicles. Journal of Aircraft, 25(6), 563-571.
 %   [2] Reschke, C. (2006). Integrated flight loads modelling and analysis
 %       for flexible transport aircraft.
-%   [3] Schmidt, D. K. (2015). Discussion:“The Lure of the Mean Axes”
+%   [3] Schmidt, D. K. (2015). Discussion:ï¿½The Lure of the Mean Axesï¿½
 %       (Meirovitch, L., and Tuzcu, I., ASME J. Appl. Mech., 74 (3), pp. 
-%       497–504). Journal of Applied Mechanics, 82(12).
+%       497ï¿½504). Journal of Applied Mechanics, 82(12).
 % 
 % Authors:
 %   Yannic Beyer
@@ -61,8 +62,8 @@ function [V_Kb_dt,Omega_Kb_dt,eta_from_7_dt2] = ...
 % *************************************************************************
 
 % node force vector due to gravity
-[~,q_gravity] = structureGetGravityLoadVector( m_nodes, g, M_bg, ...
-    structure_red.modal.T );
+[~,q_gravity] = structureGetGravityLoadVector( m_nodes, cg_nodes, g, ...
+    M_bg, structure_red.modal.T );
 
 % add gravity force vector to external force vector
 q = q + q_gravity;
