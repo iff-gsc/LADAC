@@ -83,7 +83,7 @@ for i = 1:length(varargin)
         elseif isequal(varargin{i},'Mz')
             load_type = 'Mz';
         elseif isequal(varargin{i},'reverse_none')
-            reverse_side = 'reverse_left';
+            reverse_side = 'reverse_none';
         elseif isequal(varargin{i},'reverse_left')
             reverse_side = 'reverse_left';
         elseif isequal(varargin{i},'reverse_right')
