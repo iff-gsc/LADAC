@@ -104,7 +104,18 @@ M_sc = getLinInterpMatrix(wing_eta_c,structure_eta);
 % nodes (transpose of interpolation matrix assures that each force is
 % considered once - because the sum of all columns is one)
 M_sc_load = M_cs';
-M_cs_load = M_sc';
+M_cs_load = pinv(M_sc_load);
+% check if backward force transformation is unique
+test_eye = pinv(M_sc_load)*M_sc_load;
+if any(abs(diag(test_eye)-1)>1e-3)
+    warning( ['The transformation of structure node forces back to ', ...
+        'aerodynamic node forces might be inaccurate. ', ...
+        'Consider to reduce the number of aerodynamic nodes if you ', ...
+        'use this backward transformation. ', ...
+        '(The afflicted wing currently contains ', ...
+        num2str(length(structure_eta)), ' structure nodes and ', ...
+        num2str(length(wing_eta_c)), ' aerodynamic nodes.)' ] );
+end
 
 % get relative chord position of structure nodes
 r_structure = zeros(size(r_vortex));
