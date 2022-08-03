@@ -136,7 +136,8 @@ for i = 1:length(eta)
     wing_nodes_pos_unique = wing_nodes_pos_tip_to_root(:,idx_y_unique);
     span_pos = abs(eta(i)) * wing_nodes_pos_tip_to_root(2,1);
     xyz_lever = structure.xyz(:,idx_use) ...
-        - interp1( y_unique', wing_nodes_pos_unique', span_pos )';
+        - interp1( y_unique', wing_nodes_pos_unique', span_pos, ...
+                'linear', 'extrap' )';
     
     % reverse sign on left or right wing
     eye_force_sign      = eye(3);
