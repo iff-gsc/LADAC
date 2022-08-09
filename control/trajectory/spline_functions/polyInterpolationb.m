@@ -1,4 +1,4 @@
-function [b] = polyInterpolationb(points, degree, cycle)
+function [b, num_of_splines] = polyInterpolationb(points, degree, cycle)
 % polyInterpolation computes stepwise interpolated functions in 1D
 %   The function calculates stepwise defined polynomials for any degree.
 %   The values are given are assumed to be equally spaced with a constant
@@ -28,6 +28,8 @@ function [b] = polyInterpolationb(points, degree, cycle)
 %                   to ensure that the derivatives of the first and last
 %                   point are the same.
 %                   (boolean)
+%
+%   b               right-hand-side b if equation of A*x=b
 %
 % Outputs:
 %

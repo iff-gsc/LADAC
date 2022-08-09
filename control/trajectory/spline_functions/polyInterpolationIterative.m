@@ -61,24 +61,25 @@ end
 
 num_of_waypoints = length(points_new);
 num_of_splines = num_of_waypoints-1;
-
-pp = ones(degree+1, degree+1);
-pp(2:end,:) = 0;
-point_1 = pp;
-for i=1:degree
-    point_1(i+1,1:end-i) = polyder(point_1(i,1:end-i+1));
-end
-
-point_0 = point_1;
-for i=1:degree
-    point_0(i,1:end-i) = 0;
-end
-
 sub_mat_size = degree+1;
+
+% pp = ones(degree+1, degree+1);
+% pp(2:end,:) = 0;
+% point_1 = pp;
+% for i=1:degree
+%     point_1(i+1,1:end-i) = polyder(point_1(i,1:end-i+1));
+% end
+% 
+% point_0 = point_1;
+% for i=1:degree
+%     point_0(i,1:end-i) = 0;
+% end
+% 
+
     
 %% Solve the System
 tic
-[x,iter] = polyInterpolationCore_mex(points, degree, cycle);
+[x,iter] = polyInterpolationCore(points, degree, cycle);
 toc
 
 disp(iter)

@@ -1,5 +1,5 @@
 function [b] = ...
-    polyInterpolationAx(points, degree, cycle, x, dim)
+    polyInterpolationAx(num_of_splines, degree, cycle, x, dim)
 % polyInterpolation computes stepwise interpolated functions in 1D
 %   The function calculates stepwise defined polynomials for any degree.
 %   The values are given are assumed to be equally spaced with a constant
@@ -48,14 +48,14 @@ function [b] = ...
 % *************************************************************************
 b = zeros(size(x));
 
-if cycle == true
-    points_new = [points, points(1)];
-else
-    points_new = points;
-end
-
-num_of_waypoints = length(points_new);
-num_of_splines = num_of_waypoints-1;
+% if cycle == true
+%     points_new = [points, points(1)];
+% else
+%     points_new = points;
+% end
+% 
+% num_of_waypoints = length(points_new);
+% num_of_splines = num_of_waypoints-1;
 
 pp = ones(degree+1, degree+1);
 pp(2:end,:) = 0;

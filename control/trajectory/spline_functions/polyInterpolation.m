@@ -175,6 +175,7 @@ end
     
 % Solve the System
 coeffs = (A \ b)';
+%coeffs = ladac_lsqr(A, b, 6)';
 
 %% Plot function and derivatives
 if(plot_enable)
