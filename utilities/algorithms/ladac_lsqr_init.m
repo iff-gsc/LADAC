@@ -14,20 +14,20 @@ end
 m = length(b);
 n = length(b);
 
-Anorm  = 0;             
+Anorm  = zeros(1, superiorfloat(b));             
 
 % Set up the first vectors u and v for the bidiagonalization.
 % These satisfy  beta*u = b,  alfa*v = A'u.
 
-x    = zeros(n,1);
+x    = zeros(n,1, superiorfloat(b));
 u    = b;        
-v    = zeros(n,1);
-w    = zeros(n,1);
-alfa = 0;             
+v    = zeros(n,1, superiorfloat(b));
+w    = zeros(n,1, superiorfloat(b));
+alfa = zeros(1, superiorfloat(b));             
 beta = norm(u);
 
-rhobar = 0;
-phibar = 0;
+rhobar = zeros(1, superiorfloat(b));
+phibar = zeros(1, superiorfloat(b));
 
 if beta > 0
    u = (1/beta)*u;

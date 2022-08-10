@@ -55,7 +55,9 @@ else
 end
 
 num_of_waypoints = length(points_new);
-num_of_splines = num_of_waypoints-1;
+num_of_splines = (num_of_waypoints-1)*ones(1, superiorfloat(points));
+
+
 
 pp = ones(degree+1, degree+1);
 pp(2:end,:) = 0;
@@ -72,14 +74,14 @@ end
 sub_mat_size = degree+1;
 
 size_A_mat = sub_mat_size*num_of_splines;
-%b = zeros(size_A_mat, 1,superiorfloat(points,degree));
-b = zeros(size_A_mat, 1);
+b = zeros(size_A_mat, 1,superiorfloat(points,degree));
+%b = zeros(size_A_mat, 1);
 
 if cycle == false
     
     % Boundary Condition Size
-    bnd_left  = ceil((degree+1)/2);
-    bnd_right = floor((degree+1)/2);
+    bnd_left  = ceil((degree+1)/2)*ones(1, superiorfloat(points));
+    bnd_right = floor((degree+1)/2)*ones(1, superiorfloat(points));
         
     % Construct Right Hand Side Boundarys
     b(1) = points_new(1);
@@ -97,7 +99,7 @@ if cycle == false
 else
     
     % Boundary Condition Size
-    bnd_left  = 2;
+    bnd_left  = 2*ones(1, superiorfloat(points));
 
     % Construct Right Hand Side Boundarys
     b(1) = points_new(1,1);   %These should be the same!

@@ -46,7 +46,7 @@ function [b] = ...
 %   Copyright (C) 2020-2022 Fabian Guecker
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
-b = zeros(size(x));
+b = zeros(size(x), superiorfloat(x));
 
 % if cycle == true
 %     points_new = [points, points(1)];
@@ -56,6 +56,7 @@ b = zeros(size(x));
 % 
 % num_of_waypoints = length(points_new);
 % num_of_splines = num_of_waypoints-1;
+
 
 pp = ones(degree+1, degree+1);
 pp(2:end,:) = 0;
@@ -79,8 +80,8 @@ intermediate_size = sub_mat_size*(num_of_splines-1);
 if cycle == false
     
     % Boundary Condition Size
-    bnd_left  = ceil((degree+1)/2);
-    bnd_right = floor((degree+1)/2);
+    bnd_left  = ceil((degree+1)/2) * ones(1, superiorfloat(x));
+    bnd_right = floor((degree+1)/2) * ones(1, superiorfloat(x));
     
     %Left Boundary
     i = 1;
@@ -98,7 +99,7 @@ else
     
     % Boundary Condition Size
     %bnd_left(:)  = 2;
-    bnd_left  = 2;
+    bnd_left  = 2*ones(1, superiorfloat(x));
     
     last_row = sub_mat_size*(num_of_splines-1)+bnd_left;
     last_right = sub_mat_size*(num_of_splines-1)+1;
