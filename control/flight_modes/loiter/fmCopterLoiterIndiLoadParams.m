@@ -4,7 +4,7 @@ function fm_loiter = fmCopterLoiterIndiLoadParams( filename )
 % 
 % Example:
 %  fm_atti = fmCopterLoiterIndiLoadParams( ...
-%   'fm_copter_loiter_indi_params_default' );
+%   'fmCopterLoiterIndi_params_default' );
 % 
 
 % Disclamer:

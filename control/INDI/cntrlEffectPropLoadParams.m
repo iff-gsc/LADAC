@@ -1,10 +1,10 @@
-function cntrl_effect = controlEffectivenessLoadParams( filename )
-% controlEffectivenessLoadParams loads a wls control allocation parameters
+function cntrl_effect = cntrlEffectPropLoadParams( filename )
+% cntrlEffectPropLoadParams loads motor-propeller control effectiveness
 %   struct
 % 
 % Example:
-%  cntrl_effect = controlEffectivenessLoadParams( ...
-%   'control_effectiveness_params_default' );
+%  cntrl_effect = cntrlEffectPropLoadParams( ...
+%   'cntrlEffectProp_params_default' );
 % 
 
 % Disclamer:
