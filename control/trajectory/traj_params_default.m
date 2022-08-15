@@ -8,7 +8,7 @@
 % *************************************************************************
 
 % maximum number of waypoints
-params.wpmax = 6;
+params.wpmax = 10;
 
 % boolean if last and first waypoint should be connected (true) or not
 params.cycle = true;

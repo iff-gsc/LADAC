@@ -53,10 +53,11 @@ b = zeros(size(x), superiorfloat(x));
 % else
 %     points_new = points;
 % end
-% 
+%
 % num_of_waypoints = length(points_new);
 % num_of_splines = num_of_waypoints-1;
 
+degree = 5;
 
 pp = ones(degree+1, degree+1);
 pp(2:end,:) = 0;
@@ -93,7 +94,13 @@ if cycle == false
     i = bnd_left+1+intermediate_size;
     j = 1+intermediate_size;
     %A(i:i+bnd_right-1, j:j+degree) = point_1(1:bnd_right,:);
-    b = multAx(i:i+bnd_right-1, j:j+degree, point_1(1:bnd_right,:), x, b, dim);
+    %b = multAx(i:i+bnd_right-1, j:j+degree, point_1(1:bnd_right,:), x, b, dim);
+    
+    if dim == 2
+        b(j:j+degree) = b(j:j+degree) + point_1(1:bnd_right,:)' * x(i:i+bnd_right-1);
+    elseif dim == 1
+        b(i:i+bnd_right-1) = b(i:i+bnd_right-1) + point_1(1:bnd_right,:) * x(j:j+degree);
+    end
     
 else
     
@@ -108,22 +115,42 @@ else
     i = 1;
     j = 1;
     %A(i  , j:j+degree) = point_0(1,:);
-    b = multAx(i  , j:j+degree, point_0(1,:), x, b, dim);
+    %b = multAx(i  , j:j+degree, point_0(1,:), x, b, dim);
+    if dim == 2
+        b(j:j+degree) = b(j:j+degree) + point_0(1,:)' * x(i);
+    elseif dim == 1
+        b(i) = b(i) + point_0(1,:) * x(j:j+degree);
+    end
     
     %A(i+1, last_right:last_right+degree) = point_1(1,:);
-    b = multAx(i+1, last_right:last_right+degree, point_1(1,:), x, b, dim);
+    %b = multAx(i+1, last_right:last_right+degree, point_1(1,:), x, b, dim);
+    if dim == 2
+        b(last_right:last_right+degree) = b(last_right:last_right+degree) + point_1(1,:)' * x(i+1);
+    elseif dim == 1
+        b(i+1) = b(i+1) + point_1(1,:) * x(last_right:last_right+degree);
+    end
     
     % Derivative of Startpoint First Segment
     i = last_row+1;
     j = 1;
     %A(i:i+bnd_med-2, j:j+degree) = point_0(2:bnd_med,:);
-    b = multAx(i:i+bnd_med-2, j:j+degree, point_0(2:bnd_med,:), x, b, dim);
+    %b = multAx(i:i+bnd_med-2, j:j+degree, point_0(2:bnd_med,:), x, b, dim);
+    if dim == 2
+        b(j:j+degree) = b(j:j+degree) + point_0(2:bnd_med,:)' * x(i:i+bnd_med-2);
+    elseif dim == 1
+        b(i:i+bnd_med-2) = b(i:i+bnd_med-2) + point_0(2:bnd_med,:) * x(j:j+degree);
+    end
     
     % Derivative of Endpoint Last Segment
     i = last_row+1;
     j = last_right;
     %A(i:i+bnd_med-2, j:j+degree) = -point_1(2:bnd_med,:);
-    b = multAx(i:i+bnd_med-2, j:j+degree, -point_1(2:bnd_med,:), x, b, dim);
+    %b = multAx(i:i+bnd_med-2, j:j+degree, -point_1(2:bnd_med,:), x, b, dim);
+    if dim == 2
+        b(j:j+degree) = b(j:j+degree) - point_1(2:bnd_med,:)' * x(i:i+bnd_med-2);
+    elseif dim == 1
+        b(i:i+bnd_med-2) = b(i:i+bnd_med-2) - point_1(2:bnd_med,:) * x(j:j+degree);
+    end
     
 end
 
@@ -137,25 +164,45 @@ for k = 1:(num_of_splines-1)
     i = itm_row+1;
     j = itm_left;
     %A(i, j:j+degree) = point_1(1,:);
-    b = multAx(i, j:j+degree, point_1(1,:), x, b, dim);
+    %b = multAx(i, j:j+degree, point_1(1,:), x, b, dim);
+    if dim == 2
+        b(j:j+degree) = b(j:j+degree) + point_1(1,:)' * x(i);
+    elseif dim == 1
+        b(i) = b(i) + point_1(1,:) * x(j:j+degree);
+    end
     
     % Intermediate Step, Startpoint Right Segment
     i = itm_row+2;
     j = itm_right;
     %A(i, j:j+degree) = point_0(1,:);
-    b = multAx(i, j:j+degree, point_0(1,:), x, b, dim);
+    %b = multAx(i, j:j+degree, point_0(1,:), x, b, dim);
+    if dim == 2
+        b(j:j+degree) = b(j:j+degree) + point_0(1,:)' * x(i);
+    elseif dim == 1
+        b(i) = b(i) + point_0(1,:) * x(j:j+degree);
+    end
     
     % Derivative of Endpoint Left Segment
     i = itm_row+3;
     j = itm_left;
     %A(i:i+bnd_med-2, j:j+degree) = point_1(2:bnd_med,:);
-    b = multAx(i:i+bnd_med-2, j:j+degree, point_1(2:bnd_med,:), x, b, dim);
+    %b = multAx(i:i+bnd_med-2, j:j+degree, point_1(2:bnd_med,:), x, b, dim);
+    if dim == 2
+        b(j:j+degree) = b(j:j+degree) + point_1(2:bnd_med,:)' * x(i:i+bnd_med-2);
+    elseif dim == 1
+        b(i:i+bnd_med-2) = b(i:i+bnd_med-2) + point_1(2:bnd_med,:) * x(j:j+degree);
+    end
     
     % Derivative of Endpoint Right Segment
     i = itm_row+3;
     j = itm_right;
     %A(i:i+bnd_med-2, j:j+degree) = -point_0(2:bnd_med,:);
-    b = multAx(i:i+bnd_med-2, j:j+degree, -point_0(2:bnd_med,:), x, b, dim);
+    %b = multAx(i:i+bnd_med-2, j:j+degree, -point_0(2:bnd_med,:), x, b, dim);
+    if dim == 2
+        b(j:j+degree) = b(j:j+degree) - point_0(2:bnd_med,:)' * x(i:i+bnd_med-2);
+    elseif dim == 1
+        b(i:i+bnd_med-2) = b(i:i+bnd_med-2) - point_0(2:bnd_med,:) * x(j:j+degree);
+    end
     
 end
 

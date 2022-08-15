@@ -48,6 +48,8 @@ function [b, num_of_splines] = polyInterpolationb(points, degree, cycle)
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
+degree = 5;
+
 if cycle == true
    points_new = [points, points(1)];
 else
@@ -56,7 +58,6 @@ end
 
 num_of_waypoints = length(points_new);
 num_of_splines = (num_of_waypoints-1)*ones(1, superiorfloat(points));
-
 
 
 pp = ones(degree+1, degree+1);
