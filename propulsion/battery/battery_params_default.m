@@ -7,5 +7,10 @@
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-% nominal voltage, V
-bat.V = 14.8;
+% discharge model parameters
+bat.E_0 = 4.00;
+bat.A   = 0.20;
+bat.K   = 0.09;
+bat.B   = 14.4;
+bat.tc  = 30;
+bat.SoC_full = 1.13;
