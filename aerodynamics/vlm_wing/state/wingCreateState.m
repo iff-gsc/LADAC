@@ -96,6 +96,7 @@ state.aero.unsteady.c_m_c           = zeros( 1, n_panel );
 state.aero.unsteady.c_D             = zeros( 1, n_panel );
 state.aero.unsteady.alpha_eff       = zeros( 1, n_panel );
 state.aero.unsteady.c_L_c_flap      = zeros( 1, n_panel );
+state.aero.unsteady.c_L_act2        = zeros( 1, n_panel );
 % incuded normalized velocity vectors in body frame
 state.aero.unsteady.v_i             = zeros( 3, n_panel );
 

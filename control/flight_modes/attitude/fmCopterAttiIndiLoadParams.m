@@ -16,9 +16,9 @@ function fm_atti = fmCopterAttiIndiLoadParams( filename )
 
 run(filename);
 
-fm_atti.cntrl_effect.ny_du_red = fm_atti.cntrl_effect.ny_du_red(1:3,:);
-fm_atti.cntrl_effect.ny_du_dt = fm_atti.cntrl_effect.ny_du_dt(1:3,:);
-
-fm_atti.ca.W_v = fm_atti.ca.W_v(1:3,1:3);
+% fm_atti.cntrl_effect.ny_du_red = fm_atti.cntrl_effect.ny_du_red(1:3,:);
+% fm_atti.cntrl_effect.ny_du_dt = fm_atti.cntrl_effect.ny_du_dt(1:3,:);
+% 
+% fm_atti.ca.W_v = fm_atti.ca.W_v(1:3,1:3);
 
 end

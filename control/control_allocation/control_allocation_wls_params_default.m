@@ -23,7 +23,7 @@ ca.W_v = diag([10,10,0.01,1]);
 ca.W_u = eye(4);
 % weighting of pseudo-control vs. control input (scalar)
 ca.gamma = 1000;
-% initial working set mx1 vector
+% initial working set kx1 vector
 ca.W = zeros(4,1);
 % maximum number of iterations (scalar)
 ca.i_max = 100;
