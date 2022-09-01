@@ -22,15 +22,15 @@ function v_rot = axisAngle( v, axis, angle ) %#codegen
 
 v_rot       = zeros( size(v) );
 axis_length = vecnorm( axis, 2, 1 );
+for i = 1:3
+    axis(i,:) = axis(i,:) ./ axis_length;
+end
 cos_angle   = cos(angle);
 cos_angle_1 = 1-cos_angle;
 sin_angle   = sin(angle);
 cross_prod  = crossFast(axis,v);
 dot_prod    = dot(axis,v);
 for i = 1:3
-    axis(i,:) = axis(i,:) ./ axis_length;
-
     v_rot(i,:) = cos_angle.*v(i,:) + sin_angle.*cross_prod(i,:) ...
         + cos_angle_1 .* dot_prod .* axis(i,:);
-
 end
