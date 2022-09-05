@@ -25,6 +25,9 @@ measure.s_Kg        = zeros(3,1);
 measure.lla         = zeros(3,1);
 % rangefinders in (m)
 measure.rangefinder = zeros(6,1);
+%  measured acceleration represented in FRD frame, in m/s^2
+measure.a_bg = zeros(3,1);
+
 
 %% commanded values
 % stick inputs:
