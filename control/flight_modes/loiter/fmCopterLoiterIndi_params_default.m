@@ -8,29 +8,29 @@
 % *************************************************************************
 
 % attitude controller
-fm_loiter.atc = cntrlAttiRedIndiLoadParams( ...
+param.atc = cntrlAttiRedIndiLoadParams( ...
     'cntrlAttiRedIndi_params_default');
 
 % position position controller
-fm_loiter.psc = cntrlPosNdiLoadParams( ...
+param.psc = cntrlPosNdiLoadParams( ...
     'cntrlPosNdi_params_default' );
 
 % propeller control effectiveness
-fm_loiter.cep = loadParams( 'indiCeProp_params_default' );
+param.cep = loadParams( 'indiCeProp_params_default' );
 
 % body control effectiveness
-fm_loiter.ceb = loadParams( 'indiCeBody_params_default' );
+param.ceb = loadParams( 'indiCeBody_params_default' );
 
 % control allocation
-fm_loiter.ca = controlAllocationWlsLoadParams( ...
+param.ca = controlAllocationWlsLoadParams( ...
     'control_allocation_wls_params_quadcopter' );
 
 % sensor filter
-fm_loiter.sflt = indiSensFiltLoadParams( ...
+param.sflt = indiSensFiltLoadParams( ...
     'indiSensFilt_params_default' );
 
 % motor time constant, in s
-fm_loiter.mtc = 0.028;
+param.mtc = 0.028;
 
 % flight mode sample time, in s
-fm_loiter.ts = 0.0025;
+param.ts = 0.0025;

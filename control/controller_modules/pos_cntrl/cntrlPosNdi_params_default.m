@@ -10,25 +10,25 @@
 %% reference model parameter
 
 % velocity time constant, in s
-psc.rm.veltc  	= 0.8;
+param.rm.veltc      = 0.8;
 % maximum lateral velocity, in m/s
-psc.rm.velxymax = 14;
+param.rm.velxymax	= 14;
 % maximum lateral acceleration, in m/s^2
-psc.rm.accxymax = 6.5;
+param.rm.accxymax	= 6.5;
 % maximum (absolute) upwards vertical velocity, m/s
-psc.rm.velumax 	= 6;
+param.rm.velumax 	= 6;
 % maximum (absolute) downwards vertical velocity, m/s
-psc.rm.veldmax 	= 4;
+param.rm.veldmax 	= 4;
 % maximum (absolute) upwards vertical acceleration, m/s^2
-psc.rm.accumax  = 7;
+param.rm.accumax	= 7;
 % maximum (absolute) downwards vertical acceleration, m/s^2
-psc.rm.accdmax  = 4;
+param.rm.accdmax	= 4;
 
 %% position controller gains
 
 % position gain
-psc.k.pos 	= 2.1434;
+param.k.pos         = 2.1434;
 % velocity gain
-psc.k.vel 	= 2.8016;
+param.k.vel         = 2.8016;
 % acceleration gain
-psc.k.acc 	= 0.3455;
+param.k.acc         = 0.3455;
