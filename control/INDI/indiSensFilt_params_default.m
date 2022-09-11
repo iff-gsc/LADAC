@@ -1,9 +1,4 @@
-function psc = cntrlPosNdiLoadParams( filename )
-% cntrlPosIndiLoadParams NDI position controller struct
-% 
-% Example:
-%  psc = cntrlPosNdiLoadParams( 'cntrlPosNdi_params_default' );
-% 
+% ** Parameters for INDI sensor filter (default) **
 
 % Disclamer:
 %   SPDX-License-Identifier: GPL-2.0-only
@@ -12,6 +7,7 @@ function psc = cntrlPosNdiLoadParams( filename )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-run(filename);
-
-end
+% natural angular frequency of the second order low pass filter
+param.omega = 100;
+% damping ratio of the second order low pass filter
+param.D = 1;

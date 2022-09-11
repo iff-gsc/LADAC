@@ -8,31 +8,28 @@
 % *************************************************************************
 
 % attitude controller
-ap_dragonfly.atc = cntrlAttiRedIndiLoadParams( ...
-    'cntrlAttiRedIndi_params_default');
+param.atc = loadParams( 'cntrlAttiRedIndi_params_default');
 
 % position position controller
-ap_dragonfly.psc = cntrlPosNdiLoadParams( ...
-    'cntrlPosNdi_params_default' );
+param.psc = loadParams( 'cntrlPosNdi_params_default' );
 
 % guidance
-ap_dragonfly.traj = trajLoadParams( ...
-    'traj_params_default');
+param.traj = loadParams( 'traj_params_default');
 
-% control effectiveness
-ap_dragonfly.cntrl_effect = controlEffectivenessLoadParams( ...
-    'control_effectiveness_params_default' );
+% propeller control effectiveness
+param.cep = loadParams( 'indiCeProp_params_default' );
+
+% body control effectiveness
+param.ceb = loadParams( 'indiCeBody_params_default' );
 
 % control allocation
-ap_dragonfly.ca = controlAllocationWlsLoadParams( ...
-    'control_allocation_wls_params_quadcopter' );
+param.ca = loadParams( 'control_allocation_wls_params_quadcopter' );
 
 % sensor filter
-ap_dragonfly.sens_filt = indiSensFiltLoadParams( ...
-    'indi_sens_filt_params_default' );
+param.sflt = loadParams( 'indiSensFilt_params_default' );
 
 % motor time constant, in s
-ap_dragonfly.motor_time_constant = 0.028;
+param.mtc = 0.028;
 
 % flight mode sample time, in s
-ap_dragonfly.sample_time = 0.0025;
+param.ts = 0.0025;

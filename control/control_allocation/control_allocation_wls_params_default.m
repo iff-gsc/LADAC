@@ -11,19 +11,19 @@
 % m is the number of pseudo control inputs
 
 % minimum control input kx1 vector
-ca.u_min = 0.1*ones(4,1);
+param.u_min = 0.1*ones(4,1);
 % maximum control input kx1 vector
-ca.u_max = ones(4,1);
+param.u_max = ones(4,1);
 % desired control input kx1 vector
-ca.u_d = 0.1*ones(4,1);
+param.u_d = 0.1*ones(4,1);
 
 % weighting mxm matrix of pseudo-control
-ca.W_v = diag([10,10,0.01,1]);
+param.W_v = diag([10,10,0.01,1]);
 % weighting kxk matrix of the control input vector
-ca.W_u = eye(4);
+param.W_u = eye(4);
 % weighting of pseudo-control vs. control input (scalar)
-ca.gamma = 1000;
+param.gamma = 1000;
 % initial working set mx1 vector
-ca.W = zeros(4,1);
+param.W = zeros(4,1);
 % maximum number of iterations (scalar)
-ca.i_max = 100;
+param.i_max = 100;
