@@ -20,6 +20,7 @@ param.ny  = [0,0,0,0];
 param.ip  = 2e-6;
 % motor torque constant (inverse of KV), Nm/A
 param.kt  = 0.0056;
+% battery voltage, V
 param.vb  = 22.2;
 % motor internal resistance, Ohm
 param.ri  = 0.32;

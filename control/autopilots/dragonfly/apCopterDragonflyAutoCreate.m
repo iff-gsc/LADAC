@@ -7,10 +7,9 @@ is_flipped_allowed = 1;
 
 g = 9.81;
 
-ap.ca = controlAllocationWlsLoadParams( ...
-    'control_allocation_wls_params_default' );
+ap.ca = loadParams( 'control_allocation_wls_params_default' );
 
-ap.traj = trajLoadParams( 'traj_params_default');
+ap.traj = loadParams( 'traj_params_default');
 
 num_motors = size(copter.config.propPos_c,2);
 
@@ -24,10 +23,6 @@ thrust_min = sum( k*omega_min.^2 );
 thrust_hover = copter.body.m * g;
 
 omega_hover = sqrt( thrust_hover / k );
-
-torque_max = max( d*omega_max.^2 );
-torque_min = max( d*omega_min.^2 );
-torque_hover = max( d*omega_hover.^2 );
 
 delta_thrust_max = min( thrust_max - thrust_hover, thrust_hover - thrust_min );
 
