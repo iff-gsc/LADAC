@@ -152,9 +152,10 @@ ap.atc.k.yawacc = k(3);
 
 % position feedback controller
 T_h = T_h + 2/ap.atc.rm.leanfreq;
-p = -0.5*[1+1i,1-1i,4] * aggr / T_h;
+% p = -0.5*[1+1i,1-1i,4] * aggr / T_h;
 % p = -0.5*[1,1,1] * aggr / T_h;
-p = -0.5*[1.5,1+0.65i,1-0.65i] * aggr / T_h;
+% p = -0.5*[1.7,1+0.65i,1-0.65i] * aggr / T_h;
+p = -0.75*[1/T_h,0.75*aggr/T_h*(1+0.65i),0.75*aggr/T_h*(1-0.65i)];
 k = ndiFeedbackGainPlace(p,T_h);
 ap.psc.k.pos = k(1);
 ap.psc.k.vel = k(2);
