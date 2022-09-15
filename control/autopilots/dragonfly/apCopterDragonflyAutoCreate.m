@@ -7,7 +7,7 @@ is_flipped_allowed = 1;
 
 g = 9.81;
 
-ap.ca = loadParams( 'control_allocation_wls_params_default' );
+ap.ca = loadParams( 'caWls_params_default' );
 
 ap.traj = loadParams( 'traj_params_default');
 
