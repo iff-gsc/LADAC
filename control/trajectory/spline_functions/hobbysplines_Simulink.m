@@ -1,5 +1,6 @@
 function [traj] = hobbysplines_Simulink(points,tension)
 
+datatype = 'single';
 
 %% Parse inputs
 cycle  = false;
@@ -16,18 +17,24 @@ Npoints = numel(points);
 %tin = cell(Npoints, 1); % tension of curve in to point
 %tout = cell(Npoints, 1); % tension of curve out from point
 
-z = {zeros(1,3,'single');zeros(1,3,'single')};
-w = {zeros(1,3,'single');zeros(1,3,'single')};
-tin  = {zeros(1,1,'single');zeros(1,1,'single')};
-tout = {zeros(1,1,'single');zeros(1,1,'single')};
+z = {zeros(1,3,datatype);zeros(1,3,datatype)};
+w = {zeros(1,3,datatype);zeros(1,3,datatype)};
+tin  = {zeros(1,1,datatype);zeros(1,1,datatype)};
+tout = {zeros(1,1,datatype);zeros(1,1,datatype)};
 
 for n = 1:Npoints
   
   pp = points{n};
   
-  w{n} = single([NaN NaN NaN]);
-  tout{n} = single(tension);
-  tin{n} = single(tension);
+  if(strcmp(datatype, 'single'))
+    w{n} = single([NaN NaN NaN]);
+    tout{n} = single(tension);
+    tin{n} = single(tension);
+  else
+    w{n} = [NaN NaN NaN];
+    tout{n} = tension;
+    tin{n} = tension; 
+  end
 
   z{n} = pp{1};
   w{n} = pp{2};
@@ -66,8 +73,13 @@ end
 
 max_points = 1;
 degree = 5;
-traj = trajInitSingle(max_points, degree);
-traj.num_sections_set = single(Npoints-1);
+if(strcmp(datatype, 'single'))
+    traj = trajInitSingle(max_points, degree);
+    traj.num_sections_set = single(Npoints-1);
+else
+    traj = trajInit(max_points, degree);
+    traj.num_sections_set = Npoints - 1;
+end
 
 % traj.num_sections_max = Npoints;
 % traj.active_section = 0;
