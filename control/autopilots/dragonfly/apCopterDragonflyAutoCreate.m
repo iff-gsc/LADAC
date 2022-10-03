@@ -1,7 +1,7 @@
 function ap = apCopterDragonflyAutoCreate( copter )
 
 % aggressiveness (0-1)
-aggr = 0.5;
+aggr = 0.6;
 
 is_flipped_allowed = 1;
 
@@ -126,26 +126,32 @@ acc_yaw_max = yaw_moment_max / copter.body.I(3,3);
 ap.atc.rm.leanfreq =  sqrt( aggr * acc_roll_pitch_max / lean_max );
 ap.atc.rm.yawratetc = aggr * ap.atc.rm.yawratemax / acc_yaw_max;
 
-
 ap.mtc = copter.motor.R*copter.prop.I/copter.motor.KT^2;
 
 ap.ts = 0.0025;
 
 % sensor filter
 ap.sflt.D = 1;
-ap.sflt.omega = 3 * 2/ap.mtc;
+ap.sflt.omega = 2/ap.mtc;
+
+% separation factor to T_h
+sep_factor = 0.75;
+ap.atc.rm.leanfreq = min( ap.atc.rm.leanfreq, aggr*sep_factor*2/(ap.mtc + 2/ap.sflt.omega) );
+ap.atc.rm.yawratetc = max( ap.atc.rm.yawratetc, 1/(aggr*sep_factor)*(ap.mtc + 2/ap.sflt.omega) );
 
 % lean angle controller
 T_h = ap.mtc + 2/ap.sflt.omega;
-max_roll_pitch_atti_error = 2;
-k = maxError2FeedbackGain( max_roll_pitch_atti_error, acc_roll_pitch_max, T_h, aggr );
+% max_roll_pitch_atti_error = 2;
+% k = maxError2FeedbackGain( max_roll_pitch_atti_error, acc_roll_pitch_max, T_h, aggr );
+k = ndiFeedbackGainPlace(-ap.atc.rm.leanfreq*[1,1,1],T_h);
 ap.atc.k.lean = k(1);
 ap.atc.k.leanrate = k(2);
 ap.atc.k.leanacc = k(3);
 
 % yaw controller
-max_yaw_atti_error = pi;
-k = maxError2FeedbackGain( max_yaw_atti_error, acc_yaw_max, T_h, aggr );
+% max_yaw_atti_error = pi;
+% k = maxError2FeedbackGain( max_yaw_atti_error, acc_yaw_max, T_h, aggr );
+k = ndiFeedbackGainPlace(-1/ap.atc.rm.yawratetc*[1,1,1],T_h);
 ap.atc.k.yaw = k(1);
 ap.atc.k.yawrate = k(2);
 ap.atc.k.yawacc = k(3);
@@ -155,7 +161,7 @@ T_h = T_h + 2/ap.atc.rm.leanfreq;
 % p = -0.5*[1+1i,1-1i,4] * aggr / T_h;
 % p = -0.5*[1,1,1] * aggr / T_h;
 % p = -0.5*[1.7,1+0.65i,1-0.65i] * aggr / T_h;
-p = -0.75*[1/T_h,0.75*aggr/T_h*(1+0.65i),0.75*aggr/T_h*(1-0.65i)];
+p = -sep_factor*aggr*[ 1/T_h, 0.7/T_h*(1+0.65i), 0.7/T_h*(1-0.65i) ];
 k = ndiFeedbackGainPlace(p,T_h);
 ap.psc.k.pos = k(1);
 ap.psc.k.vel = k(2);
