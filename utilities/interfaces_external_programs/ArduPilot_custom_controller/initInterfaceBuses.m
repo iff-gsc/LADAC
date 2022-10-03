@@ -20,23 +20,34 @@ end
 % angular velocity of FRD frame relative to the earth represented in FRD
 % frame, in rad/s; This unfiltered (and noisy) signal is obtained on a
 % custom way and should be preferred over omega_Kb and then processed by a
-% custom low-pass filter.
+% custom low-pass filter. In contrast to omega_Kb the time-derivative of
+% the filtered Omega_Kb_raw is NOT noisy.
 measure.Omega_Kb_raw = zeros(3,1);
 % angular velocity of FRD frame relative to the earth represented in FRD
-% frame as used internally in ArduPilot (Omega_Kb_raw should be perferred
-% because omega_Kb is still noisy due to unknown reasons), in rad/s
+% frame as used internally in ArduPilot, in rad/s. This signal is filtered
+% by a low-pass filter with cutoff frequency INS_GYRO_FILTER. However, 
+% Omega_Kb_raw should be perferred because the time-derivative of omega_Kb
+% is still noisy due to unknown reasons.
 measure.omega_Kb    = zeros(3,1);
-% Euler angles of FRD frame relative to NED frame, in 1
+% Euler angles of FRD frame relative to NED frame, in rad (predicted and
+% thus almost without delay)
 measure.EulerAngles = zeros(3,1);
-% quaternion from NED to FRD frame
+% quaternion from NED to FRD frame (predicted and thus almost without
+% delay)
 measure.q_bg        = euler2Quat(measure.EulerAngles);
-% measured acceleration represented in NED frame, in m/s^2
+% measured acceleration represented in NED frame, in m/s^2 (x and y
+% component almost without delay; z component seems to be delayed by
+% INS_ACCEL_FILTER)
 measure.a_Kg        = zeros(3,1);
 % velocity of FRD frame relative to the earth represented in FRD frame, in
-% m/s
+% m/s (predicted and thus almost without delay)
 measure.V_Kg        = zeros(3,1);
-% local position NED, in m
+% local position NED, in m (there is a delay that should be elaborated in
+% the future)
 measure.s_Kg        = zeros(3,1);
+% local position NED w.r.t. origin, in m (there is a delay that should be elaborated in
+% the future)
+measure.s_Kg_origin = zeros(3,1);
 % global position (latitude, longitude, altitude), in (?,?,m)
 measure.lla         = zeros(3,1);
 % rangefinders in (m)
