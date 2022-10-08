@@ -114,12 +114,11 @@ Step 1-3 must be adjusted as follows. For the remaining steps please follow the 
 ## How to use?
 
 - Work through the [Tests](#Tests) section in the first place.
-- Make a copy of one of the `MatlabController` template Simulink files, insert your controller block and connect the inputs and outputs with the Simulink blocks in `LADAC/utilities/interfaces_external_programs/ardupilot_custom_controller`. You have to initialize the Simulink bus objects and the sample time in the first place in Matlab:
+- Make a copy of one of the `MatlabController` template Simulink files, insert your controller block and connect the inputs and outputs with the Simulink blocks in `LADAC/utilities/interfaces_external_programs/ardupilot_custom_controller`. You have to initialize the Simulink bus objects in the first place in Matlab:
   ```
-  initInterfaceBuses
-  cntrl.sample_time = 1/400
+  ardupilotCreateInterfaceBuses
   ```
-  If you need interfaces that are not supported by the LADAC blocks, you have to adjust the `initInterfaceBuses.m` and the `mode_custom.cpp` in the ArduPilot patch and probably other files in the ArduPilot patch, see [Contribute](Contribure) section.
+  If you need interfaces that are not supported by the LADAC blocks, you have to adjust the `ardupilotCreateInputBuses.m` and the `mode_custom.cpp` in the ArduPilot patch and probably other files in the ArduPilot patch, see [Contribute](Contribure) section.
 - Generate C/C++ code from the Simulink file: https://de.mathworks.com/help/dsp/ug/generate-c-code-from-simulink-model.html
 Note that floating points should be 32-bit! This is assured in the Simulink template files because the following parameters were set: `set_param(gcs, 'DefaultUnderspecifiedDataType', 'single')` and `set_param(gcs, 'DataTypeOverride', 'Single','DataTypeOverrideAppliesTo','Floating-point')`
 - You need only four files of the generated code: `MatlabController.cpp`, `MatlabController.h`, `MatlabController_data.cpp` and `rtwtypes.h`. 

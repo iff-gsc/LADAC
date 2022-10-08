@@ -1,5 +1,25 @@
-function [] = initInterfaceBuses( varargin )
-
+function [] = ardupilotCreateInputBuses( varargin )
+% ardupilotCreateInputBuses create Simulink bus objects "cmdBus" and
+% "measureBus" for ArduPilot custom controller
+%   The ArduPilot custom controller interface needs the buses "cmdBus" and
+%   "measureBus" to be in the base workspace, see
+%   ArduCopter_TemplateController.slx and ArduPlane_ManualMode.slx.
+% 
+% Syntax:
+%   ardupilotCreateInputBuses()
+%   ardupilotCreateInputBuses(data_type)
+% 
+% Inputs:
+%   data_type           (optional) data type of the floating point
+%                       variables in the "cmdBus" and "measureBus"
+%                       ('single' (default) or 'double')
+% 
+% Outputs:
+%   none (but two Simulink bus objects named "cmdBus" and "measureBus" will
+%   be assigned to the base workspace)
+% 
+% See also:
+%   ardupilotCreateLogBus
 
 % Disclamer:
 %   SPDX-License-Identifier: GPL-2.0-only
@@ -7,7 +27,6 @@ function [] = initInterfaceBuses( varargin )
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
-
 
 if isempty(varargin)
     data_type = 'single';
