@@ -23,7 +23,7 @@ Here, the implementation of your MATLAB/Simulink controller in ArduPilot is disc
 
 This unit test shows you how it works and it can be used for verification.
 Therefore, a dummy controller from MATLAB/Simulink is implemented in ArduCopter or ArduPlane.
-Take a look at the Simulink model `ArduCopter_TemplateController` in the [ArduCopter](ArduCopter) subfolder and the `ArduPlane_ManualMode` in the [ArduPlane](ArduPlane) subfolder.
+Take a look at the Simulink model `ArduCopter_TemplateController` in the [ArduCopter](ArduCopter) subfolder and the `ArduPlane_TemplateController` in the [ArduPlane](ArduPlane) subfolder.
 They contain the dummy controller in the middle.
 On the left and on the right, there are interfaces to the ArduPilot code.
 In this case, the dummy controller sends constant values to the actuators and it logs some states.  
