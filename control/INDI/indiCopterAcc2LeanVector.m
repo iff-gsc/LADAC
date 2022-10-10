@@ -44,7 +44,7 @@ function n_g_des = indiCopterAcc2LeanVector( nu_s_g_dt2, s_g_dt2, M_bg, g )
 n_g_mes = dcm2LeanVector( M_bg );
 
 % desired lean angle increment
-Delta_n_g_des = (nu_s_g_dt2 - s_g_dt2) / norm( s_g_dt2 - [0;0;g], 2 ); 
+Delta_n_g_des = divideFinite( nu_s_g_dt2 - s_g_dt2, norm( s_g_dt2 - [0;0;g], 2 ) ); 
 
 % increment desired lean angle and assure unit vector
 n_g_des = n_g_mes + Delta_n_g_des;
