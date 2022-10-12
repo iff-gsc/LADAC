@@ -15,6 +15,6 @@ function copter = copterLoadParams( filename )
 run(filename);
 
 % initialize propeller map from propeller name
-copter.prop.map_fit = propMapFitCreate( copter.prop.name );
+copter.prop.map_fit = propMapFitCreate( copter.prop.name, copter.prop.correction_factor );
 
 end

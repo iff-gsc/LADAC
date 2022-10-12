@@ -43,6 +43,8 @@ copter.prop.I = 1.1e-5;
 % copter.prop.I = copter.prop.I * 9;
 % propeller name specifying propeller map (name must be inside database)
 copter.prop.name = '6x3';
+% factor to adjust thrust and torque (e.g. due to mounting)
+copter.prop.correction_factor = 1;
 
 %% motor parameters
 % torque constant of the motor (KT=60/(2*pi*KV)), N.m/A

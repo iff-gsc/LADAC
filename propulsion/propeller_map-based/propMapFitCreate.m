@@ -1,4 +1,4 @@
-function prop_fit = propMapFitCreate( prop_name, is_plot )
+function prop_fit = propMapFitCreate( prop_name, corr_fac, is_plot )
 % PROPMAPFITCREATE create polynomial fit from propeller map data
 %   The polynomial fit is of order 5 depending on both airspeed and
 %   rotational speed.
@@ -13,6 +13,8 @@ function prop_fit = propMapFitCreate( prop_name, is_plot )
 %                           Use the following command to get all available
 %                           names:
 %                           name_list = propMapGetNameList();
+%   corr_fac                thrust and torque correction factor, e.g. due
+%                           to mounting
 %   is_plot                 (optional) show curve fit result or not (bool),
 %                           default is false.
 % 
@@ -41,14 +43,14 @@ prop_map_scatter = propMapScatterCreate( prop_name );
 
 % fit thrust
 [fitresult, ~] = propMapCurveFit( prop_map_scatter.RPM, ...
-                    prop_map_scatter.V, prop_map_scatter.thrust, ...
+                    prop_map_scatter.V, prop_map_scatter.thrust*corr_fac, ...
                     'thrust', is_plot );
 coeffs = fitresult2coeffs( fitresult );
 prop_fit.coeffs_thrust = coeffs;
 
 % fit torque
 [fitresult, ~] = propMapCurveFit( prop_map_scatter.RPM, ...
-                    prop_map_scatter.V, prop_map_scatter.torque, ...
+                    prop_map_scatter.V, prop_map_scatter.torque*corr_fac, ...
                     'torque', is_plot );
 coeffs = fitresult2coeffs( fitresult );
 prop_fit.coeffs_torque = coeffs;
