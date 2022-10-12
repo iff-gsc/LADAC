@@ -71,6 +71,8 @@ measure.s_Kg_origin = zeros(3,1);
 measure.lla         = zeros(3,1);
 % rangefinders in (m)
 measure.rangefinder = zeros(6,1);
+% battery voltage in volt
+measure.V_bat       = 0;
 
 %% commanded values
 % stick inputs:
