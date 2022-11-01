@@ -92,9 +92,9 @@ for i = 1:length(varargin)
         if isequal(varargin{i},'atmosphere')
             wing.state.external.atmosphere = varargin{i+1};
         elseif isequal(varargin{i},'V_Wb')
-            wing.state.external.V_Wb(:) = varargin{i+1};
+            wing.state.external.V_Wb(:,:) = varargin{i+1};
         elseif isequal(varargin{i},'V_Wb_dt')
-            wing.state.external.V_Wb_dt(:) = varargin{i+1};
+            wing.state.external.V_Wb_dt(:,:) = varargin{i+1};
         elseif isequal(varargin{i},'structure_pos') && wing.config.is_flexible
             wing = wingSetGeometryState( wing, 'pos', varargin{i+1} );
         elseif isequal(varargin{i},'structure_vel') && wing.config.is_flexible
