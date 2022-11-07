@@ -32,7 +32,7 @@ function [n_g_des,T_spec_des] = indiCopterAcc2LeanVector( nu_s_g_dt2, s_g_dt2, M
 %       116-130.
 % 
 % See also:
-% 	ndiCopterAcc2LeanVector, controlEffectiveness2G1G2
+% 	indiCopterAcc2AttiSmeur, ndiCopterAcc2LeanVector
 
 % Disclamer:
 %   SPDX-License-Identifier: GPL-2.0-only
