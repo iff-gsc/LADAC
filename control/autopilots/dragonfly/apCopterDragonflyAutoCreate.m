@@ -1,7 +1,17 @@
 function ap = apCopterDragonflyAutoCreate( copter )
 
+% Disclamer:
+%   SPDX-License-Identifier: GPL-2.0-only
+% 
+%   Copyright (C) 2022 Yannic Beyer
+%   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
+% *************************************************************************
+
 % aggressiveness (0-1)
-aggr = 0.6;
+aggr = 0.65;
+
+% time scale separation factor (1-2)
+sep_factor = 1.4;
 
 is_flipped_allowed = 1;
 
@@ -46,9 +56,26 @@ A = num_motors * pi/4 * prop_diameter^2;
 
 % temp: to do
 ap.psc.rm.veldmax = aggr * v_i0;
-ap.psc.rm.velumax = 10;
-ap.psc.rm.velxymax = 15;
 
+
+omega = 0;
+V = 0;
+dt = 0.001;
+while true
+    u = aggr;
+    torque = propMapFitGetZ(copter.prop.map_fit,omega*60/(2*pi),V,'torque');
+    thrust = propMapFitGetZ(copter.prop.map_fit,omega*60/(2*pi),V,'thrust');
+    dot_omega = copter.motor.KT/copter.motor.R/copter.prop.I*(copter.bat.V*u-copter.motor.KT*omega)-torque/copter.prop.I;
+    acc = 1/copter.body.m * num_motors*thrust - 1.225*copter.aero.S*copter.aero.C_Dmax*V^2;
+    omega = omega + dot_omega*dt;
+    V = V + acc*dt;
+    if abs(dot_omega) < 0.01 && abs(acc) < 0.01
+        break;
+    end
+end
+
+ap.psc.rm.velumax = aggr * V;
+ap.psc.rm.velxymax = aggr * V;
 
 lean_max = pi/2 - asin( g / ( aggr * acc_up_max ) );
 acc_xy_max = acc_up_max * sin( lean_max );
@@ -61,7 +88,7 @@ ap.atc.rm.leandamp = 1;
 ap.atc.rm.yawratemax = 2*pi;
 
 ap.psc.rm.accxymax = aggr * acc_xy_max;
-ap.psc.rm.veltc = ap.psc.rm.velxymax / ap.psc.rm.accxymax;
+ap.psc.rm.veltc = 1.25/aggr * ap.psc.rm.velxymax / ap.psc.rm.accxymax;
 
 
 
@@ -101,14 +128,14 @@ thrust_vector = zeros( num_motors, 1 );
 torque_vector = zeros( num_motors, 1 );
 
 
-thrust_vector(L(1,:)'>0) = thrust_hover + delta_thrust_max;
-thrust_vector(L(1,:)'<0) = thrust_hover - delta_thrust_max;
+thrust_vector(L(1,:)'>0) = ( thrust_hover + delta_thrust_max ) / num_motors;
+thrust_vector(L(1,:)'<0) = ( thrust_hover - delta_thrust_max ) / num_motors;
 roll_moment_max = L(1,:) * thrust_vector;
 
 acc_roll_max = roll_moment_max / copter.body.I(1,1);
 
-thrust_vector(L(2,:)'>0) = thrust_hover + delta_thrust_max;
-thrust_vector(L(2,:)'<0) = thrust_hover - delta_thrust_max;
+thrust_vector(L(2,:)'>0) = ( thrust_hover + delta_thrust_max ) / num_motors;
+thrust_vector(L(2,:)'<0) = ( thrust_hover - delta_thrust_max ) / num_motors;
 pitch_moment_max = L(2,:) * thrust_vector;
 
 acc_pitch_max = pitch_moment_max / copter.body.I(2,2);
@@ -116,14 +143,14 @@ acc_pitch_max = pitch_moment_max / copter.body.I(2,2);
 acc_roll_pitch_max = min( acc_roll_max, acc_pitch_max );
 
 
-torque_vector(ap.cep.a>0) = torque_delta_max;
-torque_vector(ap.cep.a<0) = -torque_delta_min;
+torque_vector(ap.cep.a>0) = torque_delta_max/num_motors;
+torque_vector(ap.cep.a<0) = -torque_delta_min/num_motors;
 yaw_moment_max = sum( torque_vector );
 
 acc_yaw_max = yaw_moment_max / copter.body.I(3,3);
 
 
-ap.atc.rm.leanfreq =  sqrt( aggr * acc_roll_pitch_max / lean_max );
+ap.atc.rm.leanfreq = 2*pi*sqrt( aggr * 0.25*acc_roll_pitch_max / lean_max );
 ap.atc.rm.yawratetc = aggr * ap.atc.rm.yawratemax / acc_yaw_max;
 
 ap.mtc = copter.motor.R*copter.prop.I/copter.motor.KT^2;
@@ -134,10 +161,9 @@ ap.ts = 0.0025;
 ap.sflt.D = 1;
 ap.sflt.omega = 2/ap.mtc;
 
-% separation factor to T_h
-sep_factor = 0.75;
-ap.atc.rm.leanfreq = min( ap.atc.rm.leanfreq, aggr*sep_factor*2/(ap.mtc + 2/ap.sflt.omega) );
-ap.atc.rm.yawratetc = max( ap.atc.rm.yawratetc, 1/(aggr*sep_factor)*(ap.mtc + 2/ap.sflt.omega) );
+
+ap.atc.rm.leanfreq = min( ap.atc.rm.leanfreq, aggr/sep_factor*2/(ap.mtc + 2/ap.sflt.omega) );
+ap.atc.rm.yawratetc = max( ap.atc.rm.yawratetc, sep_factor/aggr*(ap.mtc + 2/ap.sflt.omega) );
 
 % lean angle controller
 T_h = ap.mtc + 2/ap.sflt.omega;
@@ -161,7 +187,8 @@ T_h = T_h + 2/ap.atc.rm.leanfreq;
 % p = -0.5*[1+1i,1-1i,4] * aggr / T_h;
 % p = -0.5*[1,1,1] * aggr / T_h;
 % p = -0.5*[1.7,1+0.65i,1-0.65i] * aggr / T_h;
-p = -sep_factor*aggr*[ 1/T_h, 0.7/T_h*(1+0.65i), 0.7/T_h*(1-0.65i) ];
+% p = -sep_factor*aggr*[ 1/T_h, 0.7/T_h*(1+0.65i), 0.7/T_h*(1-0.65i) ];
+p = -aggr/sep_factor*[ 1/T_h, 1/T_h, 1/T_h ];
 k = ndiFeedbackGainPlace(p,T_h);
 ap.psc.k.pos = k(1);
 ap.psc.k.vel = k(2);
