@@ -10,8 +10,8 @@ function ap = apCopterDragonflyAutoCreate( copter )
 % aggressiveness (0-1)
 aggr = 0.65;
 
-% time scale separation factor (1-2)
-sep_factor = 1.4;
+% time scale separation factor (2.5-3.5)
+sep_factor = 3;
 
 is_flipped_allowed = 1;
 
@@ -162,8 +162,8 @@ ap.sflt.D = 1;
 ap.sflt.omega = 2/ap.mtc;
 
 
-ap.atc.rm.leanfreq = min( ap.atc.rm.leanfreq, aggr/sep_factor*2/(ap.mtc + 2/ap.sflt.omega) );
-ap.atc.rm.yawratetc = max( ap.atc.rm.yawratetc, sep_factor/aggr*(ap.mtc + 2/ap.sflt.omega) );
+ap.atc.rm.leanfreq = min( ap.atc.rm.leanfreq, 1/sep_factor*2/( ap.mtc + 2/ap.sflt.omega ) );
+ap.atc.rm.yawratetc = max( ap.atc.rm.yawratetc, sep_factor*(ap.mtc + 2/ap.sflt.omega ) );
 
 % lean angle controller
 T_h = ap.mtc + 2/ap.sflt.omega;
@@ -188,7 +188,7 @@ T_h = T_h + 2/ap.atc.rm.leanfreq;
 % p = -0.5*[1,1,1] * aggr / T_h;
 % p = -0.5*[1.7,1+0.65i,1-0.65i] * aggr / T_h;
 % p = -sep_factor*aggr*[ 1/T_h, 0.7/T_h*(1+0.65i), 0.7/T_h*(1-0.65i) ];
-p = -aggr/sep_factor*[ 1/T_h, 1/T_h, 1/T_h ];
+p = -aggr/sep_factor*[ 1, 1, 1 ]*2/T_h;
 k = ndiFeedbackGainPlace(p,T_h);
 ap.psc.k.pos = k(1);
 ap.psc.k.vel = k(2);

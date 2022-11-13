@@ -47,7 +47,8 @@ n_g_meas = dcm2LeanVector( M_bg );
 g_g             = [0;0;g];
 
 % expected specific thrust force
-spec_thrust_exp = n_g_meas*dot(n_g_meas,(s_g_dt2-g_g));
+% spec_thrust_exp = n_g_meas*dot(n_g_meas,(s_g_dt2-g_g));
+spec_thrust_exp = n_g_meas * norm(s_g_dt2-g_g,2);
 
 % desired acceleration increment
 Delta_acc_des   = nu_s_g_dt2 - s_g_dt2;
