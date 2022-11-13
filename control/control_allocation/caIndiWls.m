@@ -1,6 +1,6 @@
-function [ Delta_u, W, iter ] = controlAllocationIndiWls( ca, ...
+function [ Delta_u, W, iter ] = caIndiWls( ca, ...
     B, Delta_nu, u, Delta_u_d, Delta_gamma, Delta_diag_W_v )
-% controlAllocationIndiWls adapt WLS control allocation for INDI
+% caIndiWls adapt WLS control allocation for INDI
 %   The adaption of WLS control allocation for INDI is described in [1].
 % 
 % Inputs:
