@@ -41,9 +41,10 @@ nu_n_b_dt2_upset	= nu_n_b_dt2;
 n_xy                = n_b(1:2);
 
 if n_b(3) > 0
-    if n_b(3) > 0.99
+    if n_b(3) > 0.999
         % avoid singularity if exactly upset
-        n_xy(:)       	= [0;1];
+        n_xy(:)       	= [0;-1];
+        n_b(1:2)        = 0;
     else
         vec_xy          = n_b(1:2);
         n_xy(:)        	= divideFinite( vec_xy, norm( vec_xy, 2 ) );
