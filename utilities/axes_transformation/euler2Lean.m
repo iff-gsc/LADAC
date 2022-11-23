@@ -17,6 +17,6 @@ up = max( -1, min( 1, tan(pi/2-delta_abs) ) );
 right = max( -1, min( 1, tan(delta_abs) ) );
 dist = sqrtReal( powerFast(up,2) + powerFast(right,2) );
 
-phi = sqrtReal(powerFast(px,2)+powerFast(ry,2)) / dist;
+phi = sqrtReal(powerFast(px,2)+powerFast(ry,2)) ./ dist;
 
 end
