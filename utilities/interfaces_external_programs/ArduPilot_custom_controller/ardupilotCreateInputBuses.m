@@ -73,6 +73,8 @@ measure.lla         = zeros(3,1);
 measure.rangefinder = zeros(6,1);
 % battery voltage in volt
 measure.V_bat       = 0;
+% motor angular velocities, in rad/s
+measure.omega_mot   = zeros(4,1);
 
 %% commanded values
 % stick inputs:

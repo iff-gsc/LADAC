@@ -54,8 +54,12 @@ sin_theta   = sin(theta);
 cos_theta   = cos(theta);
 sin_psi     = sin(psi);
 cos_psi     = cos(psi);
+
+g_g         = [0;0;g];
+n_g_meas	= dcm2LeanVector( M_bg );
 % thrust defined negative
-T = -norm(nu_s_g_dt2-[0;0;g],2);
+T = -dot(n_g_meas,(s_g_dt2-g_g));
+
 G = [ ...
     (cos_phi*sin_psi-sin_phi*cos_psi*sin_theta)*T, cos_phi*cos_psi*cos_theta*T, sin_phi*sin_psi+cos_phi*cos_psi*sin_theta; ...
     (-sin_phi*sin_psi*sin_theta-cos_psi*cos_phi)*T, cos_phi*sin_psi*cos_theta*T, cos_phi*sin_psi*sin_theta-cos_psi*sin_phi; ...
@@ -64,7 +68,7 @@ G = [ ...
 u_f         = [phi;theta;T];
 u_c         = u_f + pinv(G)*(nu_s_g_dt2-s_g_dt2);
 eul_ang_des = [u_c(1);u_c(2);psi];
-T_spec_des  = u_c(3);
+T_spec_des  = -u_c(3);
 M_bg_c      = euler2Dcm(eul_ang_des);
 n_g_des     = dcm2LeanVector( M_bg_c );
 

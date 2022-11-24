@@ -9,6 +9,8 @@ In the future, as the library grows, this will probably be restructured.
 
 - [**Angles**](angles)  
 Contains functions to compute angle errors.
+- [**Autopilots**](autopilots)  
+Contains autopilots for specific vehicle types.
 - [**Control allocation**](control_allocation)  
 This project contains control allocation algorithms.
 - [**Filters**](filters)  
