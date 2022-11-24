@@ -1,4 +1,4 @@
-function ap = apCopterDragonflyAutoCreate( copter )
+function ap = lindiCopterAutoCreate( copter )
 
 % Disclamer:
 %   SPDX-License-Identifier: GPL-2.0-only
