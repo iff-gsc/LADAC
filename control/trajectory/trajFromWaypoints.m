@@ -58,9 +58,9 @@ num_of_coeffs = degree + 1;
 for i=1:num_of_splines
     idx_beg = num_of_coeffs*(i-1)+1;
     idx_end = num_of_coeffs*(i);
-    traj.sections(i).pos_x(:) = coeffs_x(idx_beg:idx_beg+5);
-    traj.sections(i).pos_y(:) = coeffs_y(idx_beg:idx_beg+5);
-    traj.sections(i).pos_z(:) = coeffs_z(idx_beg:idx_beg+5);
+    traj.sections(i).pos_x(:) = coeffs_x(idx_beg:idx_end);
+    traj.sections(i).pos_y(:) = coeffs_y(idx_beg:idx_end);
+    traj.sections(i).pos_z(:) = coeffs_z(idx_beg:idx_end);
 end
 
 % Update arc length for each section
