@@ -35,6 +35,9 @@ function prop_fit = propMapFitCreate( prop_name, corr_fac, is_plot )
 load('DATA_APC');
 
 if nargin < 3
+    if nargin < 2
+        corr_fac = 1;
+    end
     is_plot = false;
 end
 
