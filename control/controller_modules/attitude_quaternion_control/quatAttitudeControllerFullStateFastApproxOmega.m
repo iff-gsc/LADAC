@@ -57,7 +57,13 @@ function [int_omega, omega, dot_omega] = ...
 %   Copyright (C) 2020-2022 Fabian Guecker
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
-q_cmd = sign(q_cmd'*q_bg)*q_cmd;
+
+% q_cmd = sign(q_cmd'*q_bg)*q_cmd;
+% above fails if sign of dot product returns zero!!!
+if (q_cmd'*q_bg) < 0
+    q_cmd = -q_cmd;
+end
+
 
 %% Integral Omega Part
 int_omega_q = 2.0 * quatLogDivide(q_cmd, q_bg, 1);

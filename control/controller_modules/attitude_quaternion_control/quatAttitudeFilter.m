@@ -44,12 +44,15 @@ function [int_omega, omega] = quatAttitudeFilter...
 % *************************************************************************
 
 % Use the closest mapping of the two quaternions towards [1 0 0 0]'
-q_cmd = sign(q_cmd'*q_bg)*q_cmd;
+% q_cmd = sign(q_cmd'*q_bg)*q_cmd;
+% above fails if sign of dot product returns zero!!!
+if (q_cmd'*q_bg) < 0
+    q_cmd = -q_cmd;
+end
 
 % Calculate Distance between the two attitudes
 int_omega = 2.0 * quatLogDivide(q_cmd, q_bg, 1);
 int_omega = int_omega(2:4);
-
 
 omega = -omega_Kb;
 

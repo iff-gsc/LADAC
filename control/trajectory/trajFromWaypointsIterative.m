@@ -15,6 +15,8 @@ num_of_splines = state_vec(4);
 traj_valid = state_vec(5);
 residuum = state_vec(6);
 
+datatype = superiorfloat(state_vec);
+
 %%
 num_wp = min([num_wp, traj.num_sections_max, size(waypoints,2)]);
 
@@ -86,7 +88,11 @@ elseif (axis_sel >= 1) && (axis_sel <= 3)
         
         % Check if finished
         if( residuum < 1e-3)
-            state = single(1000);
+            if strcmp(datatype, 'single')
+                state = single(1000);
+            else
+                state = double(1000);
+            end
         end
         
     % In the ast state copy the values from x into traj struct
@@ -144,7 +150,12 @@ end
 % state_vec(4) = num_of_splines * ones(1, superiorfloat(state_vec));
 % state_vec(5) = traj_valid * ones(1, superiorfloat(state_vec));
 
-state_vec = single([state; b_size; axis_sel; num_of_splines; traj_valid; residuum]);
+
+if strcmp(datatype, 'single')
+    state_vec = single([state; b_size; axis_sel; num_of_splines; traj_valid; residuum]);
+else
+    state_vec = double([state; b_size; axis_sel; num_of_splines; traj_valid; residuum]);
+end
 
 end
 
