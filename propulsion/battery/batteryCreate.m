@@ -39,8 +39,8 @@ run(filename);
 
 % number of serial cells
 bat.num_serial  = num_serial;
-% capacity, mAh
-bat.C           = capacity;
+% capacity, Ah
+bat.capacity 	= capacity;
 % C rate, 1/h
 bat.C_rate      = c_rate;
 
