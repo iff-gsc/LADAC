@@ -31,6 +31,6 @@ function [ alpha, beta ] = aeroAngles( V_Ab ) %#codegen
 alpha = atan2( V_Ab(3,:), V_Ab(1,:) );
 
 % compute the sideslip angle according to [1, page 78]
-beta = asinReal( V_Ab(2,:) ./ vecnorm( V_Ab, 2, 1 ) );
+beta = asinReal( divideFinite( V_Ab(2,:), vecnorm( V_Ab, 2, 1 ) ) );
 
 end

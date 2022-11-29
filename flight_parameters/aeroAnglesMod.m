@@ -41,7 +41,7 @@
 function [ alpha_M, beta_M ] = aeroAnglesMod( V_Ab ) %#codegen
 
 % compute the argument of the asin function
-argAlpha = V_Ab(3,:) ./ vecnorm( V_Ab, 2, 1 );
+argAlpha = divideFinite( V_Ab(3,:), vecnorm( V_Ab, 2, 1 ) );
 
 % compute the modified angle of attack and avoid complex numbers
 alpha_M = asinReal( argAlpha );
