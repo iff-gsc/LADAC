@@ -1,9 +1,9 @@
 function [A] = ...
     polyInterpolationA(points, degree, cycle)
-% polyInterpolation computes stepwise interpolated functions in 1D
-%   The function calculates stepwise defined polynomials for any degree.
-%   The values are given are assumed to be equally spaced with a constant
-%   stepsize.
+% polyInterpolationA computes the A matrix for solving stepwise 
+%   interpolated functions in 1D with Ax=b. The function calculates 
+%   stepwise defined polynomials for any degree. The values are given are
+%   assumed to be equally spaced with a constant stepsize.
 %
 %   Note:
 %   This is a very specialized function for polynominal interpolation.
@@ -11,14 +11,14 @@ function [A] = ...
 %   iterpolation, because the x values can not be choosen.
 %
 %   Known limitations:
-%   - Do not use the cycle option and an even number
+%   - Do not use the cycle option and an even number of degree
 %   - Very high grades lead to a very ill-conditioned system of equations
 %
 % Inputs:
 %
 %   points          y-coordinate of points to interpolate with step size of
 %                   one(dimensionsless) each
-%                   (1xN vector)
+%                   (1xN vector), dimensionsless
 %
 %   degree 		    degree of the stepwise polynomials to calculate. This
 %                   value should be an odd number to ensure symmetrically
@@ -46,8 +46,6 @@ function [A] = ...
 %   Copyright (C) 2020-2022 Fabian Guecker
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
-
-%b = zeros(size(x));
 
 if cycle == true
    points_new = [points, points(1)];
@@ -87,13 +85,11 @@ if cycle == false
     i = 1;
     j = 1;
     A(i:i+bnd_left-1, j:j+degree) = point_0(1:bnd_left,:);
-    %b = multAx(i:i+bnd_left-1, j:j+degree, point_0(1:bnd_left,:), x, b);
     
     % Right Boundary
     i = bnd_left+1+intermediate_size;
     j = 1+intermediate_size;
     A(i:i+bnd_right-1, j:j+degree) = point_1(1:bnd_right,:);
-    %b = multAx(i:i+bnd_right-1, j:j+degree, point_1(1:bnd_right,:), x, b);
         
 else
     
@@ -107,22 +103,18 @@ else
     i = 1;
     j = 1;
     A(i  , j:j+degree) = point_0(1,:);
-    %b = multAx(i  , j:j+degree, point_0(1,:), x, b);
     
     A(i+1, last_right:last_right+degree) = point_1(1,:);
-    %b = multAx(i+1, last_right:last_right+degree, point_1(1,:), x, b);
       
     % Derivative of Startpoint First Segment
     i = last_row+1;
     j = 1;
     A(i:i+bnd_med-2, j:j+degree) = point_0(2:bnd_med,:);
-    %b = multAx(i:i+bnd_med-2, j:j+degree, point_0(2:bnd_med,:), x, b);
     
     % Derivative of Endpoint Last Segment
     i = last_row+1;
     j = last_right;
     A(i:i+bnd_med-2, j:j+degree) = -point_1(2:bnd_med,:);
-    %b = multAx(i:i+bnd_med-2, j:j+degree, -point_1(2:bnd_med,:), x, b);
     
 end
 
@@ -136,30 +128,21 @@ for k = 1:(num_of_splines-1)
     i = itm_row+1;
     j = itm_left;
     A(i, j:j+degree) = point_1(1,:);
-    %b = multAx(i, j:j+degree, point_1(1,:), x, b);
     
     % Intermediate Step, Startpoint Right Segment
     i = itm_row+2;
     j = itm_right;
     A(i, j:j+degree) = point_0(1,:);
-    %b = multAx(i, j:j+degree, point_0(1,:), x, b);
     
     % Derivative of Endpoint Left Segment
     i = itm_row+3;
     j = itm_left;
     A(i:i+bnd_med-2, j:j+degree) = point_1(2:bnd_med,:);
-    %b = multAx(i:i+bnd_med-2, j:j+degree, point_1(2:bnd_med,:), x, b);
     
     % Derivative of Endpoint Right Segment
     i = itm_row+3;
     j = itm_right;
     A(i:i+bnd_med-2, j:j+degree) = -point_0(2:bnd_med,:);
-    %b = multAx(i:i+bnd_med-2, j:j+degree, -point_0(2:bnd_med,:), x, b);
 
 end
- 
 end
-
-% function b = multAx(j, k, Ajk, x, b)
-%     b(j) = b(j) + Ajk * x(k);
-% end

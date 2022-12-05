@@ -1,6 +1,6 @@
 function [coeffs, num_of_splines, degree] = ...
     polyInterpolationIterative(points, degree, cycle, plot_enable, derivatives)
-% polyInterpolation computes stepwise interpolated functions in 1D
+% polyInterpolationIterative computes stepwise interpolated functions in 1D
 %   The function calculates stepwise defined polynomials for any degree.
 %   The values are given are assumed to be equally spaced with a constant
 %   stepsize.
@@ -18,7 +18,7 @@ function [coeffs, num_of_splines, degree] = ...
 %
 %   points          y-coordinate of points to interpolate with step size of
 %                   one(dimensionsless) each
-%                   (1xN vector)
+%                   (1xN vector), dimensionless
 %
 %   degree 		    degree of the stepwise polynomials to calculate. This
 %                   value should be an odd number to ensure symmetrically
@@ -39,12 +39,16 @@ function [coeffs, num_of_splines, degree] = ...
 %
 % Outputs:
 %
-%   traj            trajectory struct, see trajInit
+%   coeffs          solution of the system Ax=b
+%                   (1xN vector), dimensionless
 %
 % Syntax:
-%   [traj] = trajFromWaypoints(traj, points, degree, cycle)
+%   [coeffs, num_of_splines, degree] = ...
+%   polyInterpolationIterative(points, degree, cycle, plot_enable, ...
+%   derivatives)
 %
-% See also: trajInit, traj_from_waypoints_example
+% See also: polyInterpolationb, polyInterpolationAx,
+%           trajFromWaypointsIterative, polyInterpolationCore
 
 % Disclamer:
 %   SPDX-License-Identifier: GPL-2.0-only
@@ -62,20 +66,6 @@ end
 num_of_waypoints = length(points_new);
 num_of_splines = num_of_waypoints-1;
 sub_mat_size = degree+1;
-
-% pp = ones(degree+1, degree+1);
-% pp(2:end,:) = 0;
-% point_1 = pp;
-% for i=1:degree
-%     point_1(i+1,1:end-i) = polyder(point_1(i,1:end-i+1));
-% end
-% 
-% point_0 = point_1;
-% for i=1:degree
-%     point_0(i,1:end-i) = 0;
-% end
-% 
-
     
 %% Solve the System
 tic

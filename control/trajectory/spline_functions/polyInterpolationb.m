@@ -1,8 +1,8 @@
 function [b, num_of_splines] = polyInterpolationb(points, degree, cycle)
-% polyInterpolation computes stepwise interpolated functions in 1D
-%   The function calculates stepwise defined polynomials for any degree.
-%   The values are given are assumed to be equally spaced with a constant
-%   stepsize.
+% polyInterpolationb computes the right-hand-side b for solving stepwise 
+%   interpolated functions in 1D with Ax=b. The function calculates 
+%   stepwise defined polynomials for any degree. The values are given are
+%   assumed to be equally spaced with a constant stepsize.
 %
 %   Note:
 %   This is a very specialized function for polynominal interpolation.
@@ -17,7 +17,7 @@ function [b, num_of_splines] = polyInterpolationb(points, degree, cycle)
 %
 %   points          y-coordinate of points to interpolate with step size of
 %                   one(dimensionsless) each
-%                   (1xN vector)
+%                   (1xN vector), dimensionless
 %
 %   degree 		    degree of the stepwise polynomials to calculate. This
 %                   value should be an odd number to ensure symmetrically
@@ -29,14 +29,16 @@ function [b, num_of_splines] = polyInterpolationb(points, degree, cycle)
 %                   point are the same.
 %                   (boolean)
 %
-%   b               right-hand-side b if equation of A*x=b
-%
 % Outputs:
 %
-%   b               right-hand-side b if equation of A*x=b
+%   b               right-hand-side b of equation of A*x=b
+%                   (1xN vector), dimensionless
+%
+%   num_of_splines  the number of splines/segments between the waypoints
+%                   (scalar), dimensionless
 %
 % Syntax:
-%   [b] = polyInterpolationb(points, degree, cycle)
+%   [b, num_of_splines] = polyInterpolationb(points, degree, cycle)
 %
 % See also: polyInterpolationb, polyInterpolationAx,
 %           polyInterpolationIterative
@@ -48,6 +50,9 @@ function [b, num_of_splines] = polyInterpolationb(points, degree, cycle)
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
+% For code generation it may be necessary to comment out this line, 
+% otherwise Simulink will have problems with the variable size of the array
+% accesses.
 degree = 5;
 
 if cycle == true

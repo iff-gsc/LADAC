@@ -11,7 +11,7 @@ function [coeffs, num_of_splines, degree] = ...
 %   iterpolation, because the x values can not be choosen.
 %
 %   Known limitations:
-%   - Do not use the cycle option and an even number
+%   - Do not use the cycle option and an even number of degree
 %   - Very high grades lead to a very ill-conditioned system of equations
 %
 % Inputs:
