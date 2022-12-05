@@ -48,11 +48,11 @@ polyInterpolation computes stepwise interpolated functions in 1D
 
 [b, num_of_splines] = polyInterpolationb(points, degree, cycle);
 A = @(x, a) polyInterpolationAx(num_of_splines, degree, cycle, x, a);
-[ x, w, u, v, Anorm, alfa, rhobar, phibar ] = ladac_lsqr_init(A, b);
+[ x, w, u, v, Anorm, alfa, rhobar, phibar ] = ladacLsqrInit(A, b);
 
 for i=1:1000
     [ x, w, u, v, Anorm, alfa, rhobar, phibar ] = ...
-        ladac_lsqr_iterate( A, x, w, u, v, Anorm, alfa, rhobar, phibar);
+        ladacLsqrIterate( A, x, w, u, v, Anorm, alfa, rhobar, phibar);
     if( norm( A(x,1) - b ) < 1e-4)
         disp(i);
         break;

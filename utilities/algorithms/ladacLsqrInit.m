@@ -1,7 +1,7 @@
 function [ x, w, u, v, Anorm, alfa, rhobar, phibar ] = ... 
-    ladac_lsqr_init( A, b)
+    ladacLsqrInit( A, b)
 
-% ladac_lsqr_init initializes the auxiliary variables of the LSQR
+% ladacLsqrInit initializes the auxiliary variables of the LSQR
 %   algorithm for the successive iterations on the given system of matrix A 
 %   and the right-hand side b.
 %

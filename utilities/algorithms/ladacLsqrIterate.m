@@ -1,5 +1,5 @@
 function [ x, w, u, v, Anorm, alfa, rhobar, phibar ] = ...
-    ladac_lsqr_iterate( A, x, w, u, v, Anorm, alfa, rhobar, phibar)
+    ladacLsqrIterate( A, x, w, u, v, Anorm, alfa, rhobar, phibar)
 
 % ladac_lsqr_iterate executes one step of the LSQR algorithm
 %   The function executes the LSQR algorithm for a single iteration

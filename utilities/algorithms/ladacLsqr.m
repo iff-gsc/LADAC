@@ -1,4 +1,4 @@
-function [x] = ladac_lsqr( A, b, itnlim)
+function [x] = ladacLsqr( A, b, itnlim)
 % ladac_lsqr solves the linear equation system Ax = b
 %   The function executes the LSQR algorithm for a fixed number of given
 %   iterations on the given system of matrix A and right-hand side b.

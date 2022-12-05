@@ -114,7 +114,7 @@ elseif (axis_sel >= 1) && (axis_sel <= 3)
         [b, num_of_splines] = polyInterpolationb(points, degree, cycle);
         
         A = @(x, a) polyInterpolationAx(num_of_splines, degree, cycle, x, a);
-        [ x, w, u, v, Anorm, alfa, rhobar, phibar ] = ladac_lsqr_init(A, b);
+        [ x, w, u, v, Anorm, alfa, rhobar, phibar ] = ladacLsqrInit(A, b);
         
         state = ones(1, superiorfloat(state_vec));
         b_size = length(b) * ones(1, superiorfloat(b));
@@ -144,7 +144,7 @@ elseif (axis_sel >= 1) && (axis_sel <= 3)
         A = @(x, a) polyInterpolationAx(num_of_splines, degree, cycle, x, a);
         
         [ x, w, u, v, Anorm, alfa, rhobar, phibar ] = ...
-            ladac_lsqr_iterate( A, x, w, u, v, Anorm, alfa, rhobar, phibar);
+            ladacLsqrIterate( A, x, w, u, v, Anorm, alfa, rhobar, phibar);
         
         % Copy all temporary variables into loop buffer
         uvwxb(1:b_size, 1) = b;
