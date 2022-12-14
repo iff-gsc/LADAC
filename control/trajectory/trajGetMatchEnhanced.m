@@ -44,14 +44,14 @@ last_checked_section = traj.num_sections_set;
 
 traj_section = trajGetSection(traj, 1);
 
-t = 0.0;
-section_idx = 1;
+t = zeros(1,superiorfloat(position));
+section_idx = ones(1,superiorfloat(position));
 error = norm(position - trajSectionGetPos(traj_section, 0));
 
 degree = length(traj.sections(1).pos_x);
 
 resolution = 2*degree;
-t_array = linspace(0, 1, resolution);
+t_array = linspace(0, 1, resolution)*ones(1,superiorfloat(position));
 
 for k = first_checked_section:last_checked_section
     
@@ -122,7 +122,7 @@ for i=1:100
     % Check for convergence
     
     if abs(eval_fun_dt) < 1e-16
-        eval_fun_dt = 1e-8;
+        eval_fun_dt(:) = 1e-8;
     end
     
     % One Newton step
@@ -142,8 +142,8 @@ for i=1:100
                 if traj.is_repeated_course
                     section_idx = traj.num_sections_set;
                 else
-                    section_idx = 1;
-                    t = 0;
+                    section_idx = ones(1,superiorfloat(position));
+                    t = zeros(1,superiorfloat(position));
                 end
             end
         else
@@ -151,10 +151,10 @@ for i=1:100
             section_idx = section_idx + 1;
             if(section_idx > traj.num_sections_set)
                 if traj.is_repeated_course
-                    section_idx = 1;
+                    section_idx = ones(1,superiorfloat(position));
                 else
                     section_idx = traj.num_sections_set;
-                    t = 1;
+                    t = ones(1,superiorfloat(position));
                 end
             end
         end

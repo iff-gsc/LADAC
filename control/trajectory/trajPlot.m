@@ -80,4 +80,6 @@ legend('waypoints','trajectory','tangent vector','bi-normal vector','normal vect
 %grid
 axis equal
 
+set(gca,'Ydir','reverse');
+
 end

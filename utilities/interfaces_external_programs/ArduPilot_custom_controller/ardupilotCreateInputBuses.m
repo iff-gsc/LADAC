@@ -58,6 +58,8 @@ measure.q_bg        = euler2Quat(measure.EulerAngles);
 % component almost without delay; z component seems to be delayed by
 % INS_ACCEL_FILTER)
 measure.a_Kg        = zeros(3,1);
+% measured acceleration represented in FRD frame, in m/s^2
+measure.a_Kg = zeros(3,1);
 % velocity of FRD frame relative to the earth represented in FRD frame, in
 % m/s (predicted and thus almost without delay)
 measure.V_Kg        = zeros(3,1);
@@ -75,6 +77,8 @@ measure.rangefinder = zeros(6,1);
 measure.V_bat       = 0;
 % motor angular velocities, in rad/s
 measure.omega_mot   = zeros(4,1);
+% measured airspeed from airspeed sensor, in m/s
+measure.airspeed = 0;
 
 %% commanded values
 % stick inputs:

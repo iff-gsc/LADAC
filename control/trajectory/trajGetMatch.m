@@ -48,8 +48,8 @@ zf = position(3);
 first_checked_section = 1;
 last_checked_section = traj.num_sections_set;
 
-section_errors = zeros(last_checked_section-first_checked_section+1, 1);
-section_t      = zeros(last_checked_section-first_checked_section+1, 1);
+section_errors = zeros(last_checked_section-first_checked_section+1, 1,superiorfloat(position));
+section_t      = zeros(last_checked_section-first_checked_section+1, 1,superiorfloat(position));
 
 traj_degree = traj.polynomial_degree;
 
@@ -58,7 +58,7 @@ for k = first_checked_section:last_checked_section
     % Default for degree of 3
     no_of_points = 1;
     
-    P = zeros(1,18);
+    P = zeros(1,18,superiorfloat(position));
     
     traj_section = trajGetSection(traj,k);
     
@@ -222,8 +222,8 @@ if(traj.num_sections_set > 0)
     t = section_t(idx);
 else
     section_idx = 1;
-    error = 0;
-    t=0;
+    error = zeros(1,superiorfloat(position));
+    t=zeros(1,superiorfloat(position));
 end
 
 end

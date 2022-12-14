@@ -1,9 +1,9 @@
-function [coeffs, num_of_splines, degree] = ...
-    polyInterpolation(points, degree, cycle, plot_enable, derivatives)
-% polyInterpolation computes stepwise interpolated functions in 1D
-%   The function calculates stepwise defined polynomials for any degree.
-%   The values are given are assumed to be equally spaced with a constant
-%   stepsize.
+function [A] = ...
+    polyInterpolationA(points, degree, cycle)
+% polyInterpolationA computes the A matrix for solving stepwise 
+%   interpolated functions in 1D with Ax=b. The function calculates 
+%   stepwise defined polynomials for any degree. The values are given are
+%   assumed to be equally spaced with a constant stepsize.
 %
 %   Note:
 %   This is a very specialized function for polynominal interpolation.
@@ -18,7 +18,7 @@ function [coeffs, num_of_splines, degree] = ...
 %
 %   points          y-coordinate of points to interpolate with step size of
 %                   one(dimensionsless) each
-%                   (1xN vector)
+%                   (1xN vector), dimensionsless
 %
 %   degree 		    degree of the stepwise polynomials to calculate. This
 %                   value should be an odd number to ensure symmetrically
@@ -30,21 +30,15 @@ function [coeffs, num_of_splines, degree] = ...
 %                   point are the same.
 %                   (boolean)
 %
-%   plot_enable     Enable the plotting of the calculated functions
-%                   (boolean)
-%
-%   derivatives     Count of the derivatives that will be plotted if 
-%                   plotting is enabled.
-%                   (boolean)
-%
 % Outputs:
 %
-%   traj            trajectory struct, see trajInit
+%   A               matrix A of equation of A*x=b
 %
 % Syntax:
-%   [traj] = trajFromWaypoints(traj, points, degree, cycle)
+%   [b] = polyInterpolationAx(points, degree, cycle)
 %
-% See also: trajInit, traj_from_waypoints_example
+% See also: polyInterpolationb, polyInterpolationAx,
+%           polyInterpolationIterative
 
 % Disclamer:
 %   SPDX-License-Identifier: GPL-2.0-only
@@ -80,7 +74,6 @@ intermediate_size = sub_mat_size*(num_of_splines-1);
 
 size_A_mat = sub_mat_size*num_of_splines;
 A = zeros(size_A_mat, size_A_mat,superiorfloat(points,degree));
-b = zeros(size_A_mat, 1,superiorfloat(points,degree));
 
 if cycle == false
     
@@ -97,25 +90,11 @@ if cycle == false
     i = bnd_left+1+intermediate_size;
     j = 1+intermediate_size;
     A(i:i+bnd_right-1, j:j+degree) = point_1(1:bnd_right,:);
-    
-    % Construct Right Hand Side Boundarys
-    b(1) = points_new(1);
-    b(end-bnd_right+1) = points_new(1,end);
-    
-    % 1st Derivative should not be zero at endpoints
-    % this cause problems with newton iteration
-    if(degree>1)
-        b(2) = points_new(2)-points_new(1);
-    end
-    if(degree>2)
-        b(end-bnd_right+2) = points_new(end)-points_new(end-1);
-    end
         
 else
     
     % Boundary Condition Size
     bnd_left(:)  = 2;
-    bnd_right = floor((degree+1)/2);
     
     last_row = sub_mat_size*(num_of_splines-1)+bnd_left;
     last_right = sub_mat_size*(num_of_splines-1)+1;
@@ -124,11 +103,8 @@ else
     i = 1;
     j = 1;
     A(i  , j:j+degree) = point_0(1,:);
+    
     A(i+1, last_right:last_right+degree) = point_1(1,:);
-
-    % Construct Right Hand Side Boundarys
-    b(1) = points_new(1,1);   %These should be the same!
-    b(2) = points_new(1,end); %These should be the same!
       
     % Derivative of Startpoint First Segment
     i = last_row+1;
@@ -167,53 +143,6 @@ for k = 1:(num_of_splines-1)
     i = itm_row+3;
     j = itm_right;
     A(i:i+bnd_med-2, j:j+degree) = -point_0(2:bnd_med,:);
-    
-    % Construct Right Hand Side Boundarys
-    b(itm_row+1) = points_new(1,k+1);
-    b(itm_row+2) = points_new(1,k+1);
-end
-    
-% Solve the System
-coeffs = (A \ b)';
-%coeffs = ladac_lsqr(A, b, 6)';
 
-%% Plot function and derivatives
-if(plot_enable)
-    
-    clf;
-    subplot(derivatives+1, 1, 1)
-    hold on
-    
-    for i=1:num_of_splines
-        idx_beg = sub_mat_size*(i-1)+1;
-        idx_end = sub_mat_size*(i);
-        x_iter  = coeffs(idx_beg:idx_end);
-        plot(i-1:0.01:i,polyVal(x_iter,0:0.01:1))
-    end
-    hold off
-    grid on
-    
-    
-    for k = 1:derivatives
-        subplot(derivatives+1, 1, k+1)
-        
-        hold on
-        for i=1:num_of_splines
-            idx_beg = sub_mat_size*(i-1)+1;
-            idx_end = sub_mat_size*(i);
-            x_iter  = coeffs(idx_beg:idx_end);
-            
-            x_derivative = x_iter;
-            for deriv_no=1:k
-                x_derivative = polyder(x_derivative);
-            end
-            
-            plot(i-1:0.01:i,polyVal(x_derivative,0:0.01:1))
-        end
-        hold off
-        grid on
-        
-    end
 end
-
 end

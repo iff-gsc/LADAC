@@ -8,10 +8,10 @@
 % *************************************************************************
 
 % maximum number of waypoints
-param.wpmax = 4;
+params.wpmax = 10;
 
 % boolean if last and first waypoint should be connected (true) or not
-param.cycle = true;
+params.cycle = true;
 
 % degree of spline polynomials
-param.degree = 5;
+params.degree = 5;
