@@ -37,17 +37,9 @@ end
 %% measured values from ahrs object
 
 % angular velocity of FRD frame relative to the earth represented in FRD
-% frame, in rad/s; This unfiltered (and noisy) signal is obtained on a
-% custom way and should be preferred over omega_Kb and then processed by a
-% custom low-pass filter. In contrast to omega_Kb the time-derivative of
-% the filtered Omega_Kb_raw is NOT noisy.
-measure.Omega_Kb_raw = zeros(3,1);
-% angular velocity of FRD frame relative to the earth represented in FRD
-% frame as used internally in ArduPilot, in rad/s. This signal is filtered
-% by a low-pass filter with cutoff frequency INS_GYRO_FILTER. However, 
-% Omega_Kb_raw should be perferred because the time-derivative of omega_Kb
-% is still noisy due to unknown reasons.
-measure.omega_Kb    = zeros(3,1);
+% frame, in rad/s; This signal is unfiltered (and noisy) and should be
+% processed by a custom low-pass filter.
+measure.omega_Kb = zeros(3,1);
 % Euler angles of FRD frame relative to NED frame, in rad (predicted and
 % thus almost without delay)
 measure.EulerAngles = zeros(3,1);
@@ -59,7 +51,7 @@ measure.q_bg        = euler2Quat(measure.EulerAngles);
 % INS_ACCEL_FILTER)
 measure.a_Kg        = zeros(3,1);
 % measured acceleration represented in FRD frame, in m/s^2
-measure.a_Kg = zeros(3,1);
+measure.a_Kb = zeros(3,1);
 % velocity of FRD frame relative to the earth represented in FRD frame, in
 % m/s (predicted and thus almost without delay)
 measure.V_Kg        = zeros(3,1);
