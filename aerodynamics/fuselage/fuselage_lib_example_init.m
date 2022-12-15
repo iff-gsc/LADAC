@@ -9,7 +9,7 @@
 
 % init
 fuselage = fuselageCreate('fuselage_params_default',5,20);
-fuselage_state_bus = struct2bus(fuselage.state,'fuselage_state_bus');
+struct2bus(fuselage.state,'fuselage_state_bus');
 atmosphere_struct = isAtmosphere(0);
 
 % this part is only needed if this script is called from a function
