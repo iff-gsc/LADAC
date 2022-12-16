@@ -16,7 +16,6 @@ atmosphere_struct = isAtmosphere(0);
 % (to do: improve struct2bus function so that Simulink bus objects are
 % created in caller workspace)
 assignin('base','fuselage',fuselage)
-assignin('base','fuselage_state_bus',fuselage_state_bus)
 
 % run Simulink model
 options = simset('srcWorkspace','current');

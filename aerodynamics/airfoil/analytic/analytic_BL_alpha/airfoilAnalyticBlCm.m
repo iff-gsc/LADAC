@@ -24,9 +24,9 @@ function c_m = airfoilAnalyticBlCm(fcm,f,c_L)
 % *************************************************************************
 
 % [1], eq. (22)
-c_m = zeros(size(c_L));
-for i = 1:length(c_L)
-    c_m(i) = fcm(1,i)+(fcm(2,i)+fcm(3,i)*abs(1-f(i))+fcm(4,i)*sin(pi*f(i)^(fcm(5,i))))*c_L(i);
-end
+c_m = fcm(1,:) + ( ...
+    fcm(2,:) ...
+    + fcm(3,:) .* abs(1-f) + ...
+    + fcm(4,:) .* sin(pi*f.^(fcm(5,:))) ) .* c_L;
 
 end
