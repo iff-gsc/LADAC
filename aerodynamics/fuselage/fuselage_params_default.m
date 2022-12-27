@@ -21,7 +21,7 @@ C_D0 = 0.05;
 % longitudinal coordinates of fuselage parts (1x(s+1) array), dimensionless
 xi_segments = [ 0, 0.07 0.2 0.65, 0.85, 1 ];
 % fuselage width at section borders (1x(s+1) array), in m
-width = [ 0, 1.5, 2, 2, 1.3, 0.2 ];
+border_width = [ 0, 1.5, 2, 2, 1.3, 0.2 ];
 % center line height displacement at section borders (1x(s+1) array), in m
 center_line_height = [ -0.3, -0.1, 0, 0, 0.05, 0.2 ];
 % are section between two equal points straight?

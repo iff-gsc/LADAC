@@ -24,7 +24,7 @@ run(filename);
 
 fuselage.params.total_length(:) = total_length;
 fuselage.params.xi_segments(:) = xi_segments;
-fuselage.params.width(:) = width;
+fuselage.params.width(:) = border_width;
 fuselage.params.center_line_height(:) = center_line_height;
 fuselage.params.C_L_alpha(:) = C_L_alpha;
 fuselage.params.C_D0(:) = C_D0;
