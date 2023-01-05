@@ -97,7 +97,7 @@ To get to run your MATLAB/Simulink controller in ArduPilot you have to generate 
 
 1. Make a copy of one of the `MatlabController` template Simulink files, insert your controller block and connect the inputs and outputs with the Simulink blocks in `LADAC/utilities/interfaces_external_programs/ardupilot_custom_controller`. You have to initialize the Simulink bus objects in the first place in Matlab:
     ```
-    ardupilotCreateInterfaceBuses
+    ardupilotCreateInputBuses
     ```
 2. Generate C++ code from the Simulink file (click top right button "Build Model"): https://de.mathworks.com/help/dsp/ug/generate-c-code-from-simulink-model.html  
   Note that floating points should be 32-bit. This is assured in the Simulink template files because the following parameters were set: `set_param(gcs, 'DefaultUnderspecifiedDataType', 'single')` and `set_param(gcs, 'DataTypeOverride', 'Single','DataTypeOverrideAppliesTo','Floating-point')`
