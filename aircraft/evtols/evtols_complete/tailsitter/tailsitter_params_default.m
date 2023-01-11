@@ -40,16 +40,16 @@ tailsitter.config.hitPoints_c = [ ...
                     ]';
 
 % propeller parameters
-tailsitter.map_fit = propMapLoadParams( 'propeller_map_based_params_default' );
+tailsitter.prop = propMapLoadParams( 'propeller_map_based_params_Arkbird' );
 
 % motor parameters
-tailsitter.motor = motorLoadParams( 'motor_bldc_params_default' );
+tailsitter.motor = loadParams( 'motor_bldc_params_default' );
 
 % battery parameters
-tailsitter.bat = batteryLoadParams( 'battery_params_default' );
+tailsitter.bat = 14.8;
 
 % actuator parameters
-tailsitter.act.elevons = actuatorsLoadParams('actuators_pt2_params_default');
+tailsitter.act.elevons = loadParams('actuators_pt2_params_default');
 
 % reference position
 tailsitter.posRef = posRefLoadParams( 'reference_position_params_default' );
@@ -58,6 +58,8 @@ tailsitter.posRef = posRefLoadParams( 'reference_position_params_default' );
 tailsitter.grnd = groundLoadParams( 'params_ground_default' );
 
 % aerodynamics parameters
+% propeller induced velocity gain, -
+tailsitter.aero.v_i_gain = 2;
 % parameters of the first wing
 tailsitter.aero.wing = simpleWingLoadParams( 'params_aero_simple_wing_default' );
 % parameters of wet wing
@@ -65,7 +67,7 @@ tailsitter.aero.wing_wet = getWetWing( tailsitter );
 % reduce wing surface of dry wing
 tailsitter.aero.wing.geometry.S = tailsitter.aero.wing.geometry.S - tailsitter.aero.wing_wet.geometry.S;
 % fuselage aerodynamics parameters
-tailsitter.aero.fuse = fuselageLoadParams( 'params_aero_fuselage_default' );
+tailsitter.aero.fuse = simpleFuselageCreate( 'simpleFuselage_params_default', 0 );
 
 % initial conditions
 % initial angular velocity vector (body rel. to earth) in body frame, rad/s

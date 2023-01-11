@@ -39,13 +39,13 @@ tiltwing.config.collision_points_c = [ ...
 
 %% propellers, motors, battery
 
-tiltwing.map_fit = propMapLoadParams( 'propeller_map_based_params_default' );
-tiltwing.motor = motorLoadParams( 'motor_bldc_params_default' );
-tiltwing.bat = batteryLoadParams( 'battery_params_default' );
+tiltwing.prop = propMapLoadParams( 'propMap_params_default' );
+tiltwing.motor = loadParams( 'motor_bldc_params_default' );
+tiltwing.bat = 14.8;
 
 %% fuselage parameters
 
-tiltwing.aero.fuselage = fuselageLoadParams( 'params_aero_fuselage_default' );
+tiltwing.aero.fuselage = simpleFuselageCreate('simpleFuselage_params_default', 0);
 
 % neutral point of the fuselage in c frame
 tiltwing.aero.fuselage.xyz_c_np_fuselage = [-0.3; 0; 0];
@@ -59,8 +59,8 @@ tiltwing.aero.wing_2 = simpleWingLoadParams( 'params_aero_simple_wing_default' )
 
 %% actuator parameters
 
-tiltwing.act.elevon = actuatorsLoadParams( 'actuators_pt2_params_default' );
-tiltwing.act.tilt = actuatorsLoadParams( 'actuators_pt2_params_default' );
+tiltwing.act.elevon = loadParams( 'actuators_pt2_params_default' );
+tiltwing.act.tilt = loadParams( 'actuators_pt2_params_default' );
 
 %% initial conditions
 % kinematic rotational velocity, rad/s

@@ -27,16 +27,16 @@ airplane.prop.config.Pos = [0;0;0];
 airplane.prop.config.Rot = eye(3);
 
 % motor parameters
-airplane.motor = motorLoadParams( 'motor_bldc_params_default' );
+airplane.motor = loadParams( 'motor_bldc_params_default' );
 
 % actuator parameters
-airplane.act.ailerons = actuatorsLoadParams('actuators_pt2_params_default');
-airplane.act.elevator = actuatorsLoadParams('actuators_pt2_params_default');
-airplane.act.rudder = actuatorsLoadParams('actuators_pt2_params_default');
-airplane.act.htpTrim = actuatorsLoadParams('actuators_pt2_params_default');
+airplane.act.ailerons = loadParams('actuators_pt2_params_default');
+airplane.act.elevator = loadParams('actuators_pt2_params_default');
+airplane.act.rudder = loadParams('actuators_pt2_params_default');
+airplane.act.htpTrim = loadParams('actuators_pt2_params_default');
 
 % battery parameters
-airplane.bat = batteryLoadParams( 'battery_params_default' );
+airplane.bat = 14.8;
 
 % cmd struct/bus
 airplane.cmd = struct('aileron_left',0.5,'aileron_right',0.5,'elevator',0.5,'rudder',0.5,'throttle',0,'htp_trim',0.5);

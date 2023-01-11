@@ -8,12 +8,12 @@
 % *************************************************************************
 
 % natural frequency, rad/s
-act.naturalFrequency = 80;
+param.naturalFrequency = 80;
 % damping ratio, 1
-act.dampingRatio = 1;
+param.dampingRatio = 1;
 % maximum deflection, rad
-act.deflectionMax = deg2rad(25);
+param.deflectionMax = deg2rad(25);
 % minimum deflection, rad
-act.deflectionMin = deg2rad(-25);
+param.deflectionMin = deg2rad(-25);
 % maximum deflection rate, rad/2
-act.deflectionRateMax = deg2rad(60/0.18);
+param.deflectionRateMax = deg2rad(60/0.18);

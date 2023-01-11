@@ -9,6 +9,6 @@
 
 % torque constant of the motor (KT=60/(2*pi*KV)), N.m/A
 % with KV = 1280 RPM/V
-motor.KT = 60/(2*pi*1280);
+param.KT = 60/(2*pi*1280);
 % motor internal resistance, Ohm
-motor.R = 0.07;
+param.R = 0.07;
