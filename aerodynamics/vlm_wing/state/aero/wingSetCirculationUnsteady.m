@@ -81,8 +81,8 @@ else
 end
 converged       = false;
 wing.state.aero.circulation.num_iter = 0;
-err_abs_max    	= 1e-5;
-err_rel_max     = 1e-3;
+err_abs_max    	= 1e-7;
+err_rel_max     = 1e-5;
 % iterate until VLM and 2D airfoil lift coefficient are (almost) equal
 while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
     
