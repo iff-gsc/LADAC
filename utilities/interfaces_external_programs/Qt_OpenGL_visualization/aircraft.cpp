@@ -476,7 +476,7 @@ void Wing::plot() {
         cntrl_pos[2].append(cntrl_pt[2]);
     }
 
-    for (int i=0; i < m_cntrl_pt.m_x.length(); i++) {
+    for (int i=0; i < m_cntrl_pt.m_x.length()-1; i++) {
         pointTrailRight = this->getPointTrailAt(i+1,0);
         pointFlapRight = this->getPointFlapAt(i+1,0);
         pointFlapLeft = this->getPointFlapAt(i,1);
