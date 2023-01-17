@@ -18,7 +18,7 @@ function wing = wingSetLocalInflow( wing, pos_ref_c )
 %       of unsteady airfoil behavior. AIAA journal, 28(5), 836-844.
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

@@ -1,7 +1,7 @@
 function  [T, M, R_kb, Q_kb, C_T, mu, mu_z, lambda_i] = bemQuasiStaticThrustFromTheta(N, V_kb, Theta, rho, R, c, Nb, C_l_alpha, C_d_0, C_d_1, C_d_2)
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

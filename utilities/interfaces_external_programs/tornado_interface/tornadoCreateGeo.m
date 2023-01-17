@@ -33,7 +33,7 @@ function geo = tornadoCreateGeo( params_file, xyz_cg_c, xyz_ref_c, ...
 %   tornadoCreateState
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

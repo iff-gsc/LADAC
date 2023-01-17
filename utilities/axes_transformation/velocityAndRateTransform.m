@@ -20,7 +20,7 @@ function [ V_sub, omega_sub ] = velocityAndRateTransform(V_Kb, omega_Kb, R_sub_b
 %
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

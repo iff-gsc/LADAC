@@ -13,7 +13,7 @@ function [ C_lmn_i_w ] = forceCoeffs2MomentCoeffs( xyz_cp_w, C_XYZ_w, c, b ) %#c
 % 
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

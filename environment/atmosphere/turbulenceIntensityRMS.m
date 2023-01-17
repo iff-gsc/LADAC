@@ -20,7 +20,7 @@ function [ sigma_u, sigma_v, sigma_w ] = turbulenceIntensityRMS( h, s_exp, V_win
 % 
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

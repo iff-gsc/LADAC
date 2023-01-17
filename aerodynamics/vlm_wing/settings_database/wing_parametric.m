@@ -2,7 +2,7 @@ function prm = wing_parametric( aspect_ratio, taper_ratio, sweep_angle, twist_an
 % Wing parameters (for different basic parameters for verification)
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

@@ -24,7 +24,7 @@ function Omega_Kb = leanVectorDeriv2Omega( n_g_dt, M_bg )
 %       116-130. url: https://arxiv.org/pdf/2002.07837.pdf
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

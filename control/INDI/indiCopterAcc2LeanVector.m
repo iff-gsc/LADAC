@@ -35,7 +35,7 @@ function [n_g_des,T_spec_des] = indiCopterAcc2LeanVector( nu_s_g_dt2, s_g_dt2, M
 % 	indiCopterAcc2AttiSmeur, ndiCopterAcc2LeanVector
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

@@ -28,7 +28,7 @@ function [ n_b_upset, n_b_dt_upset, n_b_dt2_upset, nu_n_b_dt2_upset ] = ...
 %   dcm2LeanVector, indiCopterAcc2LeanVector, leanVectorDerivTrafo
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

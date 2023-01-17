@@ -23,7 +23,7 @@ function [ y_dt, Ku_y ] = pdt2( u,y,int_Ku_y_dt,K,omega_0,D,T_D ) %#codegen
 % 
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

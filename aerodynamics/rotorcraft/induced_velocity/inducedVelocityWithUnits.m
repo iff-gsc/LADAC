@@ -55,7 +55,7 @@ function [v_i, v_h, v_total, V_z, P_i, P_c] = ...
 % See also: InducedVelocity
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

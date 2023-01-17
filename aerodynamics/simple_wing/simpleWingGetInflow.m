@@ -36,7 +36,7 @@ function [ V_A_P, q_P, alpha_M_P, beta_M_P, q_Aw, M_wb ] = ...
 % 
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2021 Lars Killian

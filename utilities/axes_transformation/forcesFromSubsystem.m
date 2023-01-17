@@ -20,7 +20,7 @@ function [ F_Kb, M_Kb ] = forcesFromSubsystem(R_sub_b, euler_angles_sub, F_sub, 
 %
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

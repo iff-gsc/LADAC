@@ -39,7 +39,7 @@ function [eul_ang_des,T_spec_des,n_g_des] = indiCopterAcc2AttiSmeur( nu_s_g_dt2,
 % 	indiCopterAcc2LeanVector, ndiCopterAcc2LeanVector
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % *************************************************************************
 
 

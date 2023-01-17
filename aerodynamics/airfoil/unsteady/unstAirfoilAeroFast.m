@@ -45,7 +45,7 @@ function [c_L_c,c_m_c,c_L_nc,c_m_nc,alpha_E,x_dt,A,B_alpha,B_q] = unstAirfoilAer
 % 
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

@@ -34,7 +34,7 @@ function [ DoD_max, DoD_exp, DoD_nom, V_full, V_exp, V_nom, C_rate, ...
 %
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2016-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

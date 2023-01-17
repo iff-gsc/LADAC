@@ -28,7 +28,7 @@ function [fdcl,fdcd,fdcm] = airfoilAnalytic0515DeFit(alpha_deg,delta,Delta_c_L,D
 % 
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

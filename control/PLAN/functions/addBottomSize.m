@@ -3,7 +3,7 @@ function addBottomSize( blkHandle, size )
 %   Detailed explanation goes here
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2021 Alexander Kuzolap
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

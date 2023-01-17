@@ -26,7 +26,7 @@ function [V_bat,V_cell] = batteryVoltage(bat,SoC,C_rate,C_rate_filt)
 %   batteryDischargeParams, batteryAverageParams
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2018-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

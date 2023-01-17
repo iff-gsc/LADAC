@@ -37,7 +37,7 @@ function [ n_b, n_b_dt, n_b_dt2 ] = leanVectorDerivTrafo( n_g, n_g_dt, ...
 %   dcm2LeanVector, leanAngles2leanVector
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2019-2022 First Author
 %   Copyright (C) 2022 Second Author

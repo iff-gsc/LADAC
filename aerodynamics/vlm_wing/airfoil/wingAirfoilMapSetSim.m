@@ -14,7 +14,7 @@ function airfoil_map_scell = wingAirfoilMapSetSim( airfoil_map )
 % 
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2021 Lucas Schreer
