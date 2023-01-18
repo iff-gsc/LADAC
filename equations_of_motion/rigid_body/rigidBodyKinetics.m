@@ -15,7 +15,7 @@
 %   Q_b             three dimensional moment vector represented in
 %                   body-fixed frame, in N.m
 %   m               scalar mass of the body, in kg
-%   I               inertia 3x3 matrix in body-fixed frame, in kg.m^2
+%   I_b             inertia 3x3 matrix in body-fixed frame, in kg.m^2
 %   g               scalar gravitational acceleration, in m/s^2
 %   M_bg            rotation 3x3 matrix (DCM) from the earth frame (g) to 
 %                   the body-fixed frame (g), in 1         
@@ -27,10 +27,10 @@
 %                   in m/s
 % 
 % Outputs:
-%   dot_omega_Kb    three dimensional time derivative of the angular
+%   omega_Kb_dt     three dimensional time derivative of the angular
 %                   velocity vector of the rigid body relative to the earth
 %                   represented in body-fixed frame, in rad/s^2
-%   dot_V_Kb        three dimensional time derivative of the velocity
+%   V_Kb_dt         three dimensional time derivative of the velocity
 %                   vector of the rigid body relative to the earth
 %                   represented in body-fixed frame, in m/^2
 % 
@@ -44,13 +44,13 @@
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-function [dot_omega_Kb, dot_V_Kb] = ...
-    rigidBodyKinetics( R_b, Q_b, m, I, g, M_bg, omega_Kb, V_Kb )%#codegen
+function [omega_Kb_dt, V_Kb_dt] = ...
+    rigidBodyKinetics( R_b, Q_b, m, I_b, g, M_bg, omega_Kb, V_Kb )%#codegen
 
 % compute the time derivative of the angular velocity vector according to
 % [1, page 36 or 42]
-dot_omega_Kb = I \ (Q_b - cross( omega_Kb, I * omega_Kb ) );
+omega_Kb_dt = I_b \ (Q_b - cross( omega_Kb, I_b * omega_Kb ) );
 
 % compute the time derivative of the velocity vector according to [1, page
 % 41 or 42]
-dot_V_Kb = 1/m * R_b + M_bg * [0; 0; g] - cross( omega_Kb, V_Kb );
+V_Kb_dt = 1/m * R_b + M_bg * [0; 0; g] - cross( omega_Kb, V_Kb );

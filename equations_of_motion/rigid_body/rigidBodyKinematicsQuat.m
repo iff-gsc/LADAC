@@ -23,9 +23,9 @@
 %                   the body-fixed frame (g), in 1   
 % 
 % Outputs:
-%   dot_q_bg        four dimensional vector of the quaternion time
+%   q_bg_dt         four dimensional vector of the quaternion time
 %                   derivative, in 1/s
-%   dot_s_g         three dimensional time derivative of the position 
+%   s_g_dt          three dimensional time derivative of the position 
 %                   vector in earth frame, in m/s
 % 
 % See also: rigidBodyKinetics
@@ -38,7 +38,7 @@
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-function [ dot_q_bg, dot_s_g ] = ...
+function [ q_bg_dt, s_g_dt ] = ...
     rigidBodyKinematicsQuat( omega_Kb, V_Kb, q_bg, M_bg )%#codegen
 
 % compute the omega cross product matrix according to [1, page 8]
@@ -51,15 +51,15 @@ q_bg_norm = quatNormalize( q_bg );
 
 % compute the time derivative of the quaternions vector according to
 % [1, page 51]
-dot_q_bg = 0.5 * [ 0, -omega_Kb';...
+q_bg_dt = 0.5 * [ 0, -omega_Kb';...
                    omega_Kb, omega_cross_product ] ...
             * q_bg_norm;
 
 % high gain quaternion normalization according to [2, page 3-60f]
 k_quat = 1;
 q_error = 1 - dot( q_bg, q_bg ); 
-dot_q_bg = dot_q_bg + q_error * k_quat * q_bg_norm;
+q_bg_dt = q_bg_dt + q_error * k_quat * q_bg_norm;
 
 % computate of the time derivative of the position vector in g frame
 % according to [1, page 41 or 42]
-dot_s_g = M_bg' * V_Kb;
+s_g_dt = M_bg' * V_Kb;
