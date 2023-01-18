@@ -149,7 +149,11 @@ ap.psc.rm.velumax = aggr_pos * V;
 ap.psc.rm.velxymax = aggr_pos * V;
 
 lean_max = acos( g / acc_up_max );
-acc_xy_max = acc_up_max * sin( lean_max );
+if isreal(lean_max)
+    acc_xy_max = acc_up_max * sin( lean_max );
+else
+    error('Not enough thrust to hover.')
+end
 if is_flipped_allowed
     ap.atc.rm.leanmax = 2*pi;
 else
