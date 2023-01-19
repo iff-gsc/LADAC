@@ -8,7 +8,10 @@
 % *************************************************************************
 
 % rigid body parameters
-airplane.body = rigidBodyLoadParams( 'rigid_body_params_default' );
+% mass, kg
+airplane.body.m = 1;
+% inertia matrix, kg*m^2
+airplane.body.I = eye(3);
 
 % center of gravity in c frame, m
 airplane.config.cg = [-1;0;0];

@@ -8,7 +8,10 @@
 % *************************************************************************
 
 % rigid body parameters
-tailsitter.body = rigidBodyLoadParams( 'rigid_body_params_default' );
+% mass, kg
+tailsitter.body.m = 1;
+% inertia matrix, kg*m^2
+tailsitter.body.I = eye(3);
 
 % configuration parameters
 % center of gravity position in c frame, in m
