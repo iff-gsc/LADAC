@@ -101,9 +101,13 @@ if (trig_update == 1) && (state == 0) && (axis_sel == 0)
     traj_valid = zeros(1, superiorfloat(state_vec));
     traj = traj_empty;
     
-    % Select the first axis and set state to zero
-    axis_sel = ones(1, superiorfloat(state_vec));
-    state    = zeros(1, superiorfloat(state_vec)); 
+    % check waypoints are valid   
+    if trajValidateWaypoints(waypoints, num_wp, cycle)
+        
+        % Select the first axis and set state to zero
+        axis_sel = ones(1, superiorfloat(state_vec));
+        state    = zeros(1, superiorfloat(state_vec)); 
+    end
     
 elseif (axis_sel >= 1) && (axis_sel <= 3)
     
@@ -126,6 +130,9 @@ elseif (axis_sel >= 1) && (axis_sel <= 3)
         uvwxb(1:b_size, 4) = w;
         uvwxb(1:b_size, 5) = x;   
         AnormAlfaRhoPhi = [Anorm; alfa; rhobar; phibar];
+        
+        % Calculate inital error
+        residuum = norm( A(x,1) - b );
         
     % States above zero mean iterating
     elseif state < 1000
@@ -158,10 +165,11 @@ elseif (axis_sel >= 1) && (axis_sel <= 3)
         state = state + 1;
         
         % Calculate residuum
+        residuum_last = residuum;
         residuum = norm( A(x,1) - b );
         
         % Check if finished
-        if( residuum < 1e-3)
+        if (residuum < 1e-3) || (residuum_last < residuum)
             if strcmp(datatype, 'single')
                 state = single(1000);
             else
