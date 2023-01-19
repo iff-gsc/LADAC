@@ -1,18 +1,20 @@
 ## Joystick to control Simulink models
 
-This project provides a calibrated joystick that assured comparable outputs for different controllers and different operating systems.
+This project provides a calibrated joystick that ensures comparable outputs for different controllers and different operating systems.
 
 ## Motivation
 
-There are joystick blocks available in Simulink in the "Aerospace Blockset" and "Simulink 3D Anmimation".
+There are joystick blocks available in Simulink in the "Aerospace Blockset" and "Simulink 3D Animation".
 However, if different joysticks on different operating systems are used, the outputs of these blocks will not be identical.
 It can happen that the number of outputs is different, the order of channels is different, the trim and maximum values are different and so on.
-Therefore, this projects wraps the joystick block from "Simulink 3D Animation" and introduces a joystick configuration file.
+In addition, not every user of LADAC has a license for the "Aerospace Blockset" or "Simulink 3D Animation" toolbox.
+Therefore this projects uses a "free" joystick implementation called "HebiJoystick Input" which does not depend on Simulink toolboxes and was further developed from "MatlabInput" (See also: https://github.com/HebiRobotics/MatlabInput and many thanks to the authors for creating this library!).
+To address the problem of using different joysticks on different operating systems a wrapping block with the name 'calibrated joystick' was created and introduces a joystick configuration file.
 The configuration file can be generated automatically with a calibration function.
 
 ## Installation
 
-- You must install [LADAC](../../../README.md) (you need the Simulink 3D Animation toolbox).
+- You must install [LADAC](../../../README.md).
 - You need to connect a joystick to your computer that is recognized by your operating system.
 
 

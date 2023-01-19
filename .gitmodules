@@ -1,3 +1,6 @@
 [submodule "libraries/m-utils"]
 	path = libraries/m-utils
 	url = ../m-Utils.git
+[submodule "libraries/MatlabInputRelease"]
+	path = libraries/MatlabInputRelease
+	url = ../MatlabInputRelease.git
