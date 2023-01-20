@@ -37,8 +37,6 @@ function [pos, T, B, N] = evaluationGetMatchFunctions(traj, velo, g)
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-tic
-
 % evaluate positions
 resolution = 30;
 pos = zeros(3,traj.num_sections_set*resolution);
@@ -80,7 +78,7 @@ T = zeros(size(pos));
 B = zeros(size(pos));
 N = zeros(size(pos));
 
-
+tic
 
 for i = 1:size(pos,2)
     % current vehicle position
@@ -90,15 +88,19 @@ for i = 1:size(pos,2)
         
     % matching
     %[active_section, ~, t] = trajGetMatch(traj, pos_ac, active_section);
-    [active_section, ~, t] = trajGetMatchEnhanced(traj, pos_ac, active_section);
-        
+    %[active_section, ~, t] = trajGetMatchEnhanced(traj, pos_ac, active_section);
+
+    R_turn = 10;
+    T_vec = [1; 0; 0];
+    
+    [active_section, ~, t] = trajGetMatchCustom(traj, pos_ac, active_section, R_turn, T_vec);
     
     
     traj_sec_m = trajGetSection(traj, active_section);
     pos_m = trajSectionGetPos(traj_sec_m, t);
     error_m = norm(pos_ac - pos_m);
     
-     if(error_m > 1e-6)
+     if(error_m > 1e-3)
          disp( [num2str(i),' Error: ', num2str(error_m),' m (', num2str(active_section), ' /  ', num2str(t), ')'] )
      end
     
@@ -111,8 +113,8 @@ for i = 1:size(pos,2)
     
 end
 
-% time = toc;
-% disp([num2str(time/size(pos,2)*1000), ' ms pro Sample'])
+time = toc;
+disp([num2str(time/size(pos,2)*1000), ' ms pro Sample'])
 
 red = 5;
 
