@@ -14,6 +14,13 @@ is_stall    = 1;
 is_le_shock = 0;
 spacing = 'like_chord';
 is_infl_recomputed = 0;
+if wing_idx == 1
+    controls_filename = 'wingControls_params_mainDefault';
+elseif wing_idx == 2
+    controls_filename = 'wingControls_params_htpDefault';
+elseif wing_idx == 3
+    controls_filename = 'wingControls_params_vtpDefault';
+end
 
 % set user parameters
 for i = 1:length(varargin)
@@ -62,6 +69,12 @@ for i = 1:length(varargin)
             else
                 error('Invalid option for parameter is_infl_recomputed.')
             end
+        case 'controlsdef'
+            if ischar(varargin{i+1})
+                controls_filename = varargin{i+1};
+            else
+                error('Invalid option for parameter control_filename.');
+            end
     end
 end
 
@@ -69,7 +82,7 @@ end
 %% define aircraft parameters
 
 % load wing parameters
-prm = wingGetParamsFromCPACS( tiglHandle, wing_idx );
+prm = wingGetParamsFromCPACS( tiglHandle, wing_idx, controls_filename );
 
 % set further wing parameters
 wing.params = wingSetParams(prm);
