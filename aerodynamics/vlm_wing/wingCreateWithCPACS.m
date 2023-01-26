@@ -93,6 +93,19 @@ wing.params = wingSetParams(prm);
 wing.n_panel = n_panel;
 wing.geometry = wingSetGeometryCoord( wing.params, wing.n_panel, spacing );
 
+cntrl_prm = loadParams(controls_filename);
+if contains(cntrl_prm.lad_mode,'everywhere')
+    lad_mode_split = strsplit(cntrl_prm.lad_mode,'-');
+    rel_border = str2double(lad_mode_split{2});
+    is_lad = abs(wing.geometry.ctrl_pt.pos(2,:)/wing.params.b*2) > rel_border;
+    num_lads = sum( is_lad );
+    lad_idx_min = min(wing.geometry.segments.control_input_index_local(2,:));
+    wing.geometry.segments.control_input_index_local(2,is_lad) = ...
+        lad_idx_min:(num_lads+lad_idx_min-1);
+    wing.geometry.segments.control_input_index_local(2,~is_lad) = 0;
+    wing.params.num_lads = num_lads;
+    wing.params.num_actuators = wing.params.num_flaps + wing.params.num_lads;
+end
 
 %% init state
 wing.state = wingCreateState( wing.params.num_actuators, n_panel, wing.geometry );

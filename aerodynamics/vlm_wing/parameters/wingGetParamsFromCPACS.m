@@ -124,6 +124,11 @@ actuator_2_type         = cell(length(cntrl_prm.actuator_2_type),1);
 actuator_2_type(:)      = {cntrl_prm.actuator_2_type};
 prm.actuator_2_type     = char(actuator_2_type(1:end-1));
 
+cntrl_inp1_idx_wo_zero 	= prm.control_input_index(1,prm.control_input_index(1,:)~=0);
+prm.num_flaps           = length(unique(cntrl_inp1_idx_wo_zero));
+
+cntrl_inp2_idx_wo_zero 	= prm.control_input_index(2,prm.control_input_index(2,:)~=0);
+prm.num_lads            = length(unique(cntrl_inp2_idx_wo_zero));
 
 
 function [x_frd,y_frd,z_frd] = tiglWingGetChordPoint_frd( handle, wing_idx, segment_idx, eta, xsi )
