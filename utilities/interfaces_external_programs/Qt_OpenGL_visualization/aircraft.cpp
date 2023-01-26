@@ -439,14 +439,14 @@ void Wing::plot() {
 
         pointCopPlusForce = pointCop + forceVector * (m_vortex.m_c[i]+m_vortex.m_c[i+1])/2 * 5;
         pointCopPlusLadForce = pointCop + ladForceVector * (m_vortex.m_c[i]+m_vortex.m_c[i+1])/2 * 5;
-        QVector3D pointSeparationHelp = pointCop + m_trailing_edge_sep_pt[i]*(pointCopPlusForce-pointCop);
+        QVector3D pointSeparationHelp = pointCop + (1-m_trailing_edge_sep_pt[i])*(pointCopPlusForce-pointCop);
         // pointCopPlusForce = pointCop + forceVector * 10;
         glBegin(GL_LINE_STRIP);
-            glColor4f(m_stallColor[0],m_stallColor[1],m_stallColor[2],m_stallAlpha);
+            glColor4f(m_forceColor[0],m_forceColor[1],m_forceColor[2],m_forceAlpha);
             glVertex3f(pointCop.x(),pointCop.y(),pointCop.z());
             glColor4f(m_forceColor[0],m_forceColor[1],m_forceColor[2],m_forceAlpha);
             glVertex3f(pointSeparationHelp.x(),pointSeparationHelp.y(),pointSeparationHelp.z());
-            glColor4f(m_forceColor[0],m_forceColor[1],m_forceColor[2],m_forceAlpha);
+            glColor4f(m_stallColor[0],m_stallColor[1],m_stallColor[2],m_stallAlpha);
             glVertex3f(pointCopPlusForce.x(),pointCopPlusForce.y(),pointCopPlusForce.z());
         glEnd();
         glColor4f(m_ladForceColor[0],m_ladForceColor[1],m_ladForceColor[2],m_ladForceAlpha);
