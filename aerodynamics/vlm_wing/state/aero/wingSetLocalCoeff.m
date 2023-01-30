@@ -116,6 +116,6 @@ wing.state.aero.coeff_loc.c_lmn_b(:) = crossFast( r_ref, wing.state.aero.coeff_l
     ./ repmat( [ wing.params.b; c; wing.params.b ], 1, wing.n_panel );
 % contribution of airfoil and flap moment
 wing.state.aero.coeff_loc.c_lmn_b(2,:) = wing.state.aero.coeff_loc.c_lmn_b(2,:) ...
-    + wing.state.aero.coeff_loc.c_m_airfoil;
+    + wing.state.aero.coeff_loc.c_m_airfoil .* wing.geometry.ctrl_pt.c / c;
 
 end
