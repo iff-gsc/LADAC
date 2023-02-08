@@ -155,7 +155,7 @@ else
     error('Not enough thrust to hover.')
 end
 if is_flipped_allowed
-    ap.atc.rm.leanmax = 2*pi;
+    ap.atc.rm.leanmax = pi;
 else
     ap.atc.rm.leanmax = lean_max;
 end

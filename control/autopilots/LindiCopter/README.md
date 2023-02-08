@@ -24,7 +24,7 @@ lindiCopter_params = lindiCopterAutoCreate(copter);
 
 Input | Explanation
 --- | ---
-flightmode_number | 0: loiter, 1: guided
+flightmode_number | 0: loiter, 1: guided, 2: stabilized
 cmd_lateral_velocity | commanded lateral velocity (-1 ... 1)
 cmd_forward_velocity | commanded forward_velocity (-1 ... 1)
 cmd_yaw_rate | commanded yaw rate (-1 ... 1)
