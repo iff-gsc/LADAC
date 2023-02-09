@@ -90,7 +90,12 @@ ap.ca.W_v(2,2) = 30;
 ap.ca.W_v(3,3) = 0.01;
 ap.ca.W_v(4,4) = 300;
 
-ap.traj = loadParams( 'traj_params_default');
+% maximum number of waypoints
+ap.traj.wpmax = 4;
+% boolean if last and first waypoint should be connected (true) or not
+ap.traj.cycle = true;
+% degree of spline polynomials
+ap.traj.degree = 5;
 
 num_motors = size(copter.config.propPos_c,2);
 
