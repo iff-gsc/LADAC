@@ -24,7 +24,6 @@ if proj<0
 else
     w_aT(:) = w_aT_min + (w_aT_max-w_aT_min)*proj^2;
 end
-w_aT(:) = w_aT_min + (w_aT_max-w_aT_min);
-Delta_diag_W_v(w_aT_idx) = w_aT - ca.W_v(w_aT_idx,w_aT_idx);
+Delta_diag_W_v(w_aT_idx) = w_aT;
 
 end
