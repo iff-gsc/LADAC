@@ -28,20 +28,17 @@ abs_V_loc = vecnorm( wing.state.aero.local_inflow.V_25 .* wing.state.aero.circul
 % Note that the local airspeed is multiplied because the local
 % aerodynamic coefficients are normalized by the local airspeed.
 factor =  powerFast(abs_V_loc,2) * 0.5 * wing.state.external.atmosphere.rho ...
-    .* b_i .* wing.geometry.ctrl_pt.c;
+    .* b_i(:,:,1:end-1) .* wing.geometry.ctrl_pt.c;
 
-wing.state.aero.force_loc.M_i_b = wing.state.aero.coeff_loc.c_m_airfoil .* factor * c;
+wing.state.aero.force_loc.M_i_b = wing.state.aero.coeff_loc.c_m_airfoil .* mean( factor, 3 ) * c;
 
 % Compute factor for the aerodynamic force coefficients to get the forces.
 % Note that the local airspeed is multiplied because the local
 % aerodynamic coefficients are normalized by the local airspeed.
-factor3 =  repmat( factor, 3, 1 );
-
-wing.state.aero.force_loc.R_i_b = wing.state.aero.coeff_loc.c_XYZ_b .* factor3;
-
-% Compute factor for the aerodynamic moment coefficients to get the moment.
-factor3 =  factor3 .* repmat( [wing.params.b;c;wing.params.b], 1, wing.n_panel );
-
-wing.state.aero.force_loc.Q_i_b = wing.state.aero.coeff_loc.c_lmn_b .* factor3;
+ref_length = [wing.params.b;c;wing.params.b];
+for i = 1:3
+    wing.state.aero.force_loc.R_i_b(i,:,:) = wing.state.aero.coeff_loc.c_XYZ_b(i,:,:) .* factor;
+    wing.state.aero.force_loc.Q_i_b(i,:,:) = wing.state.aero.coeff_loc.c_lmn_b(i,:,:) .* factor * ref_length(i);
+end
 
 end

@@ -7,6 +7,13 @@ function u_n_b = wingGetNormalVectorFromGeometry( geometry, varargin )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
+u_n_b = cross( geometry.vortex.pos(:,1:end-1,1:end-1) - geometry.ctrl_pt.pos, diff(geometry.vortex.pos(:,:,1:end-1),1,2) );
+u_n_b = cross( diff(geometry.vortex.pos(:,1:end-1,:),1,3)+diff(geometry.vortex.pos(:,2:end,:),1,3), diff(geometry.vortex.pos(:,:,1:end-1),1,2)+diff(geometry.vortex.pos(:,:,2:end),1,2) );
+
+u_n_b = u_n_b ./ vecnorm(u_n_b,2,1);
+
+return;
+
 % spatial vector along bound segment
 dl = wingGetSpatialVectorAlongBoundSegment(geometry.vortex);
 

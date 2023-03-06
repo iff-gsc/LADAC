@@ -1,4 +1,4 @@
-function wing = wingCreateWithCPACS( tiglHandle, wing_idx, n_panel, varargin )
+function wing = wingCreateWithCPACS( tiglHandle, wing_idx, n_panel, n_panel_x, varargin )
 
 % Disclamer:
 %   SPDX-License-Identifier: GPL-2.0-only
@@ -14,6 +14,8 @@ is_stall    = 1;
 is_le_shock = 0;
 spacing = 'like_chord';
 is_infl_recomputed = 0;
+method = 'IVLM';
+n_trail = 1;
 
 % set user parameters
 for i = 1:length(varargin)
@@ -62,6 +64,9 @@ for i = 1:length(varargin)
             else
                 error('Invalid option for parameter is_infl_recomputed.')
             end
+        case 'DLM'
+            method = 'DLM';
+            n_trail = varargin{i+1};
     end
 end
 
@@ -78,11 +83,13 @@ wing.params = wingSetParams(prm);
 %% compute geometry
 
 wing.n_panel = n_panel;
-wing.geometry = wingSetGeometryCoord( wing.params, wing.n_panel, spacing );
+wing.n_panel_x = n_panel_x;
+wing.n_trail = n_trail;
+wing.geometry = wingSetGeometryCoord( wing.params, wing.n_panel, wing.n_panel_x, spacing );
 
 
 %% init state
-wing.state = wingCreateState( wing.params.num_actuators, n_panel, wing.geometry );
+wing.state = wingCreateState( wing.params.num_actuators, wing.n_panel, wing.n_panel_x, n_trail, wing.geometry );
 
 
 %% set airfoil aerodynamics
@@ -122,6 +129,7 @@ end
 
 wing.config.is_unsteady = double(is_unsteady);
 wing.config.is_flexible = double(is_flexible);
+wing.config.method      = method;
 wing.config.is_stall    = double(is_stall);
 wing.config.is_le_shock = double(is_le_shock);
 if wing.config.is_unsteady

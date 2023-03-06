@@ -24,14 +24,18 @@ switch wing_config.airfoil_method
         c_L_alpha = rad2deg(c_L_alpha_deg);
         % effective angle of attack for an equivalent uncambered airfoil
         alpha_inf_0 = wing_state.aero.circulation.alpha_eff - deg2rad(alpha_0);
+        alpha_inf_0_nc = wing_state.aero.circulation.alpha_inf - deg2rad(alpha_0);
         alpha_0_rad = deg2rad(alpha_0);
     case 'simple'
         % effective angle of attack for an equivalent uncambered airfoil
-        alpha_inf_0 = wing_state.aero.circulation.alpha_eff - deg2rad(wing_airfoil.simple.alpha_0);
+        alpha_inf_0 = wing_state.aero.circulation.alpha_eff - wing_airfoil.simple.alpha_0;
+        alpha_inf_0_nc = wing_state.aero.circulation.alpha_inf - wing_airfoil.simple.alpha_0;
         % clean airfoil coefficients
         c_L_alpha = wing_airfoil.simple.c_L_alpha ./ ...
             sqrtReal(1-wing_state.aero.circulation.Ma.^2);
 end
+
+% alpha_inf_0_nc = alpha_inf_0;
 
 abs_V_i = vecnorm( wing_state.aero.local_inflow.V_75, 2 );
 
@@ -45,9 +49,9 @@ q = zeros( 1, n_panel );
 x = zeros( size( wing_state.aero.unsteady.x ) );
 
 [~,~,~,~,~,~,A,B_alpha,~] = unstAirfoilAeroFast( ...
-    abs_V_i, wing_state.aero.circulation.Ma, wing_state.geometry.ctrl_pt.c, c_L_alpha, x_ac, x, alpha_inf_0 + wing_state.aero.circulation.alpha_ind, q );
+    abs_V_i, wing_state.aero.circulation.Ma, wing_state.geometry.ctrl_pt.c, c_L_alpha, x_ac, x, alpha_inf_0, q, alpha_inf_0_nc );
 
-x = (x_dt - B_alpha.*repmat(alpha_inf_0 + wing_state.aero.circulation.alpha_ind,8,1)) ./ A;
+x = (x_dt - B_alpha.*[repmat(alpha_inf_0,2,1);alpha_inf_0_nc;repmat(alpha_inf_0,5,1)]) ./ A;
 
 % for i = 1:size(wing_state.aero.unsteady.x,2)
 %     
@@ -66,10 +70,7 @@ switch wing_config.airfoil_method
         [ c_L_c, ~, c_L_nc, ~, ~, ~ ] = ...
             unstAirfoilAeroFast( abs_V_i, wing_state.aero.circulation.Ma, ...
             wing_state.geometry.ctrl_pt.c, c_L_alpha, x_ac, ...
-            x, alpha_inf_0 + wing_state.aero.circulation.alpha_ind, q );
-        
-        c_L_c = c_L_c - c_L_alpha .* wing_state.aero.circulation.alpha_ind;
-
+            x, alpha_inf_0, q, alpha_inf_0_nc );
 
         C_N_p = ( c_L_c + c_L_nc );
         

@@ -38,6 +38,8 @@ function [geometry] = wingSetGeometryCoord(params, n_panel, spacing )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
+warning('Include function input n_panel_x');
+
 wing_25_local_line_length = vecnorm( diff(params.xyz_25.*[0;1;1],1,2),2,1 );
 wing_25_total_line_length = sum( wing_25_local_line_length );
 
@@ -85,11 +87,11 @@ switch spacing
             delta_eta_vortex_new = c_ctrl_pt / mean(c_ctrl_pt);
             % normalize so that the sum is 1 (don't manipulate span)
             delta_eta_vortex_new = delta_eta_vortex_new / (sum(delta_eta_vortex_new)/(eta_vortex(end)-eta_vortex(1)));
-            error = max(abs(delta_eta_vortex_new-delta_eta_vortex));
+            eta_error = max(abs(delta_eta_vortex_new-delta_eta_vortex));
             delta_eta_vortex = delta_eta_vortex_new;
             eta_vortex(2:end-1) = cumsum(delta_eta_vortex(1:end-1))+eta_vortex(1);
             % problems occur, if the last value is slightly greater 1
-            if error < 1e-3*1/n_panel
+            if eta_error < 1e-3*1/n_panel
                 break;
             end
         end
