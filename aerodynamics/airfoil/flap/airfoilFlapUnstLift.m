@@ -30,10 +30,10 @@ function [c_L_c,z_dt] = airfoilFlapUnstLift(V,Ma,c,delta_qs,z) %#codegen
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-A_1 = 0.3;
-A_2 = 0.7;
-b_1 = 0.14;
-b_2 = 0.53;
+A_1     = 0.625;
+A_2     = 0.375;
+b_1     = 0.310;
+b_2     = 0.312;
 
 beta    = sqrtReal(1-powerFast(Ma,2));
 beta2   = powerFast(beta,2);

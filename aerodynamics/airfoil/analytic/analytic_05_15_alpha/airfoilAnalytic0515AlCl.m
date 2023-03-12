@@ -27,13 +27,13 @@ function c_L = airfoilAnalytic0515AlCl(fcl,alMa)
 alpha = alMa(1,:);
 Ma = alMa(2,:);
 
-betaM = 1./sqrtReal( 1-powerFast( fcl(5,:).*Ma, 2 ) );
+betaM = 1./sqrtReal( 1-powerFast( Ma, 2 ) );
 
 x = fcl(6,:) .* ( pi/90*(alpha-fcl(4,:)));
 % modification of the model in [1]
 x = x + powerFast(x,3)/3 + powerFast(x,5)/5;
 % [1], page 3
-c_L = fcl(2,:).*betaM.*90/pi.*sin(pi/90*(alpha-fcl(1,:))) ...
+c_L = fcl(2,:) .* betaM.*90/pi.*sin(pi/90*(alpha-fcl(1,:))) ...
     + fcl(3,:) .* ( 1 + tanh( x ) );
 
 end
