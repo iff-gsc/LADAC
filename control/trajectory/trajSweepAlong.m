@@ -137,7 +137,7 @@ else
             arc_len_diff = arc_len_start_diff;
             
             % Inital Newton step
-            t(:) = t - (dist_remaining + arc_len - arc_len_start) / arc_len_diff;
+            t(:) = t - divideFinite(dist_remaining + arc_len - arc_len_start, arc_len_diff);
             
             for i = 1:2
                 % Update arc length and derivative
@@ -145,7 +145,7 @@ else
                     trajSectionGetArcLength(act_sec, t);
                 
                 % Newton iteration step
-                t(:) = t - (dist_remaining + arc_len - arc_len_start) / arc_len_diff;
+                t(:) = t - divideFinite(dist_remaining + arc_len - arc_len_start, arc_len_diff);
             end                                
             
             break;

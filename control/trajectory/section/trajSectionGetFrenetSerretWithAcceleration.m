@@ -63,7 +63,8 @@ end
 [dot_r, ddot_r, dddot_r] = trajSectionGetDerivatives ...
     (traj_section, t);
 
-ddot_r_g = ddot_r + [(acc_vec(1) / vel^2); (acc_vec(2) / vel^2); (acc_vec(3) / vel^2)] * norm(dot_r)^2;
+vel2 = max(eps(vel),vel^2);
+ddot_r_g = ddot_r + [(acc_vec(1) / vel2); (acc_vec(2) / vel2); (acc_vec(3) / vel2)] * norm(dot_r)^2;
 
 % Check for parabel flight
 if(norm(ddot_r_g) > eps)
