@@ -126,7 +126,7 @@ for i=1:100
     end
     
     % One Newton step
-    t = t - eval_fun / eval_fun_dt;
+    t = t - divideFinite(eval_fun, eval_fun_dt);
     
     % Break loop
     if(abs(eval_fun) < 1e-12)

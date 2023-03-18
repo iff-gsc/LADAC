@@ -192,7 +192,7 @@ ap.cep.vb	= copter.bat.V;
 ap.cep.ri	= copter.motor.R;
 
 % body control effectiveness parameters
-ap.ceb.m    = copter.body.m;
+ap.ceb.m    = cntrl_effect_scaling_factor * copter.body.m;
 ap.ceb.ixx  = cntrl_effect_scaling_factor * copter.body.I(1,1);
 ap.ceb.iyy  = cntrl_effect_scaling_factor * copter.body.I(2,2);
 ap.ceb.izz  = cntrl_effect_scaling_factor * copter.body.I(3,3);
