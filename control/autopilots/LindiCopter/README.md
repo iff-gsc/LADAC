@@ -9,12 +9,12 @@ The flight path following flight mode uses splines based on defined waypoints.
 
 ## Installation
 
-- You need [LADAC](../../README.md)
+- You need [LADAC](../../../#readme)
 
 ## How to use?
 
-The autopilot Simulink block is called __LindiCopter Autopilot__ and is located in `lindiCopter_lib`.
-The autopilot parameters can be computed automatically using the function `lindiCopterAutoCreate` based on a quadcopter parameters struct (see copter_params_default):
+The autopilot Simulink block is called __LindiCopter Autopilot__ and is located in [`lindiCopter_lib`](lindiCopter_lib.slx).
+The autopilot parameters can be computed automatically using the function [`lindiCopterAutoCreate`](lindiCopterAutoCreate.m) based on a quadcopter parameters struct (see [copter_params_default](../../../aircraft/multicopters/complete/quadcopter/copter_params_default.m)):
 ```
 copter = copterLoadParams(copter_params_default');
 lindiCopter_params = lindiCopterAutoCreate(copter);
@@ -45,7 +45,7 @@ Have a look inside the block if the signal names are not clear.
 
 **EKF and flight test:**  
 LindiCopter does not contain an extended Kalman filter (EKF) for state estimation and can not be used direction for flight tests.
-However, you can use the [ArduPilot custom controller interface](https://github.com/iff-gsc/LADAC/tree/main/utilities/interfaces_external_programs/ArduPilot_custom_controller).
+However, you can use the [ArduPilot custom controller interface](../../../utilities/interfaces_external_programs/ArduPilot_custom_controller#readme).
 Using the ArduPilot custom controller interface means, that the ArduPilot EKF is used.
 With the ArduPilot custom controller interface you can perform software in the loop simulations as well as flight tests.
 
