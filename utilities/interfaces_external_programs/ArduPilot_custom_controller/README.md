@@ -2,7 +2,7 @@
 
 This is a toolchain which implements your MATLAB/Simulink controller in ArduPilot.
 Currently supported: ArduCopter and ArduPlane.  
-Note that the ArduPlane patch also contains a custom interface to ArduPilot SITL with UDP connection (see [ArduPilot SITL interface of LADAC](../ArduPilot_SITL)).
+Note that the ArduPlane patch also contains a custom interface to ArduPilot SITL with UDP connection (see [ArduPilot SITL interface of LADAC](../ArduPilot_SITL#readme)).
 
 ## Motivation
 
@@ -14,7 +14,7 @@ Here, the implementation of your MATLAB/Simulink controller in ArduPilot is disc
 
 ## Installation
 
-- You must install [LADAC](../../../README.md) (you need the MATLAB Coder and Simulink Embedded Coder).
+- You must install [LADAC](https://github.com/iff-gsc/LADAC#readme) (you need the MATLAB Coder and Simulink Embedded Coder).
 - You must install the [ArduPilot SITL](https://ardupilot.org/dev/docs/SITL-setup-landingpage.html).
 - Clone the following ArduPilot **fork** and check out one of the following branches:
   - ArduCopter 4.2.0
@@ -26,7 +26,7 @@ Here, the implementation of your MATLAB/Simulink controller in ArduPilot is disc
     ```
     git clone -b Plane-Matlab-4.3 https://github.com/ybeyer/ardupilot
     git submodule update --init --recursive
-- These instructions assume that you have a basic understanding of ArduPilot and the ArduPilot SITL. Please also note the [ArduPilot SITL interface of LADAC](../ArduPilot_SITL).
+- These instructions assume that you have a basic understanding of ArduPilot and the ArduPilot SITL. Please also note the [ArduPilot SITL interface of LADAC](../ArduPilot_SITL#readme).
 
 
 ## Tests
@@ -65,7 +65,7 @@ Note that the steps are slightly different for ArduCopter and ArduPlane.
      ```
      (Note that you have to replace `copter` with `plane` if you want to build ArduPlane.)
 3. Test the MATLAB/Simulink controller in flight tests **(CAUTION: THIS MIGHT BE DANGEROUS, PLEASE ASSURE SAFETY ARRANGEMENTS!)**.
-   - Only do flight tests after careful and comprehensive [SITL tests](../ArduPilot_SITL/README.md).
+   - Only do flight tests after careful and comprehensive [SITL tests](../ArduPilot_SITL#readme).
    - Only do flight tests at dedicated terrain.
    - Only do flight tests if you are sure that you can deactivate the MATLAB/Simulink controller at all times.
    - Only do flight tests if you have implemented a radio failsafe action that will cause acceptable reactions of the quadcopter in case of transmitter/receiver connection loss.
@@ -89,13 +89,13 @@ Step 1 must be adjusted as follows.
 
 ## How to use?
 
-Take a look at the Simulink model `ArduCopter_TemplateController` in the [ArduCopter](ArduCopter) subfolder and the `ArduPlane_TemplateController` in this folder.
+Take a look at the Simulink models [`ArduCopter_TemplateController`](ArduCopter_TemplateController.slx) and [`ArduPlane_TemplateController`](ArduPlane_TemplateController.slx) in this folder.
 They contain the dummy controller in the middle.
 On the left and on the right, there are interfaces to the ArduPilot fork.
 In this case, the dummy controller sends constant values to the actuators and it logs some signals.  
 To get to run your MATLAB/Simulink controller in ArduPilot you have to generate C++ code from your Simulink model and you must copy it inside the ArduPilot fork.
 
-1. Make a copy of one of the `MatlabController` template Simulink files, insert your controller block and connect the inputs and outputs with the Simulink blocks in `LADAC/utilities/interfaces_external_programs/ardupilot_custom_controller`. You have to initialize the Simulink bus objects in the first place in Matlab:
+1. Make a copy of one of the `Ardu<Copter/Plane>_TemplateController` Simulink files, replace the *dummy test controller* with your own controller block and connect the inputs and outputs with the interface blocks to ArduPilot (*Actuator muxer*, *log muxer* etc.). The interface blocks are provided by the Simulink library [`ardupilot_custom_controller_lib`](ardupilot_custom_controller_lib.slx). You have to initialize the Simulink bus objects in the first place in Matlab:
     ```
     ardupilotCreateInputBuses
     ```

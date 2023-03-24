@@ -1,10 +1,10 @@
 # ArduPilot SITL interfaces for Simulink
 
 There are two interfaces available:
-The [Adopted Gazebo Interface](AdoptedGazeboInterface) is based on the connection of Gazebo with ArduPilot SITL and uses the same UDP port as well as the same flight parameters.
-The [Custom Simulink Interface](CustomSimulinkInterface) uses a modification of the ArduPilot code which is provided in LADAC.  
+The [Adopted Gazebo Interface](#adopted-gazebo-interface) is based on the connection of Gazebo with ArduPilot SITL and uses the same UDP port as well as the same flight parameters.
+The [Custom Simulink Interface](#custom-simulink-interface) uses a modification of the ArduPilot code which is provided in LADAC.  
 For more information about the ArduPilot SITL interfaces take a look at the 
-[ArduPilot Documentation](https://ardupilot.org/dev/docs/using-gazebo-simulator-with-sitl.html), 
+[ArduPilot Documentation](https://ardupilot.org/dev/docs/sitl-with-gazebo.html), 
 the [ArduPilot source code](https://github.com/ArduPilot/ardupilot/blob/master/libraries/SITL/SIM_Gazebo.h),
 the [implementation of SwiftGust plugin](https://github.com/SwiftGust/ardupilot_gazebo)
 or the [implementation of khancyr plugin](https://github.com/khancyr/ardupilot_gazebo).  
@@ -20,9 +20,9 @@ However, Simulink has several advantages, especially regarding analysis and insi
 
 ## Installation
 
-You must install LADAC and the [ArduPilot SITL](https://ardupilot.org/dev/docs/SITL-setup-landingpage.html).  
-Optional: install [Mission Planner](https://ardupilot.org/planner/) or [QGroundControl](http://qgroundcontrol.com/).  
-If you want to use the [Custom Simulink Interface](CustomSimulinkInterface), you have to patch your local ArduPilot repository according to the instructions in the [ArduPilot custom controller](ArduPilot_custom_controller). 
+- You must install [LADAC](https://github.com/iff-gsc/LADAC#readme) and the [ArduPilot SITL](https://ardupilot.org/dev/docs/SITL-setup-landingpage.html).  
+- Optional: install [Mission Planner](https://ardupilot.org/planner/) or [QGroundControl](http://qgroundcontrol.com/).  
+- If you want to use the [Custom Simulink Interface](#custom-simulink-interface), you have to patch your local ArduPilot repository according to the instructions in [ArduPilot custom controller](../ArduPilot_custom_controller#readme). 
 
 
 ## Tests
@@ -117,8 +117,8 @@ sim_vehicle.py -v ArduPlane --model=simulink
 
 ## How to use?
 
-There are receive blocks and very similar send blocks in the library `ardupilot_sitl`.
+There are receive blocks and very similar send blocks in the Simulink library [`ardupilot_sitl_lib`](ardupilot_sitl_lib.slx).
 These blocks can be used in your flight dynamics Simulink file.
 The send blocks send the vehicle state to ArduPilot SITL (they have different inputs interfaces).
 The receive blocks receive the actuator commands from the ArduPilot SITL.
-Note that the ArduPilot SITL must be started like in the [Tests](##Tests) section (step 2).
+Note that the ArduPilot SITL must be started like in the [Tests](#tests) section (step 2).
