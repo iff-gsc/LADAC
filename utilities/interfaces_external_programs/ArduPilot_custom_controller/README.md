@@ -65,7 +65,7 @@ Note that the steps are slightly different for ArduCopter and ArduPlane.
      ```
      (Note that you have to replace `copter` with `plane` if you want to build ArduPlane.)
 3. Test the MATLAB/Simulink controller in flight tests **(CAUTION: THIS MIGHT BE DANGEROUS, PLEASE ASSURE SAFETY ARRANGEMENTS!)**.
-   - Only do flight tests after careful and comprehensive [SITL tests](../ArduPilot_SITL/README.md).
+   - Only do flight tests after careful and comprehensive [SITL tests](../ArduPilot_SITL#readme).
    - Only do flight tests at dedicated terrain.
    - Only do flight tests if you are sure that you can deactivate the MATLAB/Simulink controller at all times.
    - Only do flight tests if you have implemented a radio failsafe action that will cause acceptable reactions of the quadcopter in case of transmitter/receiver connection loss.
