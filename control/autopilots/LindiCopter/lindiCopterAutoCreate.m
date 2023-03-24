@@ -90,7 +90,12 @@ ap.ca.W_v(2,2) = 30;
 ap.ca.W_v(3,3) = 0.01;
 ap.ca.W_v(4,4) = 300;
 
-ap.traj = loadParams( 'traj_params_default');
+% maximum number of waypoints
+ap.traj.wpmax = 4;
+% boolean if last and first waypoint should be connected (true) or not
+ap.traj.cycle = true;
+% degree of spline polynomials
+ap.traj.degree = 5;
 
 num_motors = size(copter.config.propPos_c,2);
 
@@ -155,7 +160,7 @@ else
     error('Not enough thrust to hover.')
 end
 if is_flipped_allowed
-    ap.atc.rm.leanmax = 2*pi;
+    ap.atc.rm.leanmax = pi;
 else
     ap.atc.rm.leanmax = lean_max;
 end
@@ -187,7 +192,7 @@ ap.cep.vb	= copter.bat.V;
 ap.cep.ri	= copter.motor.R;
 
 % body control effectiveness parameters
-ap.ceb.m    = copter.body.m;
+ap.ceb.m    = cntrl_effect_scaling_factor * copter.body.m;
 ap.ceb.ixx  = cntrl_effect_scaling_factor * copter.body.I(1,1);
 ap.ceb.iyy  = cntrl_effect_scaling_factor * copter.body.I(2,2);
 ap.ceb.izz  = cntrl_effect_scaling_factor * copter.body.I(3,3);
