@@ -180,9 +180,9 @@ end
 % propeller control effectiveness parameters
 ap.cep.k 	= k;
 ap.cep.d	= d;
-ap.cep.x	= copter.config.propPos_c(1,:);
-ap.cep.y	= copter.config.propPos_c(2,:);
-ap.cep.z	= copter.config.propPos_c(3,:);
+ap.cep.x	= copter.config.propPos_c(1,:) - copter.config.CoG_Pos_c(1);
+ap.cep.y	= copter.config.propPos_c(2,:) - copter.config.CoG_Pos_c(2);
+ap.cep.z	= copter.config.propPos_c(3,:) - copter.config.CoG_Pos_c(3);
 ap.cep.a	= copter.config.propDir(:)';
 ap.cep.nx	= M(1,:);
 ap.cep.ny	= M(2,:);
