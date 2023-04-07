@@ -50,8 +50,31 @@ gamma   = ca.gamma + Delta_gamma;
 ud      = ud + Delta_u_d;
 W_v     = ca.W_v + diag( Delta_diag_W_v );
 
+datatype = superiorfloat(ca.u_min);
+
+% init
+Delta_u = zeros(size(ca.u_d),datatype);
+W       = zeros(size(Delta_nu),datatype);
+iter    = zeros(1,datatype);
+
 % run WLS
-[ Delta_u, W, iter ] = wls_alloc( B, Delta_nu, umin, umax, ...
-                    W_v, ca.W_u, ud, gamma, u0, ca.W, ca.i_max );
+if ca.force_double_precision
+    [ Delta_u_double, W_double, iter_double ] = wls_alloc( ...
+        double(B), double(Delta_nu), double(umin), double(umax), ...
+        double(W_v), double(ca.W_u), double(ud), double(gamma), ...
+        double(u0), double(ca.W), double(ca.i_max) );
+    if strcmp(datatype,'single')
+        Delta_u(:) = single(Delta_u_double);
+        W(:)       = single(W_double);
+        iter(:)    = single(iter_double);
+    else
+        Delta_u(:) = Delta_u_double;
+        W(:)       = W_double;
+        iter(:)    = iter_double;
+    end
+else
+    [ Delta_u(:), W(:), iter(:) ] = wls_alloc( B, Delta_nu, umin, umax, ...
+        W_v, ca.W_u, ud, gamma, u0, ca.W, ca.i_max );
+end
 
 end

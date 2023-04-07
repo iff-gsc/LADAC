@@ -27,3 +27,7 @@ param.gamma = 1000;
 param.W = zeros(4,1);
 % maximum number of iterations (scalar)
 param.i_max = 100;
+
+% decide if double precision should be used for control allocation (it has
+% shown that single precision yields different results in some cases)
+param.force_double_precision = true;
