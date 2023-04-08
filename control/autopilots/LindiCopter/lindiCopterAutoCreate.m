@@ -108,7 +108,18 @@ thrust_max = sum( k*omega_max.^2 );
 thrust_min = sum( k*omega_min.^2 );
 thrust_hover = copter.body.m * g;
 
-omega_hover = sqrt( thrust_hover / k );
+omega_hover = sqrt( thrust_hover / num_motors / k );
+torque_hover = d * omega_hover.^2;
+
+u_hover = (torque_hover/copter.prop.I / (copter.motor.KT/(copter.motor.R*copter.prop.I)) + copter.motor.KT*omega_hover) / copter.bat.V;
+if u_hover > 0.95
+    error('Not enough thrust to hover.')
+end
+u_hover_2 = u_hover^2;
+u_min_2 = ap.ca.u_min.^2;
+u_max_2 = ap.ca.u_max.^2;
+ap.thr.min = sqrt(u_hover_2-0.6*(u_hover_2-u_min_2));
+ap.thr.max = sqrt(u_hover_2+0.75*(u_max_2-u_hover_2));
 
 delta_thrust_max = min( thrust_max - thrust_hover, thrust_hover - thrust_min );
 
