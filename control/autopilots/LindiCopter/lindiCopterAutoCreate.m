@@ -149,11 +149,11 @@ omega = 0;
 V = 0;
 dt = 0.01;
 while true
-    u = aggr_atti;
+    u = aggr_pos;
     torque = propMapFitGetZ(copter.prop.map_fit,omega*60/(2*pi),V,'torque');
     thrust = propMapFitGetZ(copter.prop.map_fit,omega*60/(2*pi),V,'thrust');
     dot_omega = copter.motor.KT/copter.motor.R/copter.prop.I*(copter.bat.V*u-copter.motor.KT*omega)-torque/copter.prop.I;
-    acc = 1/copter.body.m * num_motors*thrust - 1.225*copter.aero.S*copter.aero.C_Dmax*V^2;
+    acc = 1/copter.body.m * ( num_motors*thrust - 0.5*1.225*copter.aero.S*copter.aero.C_Dmax*V^2 );
     omega = omega + dot_omega*dt;
     V = V + acc*dt;
     if abs(dot_omega) < 0.1 && abs(acc) < 0.01
