@@ -50,8 +50,7 @@ gamma   = ca.gamma + Delta_gamma;
 ud      = ud + Delta_u_d;
 W_v     = ca.W_v + diag( Delta_diag_W_v );
 
-% run WLS
 [ Delta_u, W, iter ] = wls_alloc( B, Delta_nu, umin, umax, ...
-                    W_v, ca.W_u, ud, gamma, u0, ca.W, ca.i_max );
+    W_v, ca.W_u, ud, gamma, u0, ca.W, ca.i_max );
 
 end
