@@ -101,6 +101,7 @@ private:
     Vortex m_vortex;
     Cntrl_pt m_cntrl_pt;
     CoeffLocal m_coeffLocal;
+    QVector<double> m_cL_act2;
     QVector3D m_origin;
     QGenericMatrix<3,3,double> m_rotationMatrix;
     QVector3D m_shift;
@@ -121,6 +122,8 @@ private:
     float m_flapFaceAlpha = 0.5;
     float m_stallColor[3] = {247.0/255.0,132.0/255.0,17.0/255.0};
     float m_stallAlpha = 0.7;
+    float m_ladForceColor[3] = {0.7,0.45,0.9};
+    float m_ladForceAlpha = 1;
 };
 
 

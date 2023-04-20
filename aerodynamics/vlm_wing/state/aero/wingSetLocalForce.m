@@ -30,7 +30,7 @@ abs_V_loc = vecnorm( wing.state.aero.local_inflow.V_25 .* wing.state.aero.circul
 factor =  powerFast(abs_V_loc,2) * 0.5 * wing.state.external.atmosphere.rho ...
     .* b_i .* wing.geometry.ctrl_pt.c;
 
-wing.state.aero.force_loc.M_i_b = wing.state.aero.coeff_loc.c_m_airfoil .* factor * c;
+wing.state.aero.force_loc.M_i_b = wing.state.aero.coeff_loc.c_m_airfoil .* factor .* wing.geometry.ctrl_pt.c;
 
 % Compute factor for the aerodynamic force coefficients to get the forces.
 % Note that the local airspeed is multiplied because the local
