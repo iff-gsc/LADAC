@@ -38,7 +38,7 @@ function [geometry] = wingSetGeometryCoord(params, n_panel, spacing )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-warning('Include function input n_panel_x');
+n_panel_x = 1;
 
 wing_25_local_line_length = vecnorm( diff(params.xyz_25.*[0;1;1],1,2),2,1 );
 wing_25_total_line_length = sum( wing_25_local_line_length );
@@ -104,7 +104,15 @@ vortex.pos = zeros( 3, size(eta_vortex,2) );
 vortex.pos(1,:) = interp1( eta_25, xyz_25(1,:), eta_vortex );
 vortex.pos(2,:) = interp1( eta_25, xyz_25(2,:), eta_vortex );
 vortex.pos(3,:) = interp1( eta_25, xyz_25(3,:), eta_vortex );
+    
 vortex.c = interp1( eta_25, c, eta_vortex );
+
+incidence_vortex = interp1( eta_25, delta_alpha, eta_vortex );
+for i = 2:n_panel_x + 1
+    vortex.pos(1,:,i) = vortex.pos(1,:,i-1) - vortex.c .* cos(incidence_vortex);
+    vortex.pos(2,:,i) = vortex.pos(2,:,i-1);
+    vortex.pos(3,:,i) = vortex.pos(3,:,i-1) + vortex.c .* sin(incidence_vortex);
+end
 
 ctrl_pt.pos = zeros(3, size(eta_ctrl_pt,2) );
 ctrl_pt.pos(1,:) = interp1( eta_25, xyz_75(1,:), eta_ctrl_pt );
@@ -133,4 +141,11 @@ geometry.ctrl_pt = ctrl_pt;
 geometry.segments = segments;
 geometry.rotation = [params.rot_x;params.i;0];
 
+line_25_ctrl_pos = geometry.vortex.pos(:,1:end-1,1) + 0.5*diff(geometry.vortex.pos(:,:,1),1,2);
+diff_ctrl_pos = line_25_ctrl_pos - geometry.ctrl_pt.pos;
+geometry.ctrl_pt_lever = vecnorm( diff_ctrl_pos, 2 , 1 );
+geometry.ctrl_pt_lever = geometry.ctrl_pt_lever .* sign( diff_ctrl_pos(1,:,:) );
+
+geometry.line_25.c = geometry.vortex.c;
+geometry.line_25.pos = geometry.vortex.pos(:,:,1);
 end

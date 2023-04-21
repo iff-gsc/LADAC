@@ -16,6 +16,7 @@ spacing = 'like_chord';
 is_infl_recomputed = 0;
 method = 'IVLM';
 n_trail = 1;
+Ma = 0;
 
 % set user parameters
 for i = 1:length(varargin)
@@ -67,6 +68,8 @@ for i = 1:length(varargin)
         case 'DLM'
             method = 'DLM';
             n_trail = varargin{i+1};
+        case 'Mach'
+            Ma = varargin{i+1};
     end
 end
 
@@ -85,11 +88,11 @@ wing.params = wingSetParams(prm);
 wing.n_panel = n_panel;
 wing.n_panel_x = n_panel_x;
 wing.n_trail = n_trail;
-wing.geometry = wingSetGeometryCoord( wing.params, wing.n_panel, wing.n_panel_x, spacing );
+wing.geometry = wingSetGeometryCoord( wing.params, wing.n_panel, spacing );
 
 
 %% init state
-wing.state = wingCreateState( wing.params.num_actuators, wing.n_panel, wing.n_panel_x, n_trail, wing.geometry );
+wing.state = wingCreateState( wing.params.num_actuators, wing.n_panel, wing.geometry );
 
 
 %% set airfoil aerodynamics
@@ -142,6 +145,6 @@ wing.config.actuator_2_type = actuator_2_type;
 wing.config.is_infl_recomputed = is_infl_recomputed;
 
 %% set interim results
-wing.interim_results = wingSetInterimResults( wing );
+wing.interim_results = wingSetInterimResults( wing, Ma );
 
 end
