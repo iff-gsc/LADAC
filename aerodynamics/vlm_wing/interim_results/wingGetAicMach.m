@@ -23,7 +23,7 @@ if strcmp(wing.config.airfoil_method,'analytic')
     fcl = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcl, Ma );
     cla = rad2deg(fcl(2,:));
 elseif strcmp(wing.config.airfoil_method,'simple')
-    cla = wing.airfoil.simple.c_L_alpha;
+    cla = repmat(wing.airfoil.simple.c_L_alpha,1,wing.n_panel);
 else
     error('Airfoil method not supported.')
 end
