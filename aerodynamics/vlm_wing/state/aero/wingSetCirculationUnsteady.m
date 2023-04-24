@@ -72,9 +72,6 @@ wing.state.aero.circulation.q = 2 * (alpha_inf_75 - alpha_inf_25);
 % rotation axis for normal vector to adjust the angle of attack / incidence
 wing.state.aero.circulation.rot_axis(:) = crossFast( -v_inf(:,:), u_n(:,:) );
 
-% influence coefficients
-Ab = zeros( wing.n_panel*n_panel_x, wing.n_panel*n_panel_x );
-At = zeros( wing.n_panel*n_panel_x, wing.n_panel*n_trail );
 
 cla0 = 2*pi;
 
@@ -196,40 +193,20 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
         wing.state.aero.circulation.Delta_alpha = c_L_visc ./ (cla0) - alpha_eff_unswept;
     end
     
-        % influence coefficients matrix [4], eq. (12.7)
-    for i = 1:wing.n_panel*n_panel_x
-        Ab(:,i) = dot( wing.interim_results.AIC_b_beta(:,:,i), u_n(:,:), 1 );
-    end
-    for j = 1:wing.n_panel*n_trail
-        At(:,j) = dot( wing.interim_results.AIC_t(:,:,j), u_n(:,:), 1 );
-    end
-
-    cla3d = diag(wing.state.aero.circulation.cla);
-    cla = diag(2*pi*ones(1,wing.n_panel));
-    c = diag(wing.state.geometry.ctrl_pt.c);
-    b = wing.params.b;
-
-    % influence matrix Mach number correction
-    A = -Ab;
-    for i=1:n_trail
-        A = A - At(:,wing.n_panel*(i-1)+1:wing.n_panel*i);
-    end
-    a = (beta*(A*cla3d*cla*c+2*b*(cla-cla3d))-2*b*(cla-beta*cla3d))/(A*beta*cla3d*cla*c);
-    
     if wing.config.is_circulation_iteration
         % adjust the normal vector (if Delta_alpha ~= 0)
         u_n_VLM(:) = axisAngle( u_n(:,:), wing.state.aero.circulation.rot_axis(:,:), wing.state.aero.circulation.Delta_alpha(:,:) );
         % normal airspeed component for VLM
         v_ni_VLM = - dot( v_inf, u_n_VLM, 1 );
         if wing.config.is_unsteady
-            v_ni_wake = (a*At * wing.state.aero.circulation.gamma_trail(:) )';
+            v_ni_wake = (wing.interim_results.AIC_t * wing.state.aero.circulation.gamma_trail(:) )';
             v_ni_VLM = v_ni_VLM - v_ni_wake;
         end
         if n_trail == 1
             wing.state.aero.circulation.gamma_trail(:) = wing.state.aero.circulation.gamma;
         end
-        v_ni_wake = a*At * wing.state.aero.circulation.gamma_trail(:);
-        wing.state.aero.circulation.gamma(:) = (a*Ab) \ (v_ni_VLM(:)-v_ni_wake(:));
+        v_ni_wake = wing.interim_results.AIC_t * wing.state.aero.circulation.gamma_trail(:);
+        wing.state.aero.circulation.gamma(:) = wing.interim_results.AIC_b \ (v_ni_VLM(:)-v_ni_wake(:));
         wing.state.aero.circulation.gamma(:,:,2:end) = wing.state.aero.circulation.gamma(:,:,2:end) - wing.state.aero.circulation.gamma(:,:,1:end-1);
         % lift coefficient of VLM
         c_L_VLM = 2*wing.state.aero.circulation.gamma * span./wing.state.geometry.ctrl_pt.c;
@@ -237,10 +214,8 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
         % VLM backwards (c_L_visc won't change)
         c_L_VLM = c_L_visc;
         wing.state.aero.circulation.gamma = 0.5*c_L_VLM / span .* wing.state.geometry.ctrl_pt.c;
-        AAt = a*At;
-        AAb = a*Ab;
-        v_ni_wake = (AAt * wing.state.aero.circulation.gamma(:) )';
-        v_ni_VLM = (AAb * wing.state.aero.circulation.gamma(:))' + v_ni_wake;
+        v_ni_wake = (wing.interim_results.AIC_t * wing.state.aero.circulation.gamma(:) )';
+        v_ni_VLM = (wing.interim_results.AIC_b * wing.state.aero.circulation.gamma(:))' + v_ni_wake;
         alpha_eff_VLM = -asinReal(v_ni_VLM);
         wing.state.aero.circulation.Delta_alpha = alpha_eff_VLM - alpha_inf;
     end

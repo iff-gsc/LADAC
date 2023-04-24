@@ -44,23 +44,25 @@ interim_results.beta_infl = deg2rad(1);
 
 n_panel_x = 1;
 
-interim_results.AIC_b_beta = wingGetDimlessIndVel( ...
-    repmat(interim_results.M_rot_x*dcmBaFromAeroAngles(0,interim_results.beta_infl)*[-1;0;0],1,wing.n_panel,n_panel_x), ...
-    wing.state.geometry, interim_results.wake, Ma, wing.config.is_unsteady );
-
-[interim_results.AIC_b,interim_results.AIC_t] = wingGetDimlessIndVel( ...
-    repmat(interim_results.M_rot_x*dcmBaFromAeroAngles(0,0)*[-1;0;0],1,wing.n_panel,n_panel_x), ...
-    wing.state.geometry, interim_results.wake, Ma, wing.config.is_unsteady );
-
-interim_results.Delta_AIC_b_pos = ...
-	interim_results.AIC_b_beta - interim_results.AIC_b;
-interim_results.AIC_b_beta = wingGetDimlessIndVel( ...
-    repmat(interim_results.M_rot_x*dcmBaFromAeroAngles(0,-interim_results.beta_infl)*[-1;0;0],1,wing.n_panel,n_panel_x), ...
-    wing.state.geometry, interim_results.wake, Ma, wing.config.is_unsteady );
-
-interim_results.Delta_AIC_b_neg = ...
-	interim_results.AIC_b_beta - interim_results.AIC_b;
-
 interim_results.u_n = wingGetNormalVectorFromGeometry( wing.geometry );
+
+
+[AIC_b_beta,AIC_t_beta] = wingGetAicMach( wing, interim_results.wake, Ma, interim_results.beta_infl );
+[AIC_b,AIC_t] = wingGetAicMach( wing, interim_results.wake, Ma, 0 );
+
+Delta_AIC_b_pos = AIC_b_beta - AIC_b;
+Delta_AIC_t_pos = AIC_t_beta - AIC_t;
+
+[AIC_b_beta,AIC_t_beta] = wingGetAicMach( wing, interim_results.wake, Ma, -interim_results.beta_infl );
+
+Delta_AIC_b_neg = AIC_b_beta - AIC_b;
+Delta_AIC_t_neg = AIC_t_beta - AIC_t;
+
+interim_results.AIC_b = AIC_b;
+interim_results.AIC_t = AIC_t;
+interim_results.Delta_AIC_b_pos = Delta_AIC_b_pos;
+interim_results.Delta_AIC_t_pos = Delta_AIC_t_pos;
+interim_results.Delta_AIC_b_neg = Delta_AIC_b_neg;
+interim_results.Delta_AIC_t_neg = Delta_AIC_t_neg;
 
 end
