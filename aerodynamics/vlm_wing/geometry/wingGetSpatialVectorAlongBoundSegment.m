@@ -16,7 +16,7 @@ function dl = wingGetSpatialVectorAlongBoundSegment( vortex, varargin )
 % 
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
@@ -25,10 +25,10 @@ function dl = wingGetSpatialVectorAlongBoundSegment( vortex, varargin )
 % compute dl according to [1] (no equation provided)
 
 if isempty(varargin)
-    dl = diff( vortex.pos, 1, 2 );
+    dl = diff( vortex.pos(:,:,1), 1, 2 );
 else
     idx = varargin{1};
-    dl = diff( vortex.pos(:,idx), 1, 2 );
+    dl = diff( vortex.pos(:,idx,1), 1, 2 );
 end
 
 end

@@ -2,7 +2,7 @@ function interim_results = wingSetInterimResults( wing, Ma_inf )
 % Description of wingSetInterimResults
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
@@ -20,9 +20,14 @@ spanwise_vector_50 = wingGetDimLessSpanwiseLengthVector(pos_50);
 interim_results.sweep50 = pi/2 - acosReal( abs( dot( -spanwise_vector_50, -v_inf, 1 ) ) ./ ( vecnorm(-v_inf,2,1) .* vecnorm(spanwise_vector_50,2,1) ) );
 % for the LEISA aircraft a spanwise constant Mach number showed best
 % agreement
-x_root = interp1(pos_50.pos(2,:)/max(pos_50.pos(2,:)),pos_50.pos(1,:),-0.1,'linear');
-y_root = interp1(pos_50.pos(2,:)/max(pos_50.pos(2,:)),pos_50.pos(2,:),-0.1,'linear');
-interim_results.sweep50(:) = atan((pos_50.pos(1,1)-x_root)/(pos_50.pos(2,1)-y_root));
+dist = vecnorm(pos_50.pos(2:3,:),2,1);
+rel_dist = dist/max(dist);
+if wing.params.is_symmetrical
+    rel_dist(floor(1:end/2-1))=-rel_dist(floor(1:end/2-1));
+end
+x_root = interp1(rel_dist,pos_50.pos(1,:),0.1,'linear');
+y_root = interp1(rel_dist,dist,0.1,'linear');
+interim_results.sweep50(:) = atan((x_root-pos_50.pos(1,end))/(norm(pos_50.pos(2:3,end),2)-y_root));
 
 Ma = Ma_inf * cos(interim_results.sweep50);
 

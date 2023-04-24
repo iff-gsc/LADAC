@@ -36,6 +36,7 @@ n_trail = 1;
 
 % init lift coefficient
 c_L_visc    = zeros( 1, wing.n_panel, n_panel_x );
+c_L_VLM     = zeros( 1, wing.n_panel, n_panel_x );
 
 abs_V_i = zeros( 1, wing.n_panel );
 
@@ -67,7 +68,7 @@ end
 
 wing.state.aero.circulation.alpha_inf(:) = alpha_inf;
 % dimensionless pitch rate [1], Nomenclature and Eq. between (18) and (19)
-wing.state.aero.circulation.q = 2 * (alpha_inf_75 - alpha_inf_25);
+wing.state.aero.circulation.q(:) = 2 * (alpha_inf_75 - alpha_inf_25);
 
 % rotation axis for normal vector to adjust the angle of attack / incidence
 wing.state.aero.circulation.rot_axis(:) = crossFast( -v_inf(:,:), u_n(:,:) );
@@ -108,12 +109,18 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
     for i = 1:3
         wing.state.aero.circulation.v_i(i,:,:) = v_inf(i,:,:) + u_n(i,:,:) .* w_ind;
     end
-    % absolute local airspeed vector
+    
+    V_i = wing.state.aero.circulation.v_i;
     if wing.config.is_unsteady
-        abs_V_i(:) = mean( vecnorm( wing.state.aero.circulation.v_i .* vecnorm(wing.state.aero.local_inflow.V_25,2,1), 2 ), 3 );
+        V_norm = vecnorm(wing.state.aero.local_inflow.V_25,2,1);
     else
-        abs_V_i(:) = mean( vecnorm( wing.state.aero.circulation.v_i .* vecnorm(wing.state.aero.local_inflow.V_75,2,1), 2 ), 3 );
+        V_norm = vecnorm(wing.state.aero.local_inflow.V_75,2,1);
     end
+    for i = 1:3
+        V_i(i,:) = V_i(i,:) .* V_norm;
+    end
+    % absolute local airspeed vector
+    abs_V_i(:) = mean( vecnorm( V_i, 2 ), 3 );
     
     % Reynolds number and Mach number
     V_A_i = vecnorm( wing.state.aero.local_inflow.V_75, 2, 1 );
@@ -209,10 +216,10 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
         wing.state.aero.circulation.gamma(:) = wing.interim_results.AIC_b \ (v_ni_VLM(:)-v_ni_wake(:));
         wing.state.aero.circulation.gamma(:,:,2:end) = wing.state.aero.circulation.gamma(:,:,2:end) - wing.state.aero.circulation.gamma(:,:,1:end-1);
         % lift coefficient of VLM
-        c_L_VLM = 2*wing.state.aero.circulation.gamma * span./wing.state.geometry.ctrl_pt.c;
+        c_L_VLM(:) = 2*wing.state.aero.circulation.gamma * span./wing.state.geometry.ctrl_pt.c;
     else
         % VLM backwards (c_L_visc won't change)
-        c_L_VLM = c_L_visc;
+        c_L_VLM(:) = c_L_visc;
         wing.state.aero.circulation.gamma = 0.5*c_L_VLM / span .* wing.state.geometry.ctrl_pt.c;
         v_ni_wake = (wing.interim_results.AIC_t * wing.state.aero.circulation.gamma(:) )';
         v_ni_VLM = (wing.interim_results.AIC_b * wing.state.aero.circulation.gamma(:))' + v_ni_wake;

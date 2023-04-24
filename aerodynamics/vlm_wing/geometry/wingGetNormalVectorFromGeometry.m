@@ -1,32 +1,32 @@
 function u_n_b = wingGetNormalVectorFromGeometry( geometry, varargin )
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-u_n_b = cross( geometry.vortex.pos(:,1:end-1,1:end-1) - geometry.ctrl_pt.pos, diff(geometry.vortex.pos(:,:,1:end-1),1,2) );
-u_n_b = cross( diff(geometry.vortex.pos(:,1:end-1,:),1,3)+diff(geometry.vortex.pos(:,2:end,:),1,3), diff(geometry.vortex.pos(:,:,1:end-1),1,2)+diff(geometry.vortex.pos(:,:,2:end),1,2) );
-
-u_n_b = u_n_b ./ vecnorm(u_n_b,2,1);
-
-return;
+% u_n_b = cross( geometry.vortex.pos(:,1:end-1,1:end-1) - geometry.ctrl_pt.pos, diff(geometry.vortex.pos(:,:,1:end-1),1,2) );
+% u_n_b = cross( diff(geometry.vortex.pos(:,1:end-1,:),1,3)+diff(geometry.vortex.pos(:,2:end,:),1,3), diff(geometry.vortex.pos(:,:,1:end-1),1,2)+diff(geometry.vortex.pos(:,:,2:end),1,2) );
+% 
+% u_n_b = u_n_b ./ vecnorm(u_n_b,2,1);
+% 
+% return;
 
 % spatial vector along bound segment
-dl = wingGetSpatialVectorAlongBoundSegment(geometry.vortex);
+dl = wingGetSpatialVectorAlongBoundSegment(geometry.line_25);
 
 if ~isempty(varargin)
     idx = varargin{1};
     incidence = geometry.ctrl_pt.local_incidence(idx);
     ny = atan2(dl(3,idx),dl(2,idx));
-    pos_vortex = geometry.vortex.pos(:,[idx,idx(end)+1]);
+    pos_vortex = geometry.line_25.pos(:,[idx,idx(end)+1]);
 else
     incidence = geometry.ctrl_pt.local_incidence;
     % local dihedral (positive for left wing side)
     ny = atan2(dl(3,:),dl(2,:));
-    pos_vortex = geometry.vortex.pos;
+    pos_vortex = geometry.line_25.pos;
 end
 % The computation of the normal vector is not that easy...
 % Rotate two unit vectors in the local wing plane from local wing frame to

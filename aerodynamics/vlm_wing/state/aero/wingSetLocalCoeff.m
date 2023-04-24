@@ -19,7 +19,7 @@ function wing = wingSetLocalCoeff( wing )
 %       of unsteady airfoil behavior. AIAA journal, 28(5), 836-844.
 % 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
@@ -27,9 +27,9 @@ function wing = wingSetLocalCoeff( wing )
 
 n_panel_x = 1;
 
-zeta = wingGetDimLessSpanwiseLengthVector( wing.state.geometry.vortex );
+zeta = wingGetDimLessSpanwiseLengthVector( wing.state.geometry.line_25 );
 % make normal_vector unit vector later
-normal_vector = cross( wing.state.aero.circulation.v_i, zeta(:,:,1:end-1) );
+normal_vector = cross( wing.state.aero.circulation.v_i, zeta(:,:,1) );
 normal_vector_length = vecnorm(normal_vector,2,1);
 
 % compute mean chord
@@ -121,7 +121,7 @@ wing.state.aero.coeff_loc.c_lmn_b(:) = cross( r_ref, wing.state.aero.coeff_loc.c
 % contribution of airfoil and flap moment
 for i = 1:n_panel_x
     wing.state.aero.coeff_loc.c_lmn_b(2,:,i) = wing.state.aero.coeff_loc.c_lmn_b(2,:,i) ...
-        + wing.state.aero.coeff_loc.c_m_airfoil;
+        + wing.state.aero.coeff_loc.c_m_airfoil .* wing.geometry.ctrl_pt.c / c;
 end
 
 end
