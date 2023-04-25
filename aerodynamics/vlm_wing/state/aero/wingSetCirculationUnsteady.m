@@ -25,7 +25,7 @@ function wing = wingSetCirculationUnsteady( wing ) %#codegen
 %       662-670.
 
 % Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
@@ -41,7 +41,7 @@ c_L_VLM     = zeros( 1, wing.n_panel, n_panel_x );
 abs_V_i = zeros( 1, wing.n_panel );
 
 % compute u_n ([5], nomenclatrue, Fig. 3) in aircraft frame
-u_n = wingGetNormalVectorFromGeometry( wing.geometry );
+u_n = wingGetNormalVectorFromGeometry( wing.state.geometry );
 u_n_VLM = zeros( 3, wing.n_panel, n_panel_x );
 
 % compute unit vector in direction of freestream ([5],
