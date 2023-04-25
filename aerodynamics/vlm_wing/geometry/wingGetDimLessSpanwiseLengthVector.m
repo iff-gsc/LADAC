@@ -36,7 +36,7 @@ dl = wingGetSpatialVectorAlongBoundSegment( vortex );
 c = vortex.c(1:end-1) + diff(vortex.c)/2;
 % span is used for normalization, any other length could be used (span is
 % used in [2], chord is used in [1])
-span = sum( db );
+span = sum( db(1,:,1) );
 % Compute dimensionless spanwise length vector zeta.
 zeta = span * dl ./ repmat((db.*c),3,1);
 

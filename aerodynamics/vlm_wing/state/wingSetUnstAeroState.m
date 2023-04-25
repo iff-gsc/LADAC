@@ -36,7 +36,9 @@ alpha_inf_0 = zeros( 1, wing.n_panel );
 
 % use raw inflow in the first step and take into account downwash
 % afterwards
-abs_V_i = vecnorm( wing.state.aero.local_inflow.V_25, 2 );
+cos_sweep = cos(wing.interim_results.sweep);
+abs_V_i = vecnorm( wing.state.aero.local_inflow.V_25, 2 ) .* cos_sweep;
+c_i = wing.state.geometry.ctrl_pt.c ./ cos_sweep;
 
 % dimensionless pitch rate [1], Nomenclature and Eq. between (18) and (19)
 q = wing.state.aero.circulation.q;
@@ -53,27 +55,27 @@ switch wing.config.airfoil_method
         fcl = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcl, wing.state.aero.circulation.Ma );
         fcd = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcd, wing.state.aero.circulation.Ma );
         fcm = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcm, wing.state.aero.circulation.Ma );
+        
+        wing.state.aero.circulation.cla = rad2deg(fcl(2,:));
 
         % get points on lift curve
         [c_L_alpha_max,alpha_0] = airfoilAnalytic0515ClAlphaMax( fcl, wing.state.aero.circulation.Ma );
+        
+        wing.state.aero.circulation.alpha_eff = (wing.state.aero.circulation.alpha_eff-deg2rad(alpha_0)) ...
+            ./cos(wing.interim_results.sweep) + deg2rad(alpha_0);
 
         % effective angle of attack for an equivalent uncambered airfoil
-        alpha_inf_0(:) = wing.state.aero.circulation.alpha_eff - deg2rad(alpha_0);
-
+        alpha_inf_0 = wing.state.aero.circulation.alpha_eff - deg2rad(alpha_0);
+        alpha_inf_nc = wing.state.aero.circulation.alpha_inf - deg2rad(alpha_0);
+        
         % linear unsteady aerodynamics (potential flow) according to [1]
         [ wing.state.aero.unsteady.c_L_c, wing.state.aero.unsteady.c_m_c, ...
             wing.state.aero.unsteady.c_L_nc, wing.state.aero.unsteady.c_m_nc, ...
             wing.state.aero.unsteady.alpha_eff, wing.state.aero.unsteady.x_dt ...
             ] = ...
             unstAirfoilAeroFast( abs_V_i, wing.state.aero.circulation.Ma, ...
-            wing.state.geometry.ctrl_pt.c, rad2deg(c_L_alpha_max), x_ac, ...
-            wing.state.aero.unsteady.x, alpha_inf_0 + wing.state.aero.circulation.alpha_ind, q );
-        
-        % bypass 3d downwash
-        wing.state.aero.unsteady.alpha_eff = wing.state.aero.unsteady.alpha_eff ...
-            - wing.state.aero.circulation.alpha_ind;
-        wing.state.aero.unsteady.c_L_c = wing.state.aero.unsteady.c_L_c ...
-            - rad2deg(c_L_alpha_max) .* wing.state.aero.circulation.alpha_ind;
+            c_i, rad2deg(c_L_alpha_max), x_ac, ...
+            wing.state.aero.unsteady.x, alpha_inf_0, q, alpha_inf_nc );
         
         if wing.config.is_stall
             
@@ -81,7 +83,7 @@ switch wing.config.airfoil_method
             % coefficients
             C_N_p = wing.state.aero.unsteady.c_L_c + wing.state.aero.unsteady.c_L_nc;
             c_m_p = wing.state.aero.unsteady.c_m_c + wing.state.aero.unsteady.c_m_nc;
-
+            
             % dynamic stall according to a mix of [2], [3] and [4]
             [ wing.state.aero.unsteady.X_dt, wing.state.aero.unsteady.c_L_c(:), ...
                 wing.state.aero.unsteady.c_m_c(:), wing.state.aero.unsteady.c_D(:), ...
@@ -90,7 +92,7 @@ switch wing.config.airfoil_method
                 ] = ...
                 airfoilDynStall( wing.state.aero.unsteady.X, wing.state.aero.circulation.Ma, ...
                 C_N_p, c_m_p, wing.state.aero.unsteady.alpha_eff, fcl, fcd, fcm, ...
-                abs_V_i, wing.state.geometry.ctrl_pt.c, wing.state.aero.circulation.alpha_eff, ...
+                abs_V_i, c_i, wing.state.aero.circulation.alpha_eff, ...
                 wing.state.aero.unsteady.tau_v, wing.config.is_le_shock );
 
             % avoided new variable
@@ -105,33 +107,35 @@ switch wing.config.airfoil_method
             
     case 'simple'
 
-        % effective angle of attack for an equivalent uncambered airfoil
-        alpha_inf_0(:) = wing.state.aero.circulation.alpha_eff - deg2rad(wing.airfoil.simple.alpha_0);
+        wing.state.aero.circulation.alpha_eff = (wing.state.aero.circulation.alpha_eff-wing.airfoil.simple.alpha_0) ...
+            ./cos(wing.interim_results.sweep) + wing.airfoil.simple.alpha_0;
         
+        % effective angle of attack for an equivalent uncambered airfoil
+        alpha_inf_0(:) = wing.state.aero.circulation.alpha_eff - wing.airfoil.simple.alpha_0;
+        alpha_inf_nc = wing.state.aero.circulation.alpha_inf - wing.airfoil.simple.alpha_0;
+
         % clean airfoil coefficients
         c_L_alpha = wing.airfoil.simple.c_L_alpha ./ ...
             sqrtReal(1-powerFast(wing.state.aero.circulation.Ma,2));
         x_ac = wing.airfoil.simple.x_ac;
         
+        wing.state.aero.circulation.cla(:) = wing.airfoil.simple.c_L_alpha;
+        
         [ wing.state.aero.unsteady.c_L_c, wing.state.aero.unsteady.c_m_c, ...
             wing.state.aero.unsteady.c_L_nc, wing.state.aero.unsteady.c_m_nc, ...
             wing.state.aero.unsteady.alpha_eff, wing.state.aero.unsteady.x_dt ] ...
             = unstAirfoilAeroFast( abs_V_i, wing.state.aero.circulation.Ma, ...
-            wing.state.geometry.ctrl_pt.c, c_L_alpha, x_ac, wing.state.aero.unsteady.x, ...
-            alpha_inf_0 + wing.state.aero.circulation.alpha_ind, q );
-                
-        % bypass 3d downwash
-        wing.state.aero.unsteady.alpha_eff = wing.state.aero.unsteady.alpha_eff ...
-            - wing.state.aero.circulation.alpha_ind;
-        wing.state.aero.unsteady.c_L_c = wing.state.aero.unsteady.c_L_c ...
-            - c_L_alpha .* wing.state.aero.circulation.alpha_ind;
-        
+            c_i, c_L_alpha, x_ac, wing.state.aero.unsteady.x, ...
+            alpha_inf_0, q, alpha_inf_nc );
+            
         c_D_st = airfoilAnalyticSimpleCd( wing.airfoil.simple, alpha_inf_0 );
         c_L_unst = wing.state.aero.unsteady.c_L_c + wing.state.aero.unsteady.c_L_nc;
         wing.state.aero.unsteady.c_D(:) = unstAirfoilAeroCd( c_D_st, c_L_unst, ...
             alpha_inf_0, wing.state.aero.unsteady.alpha_eff );
         
 end
+
+wing.state.aero.unsteady.c_L_c = wing.state.aero.unsteady.c_L_c .* cos(wing.interim_results.sweep);
 
 % rotate induced velocity unit vector
 wing.state.aero.unsteady.v_i = axisAngle( wing.state.aero.circulation.v_i, ...
@@ -145,6 +149,8 @@ wing.state.aero.unsteady.c_L_c = wing.state.aero.unsteady.c_L_c ...
     + wing.state.aero.unsteady.c_L_c_flap;
 wing.state.aero.unsteady.c_m_c = wing.state.aero.unsteady.c_m_c ...
     + airfoilFlapMoment( wing.state.aero.unsteady.c_L_c_flap, wing.geometry.segments.flap_depth );
+
+wing.state.aero.unsteady.c_L_nc(:) = 0.5*wing.state.aero.unsteady.c_L_nc;
 
 switch wing.config.actuator_2_type
     case 'none'

@@ -23,16 +23,20 @@ function geometry = wingInitGeometry( n_panel )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
+n_panel_x = 1;
 
 geometry.origin = zeros(3,1);
 geometry.rotation = zeros(3,1);
 
-geometry.vortex.pos = zeros(3,n_panel+1);
+geometry.vortex.pos = zeros(3,n_panel+1,n_panel_x+1);
 geometry.vortex.c = zeros(1,n_panel+1);
 
-geometry.ctrl_pt.pos = zeros(3,n_panel);
-geometry.ctrl_pt.c = zeros(1,n_panel);
-geometry.ctrl_pt.local_incidence = zeros(1,n_panel);
+geometry.ctrl_pt.pos = zeros(3,n_panel,n_panel_x);
+geometry.ctrl_pt.c = zeros(1,n_panel,n_panel_x);
+geometry.ctrl_pt.local_incidence = zeros(1,n_panel,n_panel_x);
+
+geometry.line_25.pos = zeros(3,n_panel+1);
+geometry.line_25.c = zeros(1,n_panel+1);
 
 geometry.segments.control_input_index_local = zeros(2,n_panel);
 geometry.segments.type_local = zeros(1,n_panel);

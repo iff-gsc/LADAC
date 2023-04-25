@@ -8,7 +8,7 @@
 % *************************************************************************
 
 %% Create vortex lattice method wing
-wing = wingCreate('wing_params_default',40);
+wing = wingCreate('wing_params_default',40,1);
 
 %% define current wing state
 
@@ -32,15 +32,9 @@ wing = wingSetState(wing, alpha, beta, V, omega, ...
     actuators_pos, actuators_rate, xyz_cg, 'atmosphere', isAtmosphere(h), ...
     'V_Wb', zeros( 3, wing.n_panel ), 'V_Wb_dt', zeros( 3, wing.n_panel ) );
 
-%% get aerodynamic forces and moments
-
-[ XYZ_i_a ]     = wingGetLocalForce( wing );
-LMN_i_a         = wingGetLocalMoment( wing );
-XYZ_a           = wingGetGlobalForce( wing );
-LMN_a           = wingGetGlobalMoment( wing );
 
 %% plot results
-
+figure
 wingPlotGeometry(wing,3)
 
 figure

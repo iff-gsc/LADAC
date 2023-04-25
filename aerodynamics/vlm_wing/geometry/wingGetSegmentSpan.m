@@ -8,7 +8,8 @@ function db = wingGetSegmentSpan( vortex )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-spanwise_diff = diff( vortex.pos(2:3,:), 1, 2 );
+% spanwise_diff = zeros( size(vortex.pos,1)-1, size(vortex.pos,2)-1, size(vortex.pos,3) );
+spanwise_diff = diff( vortex.pos(2:3,:,1), 1, 2 );
 db = vecnorm( spanwise_diff, 2, 1 );
 
 end

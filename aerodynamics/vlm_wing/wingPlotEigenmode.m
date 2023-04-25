@@ -17,8 +17,8 @@ else
     factor = 1;
 end
 
-modal_state = pinv(structure.modal.T) * structure.modal.T(:,num_eigenmode) * factor;
-wing_deform = wingSetGeometryState( wing, modal_state );
+modal_state = pinv(structure.modal.T) * structure.modal.T(:,6+num_eigenmode) * factor;
+wing_deform = wingSetGeometryState( wing, 'pos', modal_state );
 wing_deform.geometry = wing_deform.state.geometry;
 
 wingPlotGeometry( wing, 3, [0.9, 0.9, 0.9] );

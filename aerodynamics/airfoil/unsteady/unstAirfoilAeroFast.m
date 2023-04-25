@@ -1,5 +1,5 @@
 function [c_L_c,c_m_c,c_L_nc,c_m_nc,alpha_E,x_dt,A,B_alpha,B_q] = unstAirfoilAeroFast( ...
-    V, Ma, c, C_L_alpha, x_ac, x, alpha, q ) %#codegen
+    V, Ma, c, C_L_alpha, x_ac, x, alpha, q, alpha_inf ) %#codegen
 % unstAirfoilAeroFast computes the outputs and the state derivative of the
 %   unsteady transsonic airfoil behavior according to [1]. The model has 8
 %   states, two inputs and five outputs.
@@ -51,6 +51,9 @@ function [c_L_c,c_m_c,c_L_nc,c_m_nc,alpha_E,x_dt,A,B_alpha,B_q] = unstAirfoilAer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
+if nargin < 9
+    alpha_inf = alpha;
+end
 % speed of sound
 a = V./Ma;
 
@@ -151,7 +154,11 @@ B_q(2,:) = -B2*0.5;
 x_dt = A.*x;
 
 for i = 1:8
-    x_dt(i,:) = x_dt(i,:) + B_alpha(i,:).*alpha + B_q(i,:).*q;
+    if i~=3
+        x_dt(i,:) = x_dt(i,:) + B_alpha(i,:).*alpha + B_q(i,:).*q;
+    else
+        x_dt(i,:) = x_dt(i,:) + B_alpha(i,:).*alpha_inf + B_q(i,:).*q;
+    end
 end
 
 % outputs
@@ -159,7 +166,8 @@ x1 = x(1,:);
 x2 = x(2,:);
 c_L_c = c_11 .* x1 + c_12 .* x2;
 c_m_c = c_21 .* x1 + c_22 .* x2 + c_27 .* x(7,:);
-c_L_nc = c_13 .* x(3,:) + c_14 .* x(4,:) + 4*Ma_inv .* alpha + Ma_inv .* q;
+c_L_nc = c_13 .* x(3,:) + c_14 .* x(4,:) + 4*Ma_inv .* alpha_inf + Ma_inv .* q;
+% c_L_nc(:)=0;
 c_m_nc = c_25 .* x(5,:) + c_26 .* x(6,:) + c_28 .* x(8,:) - Ma_inv .* alpha - 7/12*Ma_inv .* q;
 alpha_E = c_31 .* x1 + c_32 .* x2;
 

@@ -33,12 +33,6 @@ wing = wingSetState(wing, alpha, beta, V, omega, ...
     actuators_pos, actuators_rate, xyz_cg, 'atmosphere', isAtmosphere(h), ...
     'wind', zeros( 3, wing.n_panel ), zeros( 3, wing.n_panel ) );
 
-%% get aerodynamic forces and moments
-
-[ XYZ_i_a ]     = wingGetLocalForce( wing );
-LMN_i_a         = wingGetLocalMoment( wing );
-XYZ_a           = wingGetGlobalForce( wing );
-LMN_a           = wingGetGlobalMoment( wing );
 
 %% plot results
 

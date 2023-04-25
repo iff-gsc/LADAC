@@ -206,7 +206,7 @@ void CoeffLocal::setCoeffLocal(StructWithFieldnames coeffLocal) {
 void Wing::setWing(StructWithFieldnames wing) {
     QVector<QString> fieldNames = wing.getSubStructNames();
     StructWithFieldnames geometry = wing.getSubStruct("geometry");
-    StructWithFieldnames vortex = geometry.getSubStruct("vortex");
+    StructWithFieldnames vortex = geometry.getSubStruct("line_25");
     StructWithFieldnames cntrl_pt = geometry.getSubStruct("ctrl_pt");
     StructWithFieldnames aero = wing.getSubStruct("aero");
     StructWithFieldnames coeffLocal = aero.getSubStruct("coeff_loc");

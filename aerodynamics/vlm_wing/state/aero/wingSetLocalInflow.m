@@ -24,26 +24,30 @@ function wing = wingSetLocalInflow( wing, pos_ref_c )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
+n_panel_x = 1;
+
 % reference point position w.r.t. the wing origin
 pos_ref_wing = pos_ref_c - wing.geometry.origin;
 
 % local airspeed from rotation
 r_cntrl_ref = wing.state.geometry.ctrl_pt.pos ...
-    - repmat( pos_ref_wing, 1, size(wing.state.geometry.ctrl_pt.pos,2) );
+    - repmat( pos_ref_wing, 1, wing.n_panel, n_panel_x );
 V_Ab = dcmBaFromAeroAngles( wing.state.body.alpha, wing.state.body.beta ) ...
     * [ wing.state.body.V; 0; 0 ];
 
 % total local airspeed including local wind (external) and structure motion
-wing.state.aero.local_inflow.V_75 = velocityFromRot( V_Ab, wing.state.body.omega, r_cntrl_ref ) ...
-    + wing.state.geometry.ctrl_pt_dt.pos - wing.state.external.V_Wb;
+wing.state.aero.local_inflow.V_75(:,:) = velocityFromRot( V_Ab, wing.state.body.omega, r_cntrl_ref(:,:) ) ...
+    + wing.state.geometry.ctrl_pt_dt.pos(:,:) - wing.state.external.V_Wb(:,:);
 
 % approx. airspeed and angle of attack at 25% chord
 wing.state.aero.local_inflow.V_25 = wing.state.aero.local_inflow.V_75;
-wing.state.aero.local_inflow.V_25(3,:) = ...
-    wing.state.aero.local_inflow.V_25(3,:) - ...
-    wing.state.geometry.ctrl_pt_dt.local_incidence .* wing.geometry.ctrl_pt.c/2;
-wing.state.aero.local_inflow.V_25(:) = ...
-    wing.state.aero.local_inflow.V_25 - wing.state.external.V_Wb_dt ...
-    .* repmat( wing.geometry.ctrl_pt.c/2 ./ vecnorm( wing.state.aero.local_inflow.V_75, 2, 1 ), 3, 1 );
+for i = 1:n_panel_x
+    wing.state.aero.local_inflow.V_25(3,:,i) = ...
+        wing.state.aero.local_inflow.V_25(3,:,i) - ...
+        wing.state.geometry.ctrl_pt_dt.local_incidence(:,:,i) .* wing.geometry.ctrl_pt_lever(:,:,i);
+    wing.state.aero.local_inflow.V_25(:,:,i) = ...
+        wing.state.aero.local_inflow.V_25(:,:,i) - wing.state.external.V_Wb_dt(:,:,i) ...
+        .* repmat( wing.geometry.ctrl_pt_lever(:,:,i) ./ vecnorm( wing.state.aero.local_inflow.V_75(:,:,i), 2, 1 ), 3, 1 );
+end
 
 end

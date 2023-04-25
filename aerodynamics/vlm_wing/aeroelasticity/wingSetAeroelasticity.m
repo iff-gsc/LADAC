@@ -61,8 +61,8 @@ function [aeroelasticity,T_csfr] = wingSetAeroelasticity( wingGeometry, structur
 % each node
 chord = wingGeometry.vortex.c;
 chord_c = wingGeometry.ctrl_pt.c;
-r_vortex = wingGeometry.vortex.pos + wingGeometry.origin;
-wing_25_local_line_length = vecnorm( diff( wingGeometry.vortex.pos.*[0;1;1],1,2),2,1 );
+r_vortex = wingGeometry.line_25.pos + wingGeometry.origin;
+wing_25_local_line_length = vecnorm( diff( wingGeometry.line_25.pos.*[0;1;1],1,2),2,1 );
 wing_25_total_line_length = sum( wing_25_local_line_length );
 wing_eta = cumsum( [0,wing_25_local_line_length] / wing_25_total_line_length );
 wing_eta_c = wing_eta(1:end-1) + diff(wing_eta)/2;

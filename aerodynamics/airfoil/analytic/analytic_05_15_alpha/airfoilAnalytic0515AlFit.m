@@ -136,9 +136,9 @@ momentCurve = @airfoilAnalyticBlCm;
 
 
 % lift coefficient options
-optsCl.Lower = [ -7 0.03 -1.5 4 0.99 0.2 ]';
+optsCl.Lower = [ -7 0.03 -1.5 4 0.66 0.2 ]';
 optsCl.StartPoint = [ -2 0.11 0 7 1 5 ]';
-optsCl.Upper = [ 7 0.3 0 30 1.01 20 ]';
+optsCl.Upper = [ 7 0.3 0 30 1.5 20 ]';
 
 options = optimoptions('lsqcurvefit');
 options.MaxFunctionEvaluations = 50000;

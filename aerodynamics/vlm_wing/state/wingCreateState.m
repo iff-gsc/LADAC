@@ -38,26 +38,35 @@ state.actuators.segments.rate 	= zeros( 2, n_panel );
 
 %% aerodynamic states
 % circulation variables
-state.aero.circulation.gamma        = zeros( 1, n_panel );
+n_panel_x = 1;
+n_trail = 1;
+state.aero.circulation.gamma        = zeros( 1, n_panel, n_panel_x );
+state.aero.circulation.gamma_last   = zeros( 1, n_panel, n_panel_x );
+state.aero.circulation.gamma_trail  = zeros( 1, n_panel, n_trail );
 state.aero.circulation.Gamma        = zeros( 1, n_panel );
-state.aero.circulation.c_L          = zeros( 1, n_panel );
+state.aero.circulation.c_L          = zeros( 1, n_panel, n_panel_x );
 state.aero.circulation.c_L_flap     = zeros( 1, n_panel );
 state.aero.circulation.delta_qs     = zeros( 1, n_panel );
-state.aero.circulation.v_i          = zeros( 3, n_panel );
-state.aero.circulation.v_i_unit     = zeros( 3, n_panel );
-state.aero.circulation.alpha_eff	= zeros( 1, n_panel );
-state.aero.circulation.alpha_ind    = zeros( 1, n_panel );
-state.aero.circulation.Delta_alpha  = zeros( 1, n_panel );
+state.aero.circulation.v_i          = zeros( 3, n_panel, n_panel_x );
+state.aero.circulation.v_i_unit     = zeros( 3, n_panel, n_panel_x );
+state.aero.circulation.alpha_eff	= zeros( 1, n_panel, n_panel_x );
+state.aero.circulation.alpha_ind    = zeros( 1, n_panel, n_panel_x );
+state.aero.circulation.alpha_wake   = zeros( 1, n_panel, n_panel_x );
+state.aero.circulation.dot_alpha_wake = zeros( 1, n_panel, n_panel_x );
+state.aero.circulation.Delta_alpha  = zeros( 1, n_panel, n_panel_x );
+state.aero.circulation.alpha_inf    = zeros( 1, n_panel, n_panel_x );
 % dimensionless pitch rate
 state.aero.circulation.q            = zeros( 1, n_panel );
 state.aero.circulation.Re           = zeros( 1, n_panel );
 state.aero.circulation.Ma           = zeros( 1, n_panel );
 state.aero.circulation.num_iter 	= 0;
 % rotation axes for VLM angle of attack correction
-state.aero.circulation.rot_axis     = zeros( 3, n_panel );
+state.aero.circulation.rot_axis     = zeros( 3, n_panel, n_panel_x );
+% local lift curve slope without Prandtl-Glauert correction
+state.aero.circulation.cla          = zeros( 1, n_panel );
 % local coefficients
-state.aero.coeff_loc.c_XYZ_b     	= zeros( 3, n_panel );
-state.aero.coeff_loc.c_lmn_b        = zeros( 3, n_panel );
+state.aero.coeff_loc.c_XYZ_b     	= zeros( 3, n_panel, n_panel_x );
+state.aero.coeff_loc.c_lmn_b        = zeros( 3, n_panel, n_panel_x );
 state.aero.coeff_loc.c_m_airfoil    = zeros( 1, n_panel );
 % global coefficients
 state.aero.coeff_glob.C_XYZ_b       = zeros(3,1);
@@ -65,9 +74,9 @@ state.aero.coeff_glob.C_lmn_b       = zeros(3,1);
 
 % local forces and moments
 % Local aerodynamic forces in body frame (b), in N
-state.aero.force_loc.R_i_b          = zeros( 3, n_panel );
+state.aero.force_loc.R_i_b          = zeros( 3, n_panel, n_panel_x );
 % Local aerodynamic moments with respect to the wing origin in body frame (b), in Nm
-state.aero.force_loc.Q_i_b          = zeros( 3, n_panel );
+state.aero.force_loc.Q_i_b          = zeros( 3, n_panel, n_panel_x );
 % Local airfoil pitching moments with respect to the local c/4 positions, in Nm
 state.aero.force_loc.M_i_b          = zeros( 1, n_panel );
 
@@ -80,20 +89,20 @@ state.aero.force_glob.Q_origin_b    = zeros(3,1);
 state.aero.force_glob.Q_ref_b       = zeros(3,1);
 
 % local velocity due to rotation
-state.aero.local_inflow.V_75        = zeros( 3, n_panel );
-state.aero.local_inflow.V_25      	= zeros( 3, n_panel );
+state.aero.local_inflow.V_75        = zeros( 3, n_panel, n_panel_x );
+state.aero.local_inflow.V_25      	= zeros( 3, n_panel, n_panel_x );
 
 %% unsteady aerodynamics
 % unsteady, transsonic aerodynamics
 state.aero.unsteady.x_dt            = zeros( 8, n_panel );
 state.aero.unsteady.x               = zeros( 8, n_panel );
 % non-circulatory coefficients
-state.aero.unsteady.c_L_nc          = zeros( 1, n_panel );
+state.aero.unsteady.c_L_nc          = zeros( 1, n_panel, n_panel_x );
 state.aero.unsteady.c_m_nc          = zeros( 1, n_panel );
 % circulatory coefficients
-state.aero.unsteady.c_L_c           = zeros( 1, n_panel );
+state.aero.unsteady.c_L_c           = zeros( 1, n_panel, n_panel_x );
 state.aero.unsteady.c_m_c           = zeros( 1, n_panel );
-state.aero.unsteady.c_D             = zeros( 1, n_panel );
+state.aero.unsteady.c_D             = zeros( 1, n_panel, n_panel_x );
 state.aero.unsteady.alpha_eff       = zeros( 1, n_panel );
 state.aero.unsteady.c_L_c_flap      = zeros( 1, n_panel );
 state.aero.unsteady.c_L_act2        = zeros( 1, n_panel );
@@ -121,10 +130,10 @@ state.aero.unsteady.z2              = zeros( 1, n_panel );
 state.geometry = geometry;
 state.geometry.ctrl_pt_dt = geometry.ctrl_pt;
 state.geometry.ctrl_pt_dt = wingSetPosition( ...
-    state.geometry.ctrl_pt_dt, zeros( n_panel*4, 1 ), 4, true );
+    state.geometry.ctrl_pt_dt, zeros( n_panel*n_panel_x*4, 1 ), 4, true );
 
 %% external
-state.external = wingCreateExternal( n_panel );
+state.external = wingCreateExternal( n_panel, n_panel_x );
 
 end
 
