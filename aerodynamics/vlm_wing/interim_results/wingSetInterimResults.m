@@ -23,7 +23,7 @@ interim_results.sweep50 = pi/2 - acosReal( abs( dot( -spanwise_vector_50, -v_inf
 dist = vecnorm(pos_50.pos(2:3,:),2,1);
 rel_dist = dist/max(dist);
 if wing.params.is_symmetrical
-    rel_dist(floor(1:end/2-1))=-rel_dist(floor(1:end/2-1));
+    rel_dist(floor(1:end/2))=-rel_dist(floor(1:end/2));
 end
 x_root = interp1(rel_dist,pos_50.pos(1,:),0.1,'linear');
 y_root = interp1(rel_dist,dist,0.1,'linear');
