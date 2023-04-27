@@ -56,6 +56,10 @@ switch wing.config.airfoil_method
         fcd = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcd, wing.state.aero.circulation.Ma );
         fcm = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcm, wing.state.aero.circulation.Ma );
         
+        if ~wing.config.is_stall
+            x_ac(:) = airfoilAnalyticBlXac( fcm );
+        end
+        
         wing.state.aero.circulation.cla = rad2deg(fcl(2,:));
 
         % get points on lift curve
@@ -102,6 +106,8 @@ switch wing.config.airfoil_method
             c_L_st = rad2deg(c_L_alpha_max) .* alpha_inf_0;
             wing.state.aero.unsteady.c_D(:) = ...
                 unstAirfoilAeroCdNoFlutter( c_D_st, wing.state.aero.unsteady.c_L_c, alpha_eff, c_L_st );
+            c_m0 = airfoilAnalyticBlCm0( fcm );
+            wing.state.aero.unsteady.c_m_c(:) = wing.state.aero.unsteady.c_m_c + c_m0;
             
         end
             

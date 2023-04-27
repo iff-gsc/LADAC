@@ -26,6 +26,6 @@ function c_m0 = airfoilAnalyticBlCm0(beta)
 
 
 % [1], below eq. (22)
-c_m0 = beta(:,1);
+c_m0 = beta(1,:);
 
 end
