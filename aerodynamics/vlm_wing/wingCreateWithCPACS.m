@@ -17,6 +17,7 @@ is_infl_recomputed = 0;
 method = 'IVLM';
 n_trail = 1;
 Ma = 0;
+Delta_jig_twist_data = [linspace(-1,1,n_panel);zeros(1,n_panel)];
 if wing_idx == 1
     controls_filename = 'wingControls_params_mainDefault';
 elseif wing_idx == 2
@@ -83,6 +84,8 @@ for i = 1:length(varargin)
             n_trail = varargin{i+1};
         case 'Mach'
             Ma = varargin{i+1};
+        case 'AdjustJigTwist'
+            Delta_jig_twist_data(:) = varargin{i+1};
     end
 end
 
@@ -102,6 +105,11 @@ wing.n_panel = n_panel;
 wing.n_panel_x = n_panel_x;
 wing.n_trail = n_trail;
 wing.geometry = wingSetGeometryCoord( wing.params, wing.n_panel, spacing );
+
+Delta_jig_twist = interp1( Delta_jig_twist_data(1,:), Delta_jig_twist_data(2,:), ...
+    wing.geometry.ctrl_pt.pos(2,:), 'linear', 'extrap' );
+wing.geometry.ctrl_pt.local_incidence(:) = ...
+        wing.geometry.ctrl_pt.local_incidence + Delta_jig_twist;
 
 cntrl_prm = loadParams(controls_filename);
 if contains(cntrl_prm.lad_mode,'everywhere')
