@@ -198,6 +198,26 @@ function geometry = geometrySegments( params, geometry )
         geometry.segments.type_local(indices_c) = section_type_2(segment_index);
         geometry.segments.flap_depth(indices_c) = flap_depth_2(segment_index);
     end
+    y_seg = params.b/2*params.eta_segments_wing;
+    x_25 = zeros(size(y_seg));
+    for i = 2:length(x_25)
+        x_25(i) = x_25(i-1) - (y_seg(i)-y_seg(i-1)) * params.lambda(i-1);
+    end
+    flap_depth_unique = unique(flap_depth_2);
+    flap_depth_unique(flap_depth_unique==0) = [];
+    dist = vecnorm(geometry.ctrl_pt.pos(2:3,:),2,1);
+    dist_max = norm(geometry.line_25.pos(2:3,end),2);
+    rel_dist = dist/dist_max;
+    for i = 1:length(flap_depth_unique)
+        x_seg_hinge = x_25 + params.c/4 - (1-flap_depth_unique(i)).*params.c;
+        flap_sweep_seg = atan(diff(-x_seg_hinge)./diff(y_seg));
+        is_depth = geometry.segments.flap_depth == flap_depth_unique(i);
+        for j = 1:length(params.eta_segments_wing)-1
+            is_seg = rel_dist >= params.eta_segments_wing(j) & rel_dist < params.eta_segments_wing(j+1);
+            is_match = is_seg & is_depth;
+            geometry.segments.flap_sweep(is_match) = flap_sweep_seg(j);
+        end
+    end
 
 end
 
