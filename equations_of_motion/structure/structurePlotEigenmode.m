@@ -17,10 +17,11 @@ function structurePlotEigenmode(structure,num_eigenmode,varargin)
 % *************************************************************************
 
 % factor that amplifies the structure deformation
-if isempty(varargin)
-    factor = 1;
-else
-    factor = varargin{1};
+scaling = 1;
+for i = 1:length(varargin)
+    if strcmp(varargin{i},'Scaling')
+        scaling = varargin{i+1};
+    end
 end
 
 % check if the eigenmodes have already been computed (save time)
@@ -45,7 +46,7 @@ state_vector = structure_red.modal.T(:,num_eigenmode+6);
 Delta_x = state_vector(1:6:end);
 Delta_y = state_vector(2:6:end);
 Delta_z = state_vector(3:6:end);
-Delta_xyz = [Delta_x';Delta_y';Delta_z'] * factor;
+Delta_xyz = [Delta_x';Delta_y';Delta_z'] * scaling;
 
 % plot rigid structure (for comparison)
 plot3(structure_red.xyz(1,:),structure_red.xyz(2,:),structure_red.xyz(3,:),'ko')
@@ -54,6 +55,6 @@ hold on
 
 % plot deformed structure
 structure.xyz = structure.xyz + Delta_xyz;
-structurePlot(structure);
+structurePlot(structure,varargin{:});
 
 end

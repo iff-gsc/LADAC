@@ -1,4 +1,4 @@
-function [] = structurePlot( structure )
+function [] = structurePlot( structure, varargin )
 % structurePlot plots the structure based on the nodes positions, the
 %   stiffness matrix and the mass matrix. All connected nodes are
 %   visualized by lines, the node is visualized by a dot and a circle where
@@ -24,6 +24,25 @@ function [] = structurePlot( structure )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
+mass_color = 'm';
+mass_size = 1;
+line_width = 1;
+structure_color = 'b';
+node_size = 1;
+for i = 1:length(varargin)
+    if strcmp(varargin{i},'MassColor')
+        mass_color = varargin{i+1};
+    elseif strcmp(varargin{i},'MassSize')
+        mass_size = varargin{i+1};
+    elseif strcmp(varargin{i},'LineWidth')
+        line_width = varargin{i+1};
+    elseif strcmp(varargin{i},'StructureColor')
+        structure_color = varargin{i+1};
+    elseif strcmp(varargin{i},'NodeSize')
+        node_size = varargin{i+1};
+    end
+end
+
 n_nodes = length( structure.xyz(1,:) );
 M_int = structureGetNodesConnections( structure );
 
@@ -32,13 +51,14 @@ for i = 1:n_nodes
     [~,indices1] = find( M_int(i,:) == true );
     % plot connections of nodes
     pairs = nchoosek(indices1, 2)';
-    plot3( structure.xyz(1,pairs), structure.xyz(2,pairs), structure.xyz(3,pairs), 'b.-', 'LineWidth', 1.5, 'MarkerSize', 13 )
+    plot3( structure.xyz(1,pairs), structure.xyz(2,pairs), structure.xyz(3,pairs), 'Color', structure_color, 'LineStyle', '-', 'LineWidth', line_width*1.5 )
     hold on
+    plot3( structure.xyz(1,pairs), structure.xyz(2,pairs), structure.xyz(3,pairs), 'Color', structure_color, 'LineStyle', 'none', 'Marker', '.', 'MarkerSize', 13*node_size )
     % marker size should be proportional to third root of node mass
     mass = structureGetNodeMass( structure, i );
-    MarkerSize = max( 2*mass^(1/3), 0.1 );
+    MarkerSize = mass_size * max( 2*mass^(1/3), 0.1 );
     % plot nodes with marker size indicating the node mass
-    scatter3( structure.xyz(1,i), structure.xyz(2,i), structure.xyz(3,i), MarkerSize.^2, 'MarkerFaceColor', 'm', 'MarkerFaceAlpha', 0.5, 'MarkerEdgeColor', 'm' )
+    scatter3( structure.xyz(1,i), structure.xyz(2,i), structure.xyz(3,i), MarkerSize.^2, 'MarkerFaceColor', mass_color, 'MarkerFaceAlpha', 0.5, 'MarkerEdgeColor', mass_color )
     % plot3( structure.xyz(1,i), structure.xyz(2,i), structure.xyz(3,i), 'mo', 'MarkerSize', MarkerSize, 'MarkerFaceColor', 'm' );
 end
 
