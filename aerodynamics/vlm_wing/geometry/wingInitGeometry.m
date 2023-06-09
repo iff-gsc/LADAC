@@ -41,5 +41,6 @@ geometry.line_25.c = zeros(1,n_panel+1);
 geometry.segments.control_input_index_local = zeros(2,n_panel);
 geometry.segments.type_local = zeros(1,n_panel);
 geometry.segments.flap_depth = zeros(1,n_panel);
+geometry.segments.flap_sweep = zeros(1,n_panel);
 
 end
