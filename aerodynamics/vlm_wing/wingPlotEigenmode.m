@@ -11,20 +11,22 @@ if ~wing.config.is_flexible
     error('This is not a flexible wing.')
 end
 
-if ~isempty(varargin)
-    factor = varargin{1};
-else
-    factor = 1;
+scaling = 1;
+for i = 1:length(varargin)
+    if strcmp(varargin{i},'Scaling')
+        scaling = varargin{i+1};
+    end
 end
 
-modal_state = pinv(structure.modal.T) * structure.modal.T(:,6+num_eigenmode) * factor;
+modal_state = pinv(structure.modal.T) * structure.modal.T(:,6+num_eigenmode) * scaling;
 wing_deform = wingSetGeometryState( wing, 'pos', modal_state );
 wing_deform.geometry = wing_deform.state.geometry;
 
-wingPlotGeometry( wing, 3, [0.9, 0.9, 0.9] );
+wingPlotGeometry( wing, 'FaceColor', [1, 1, 1], 'FlapFaceColor', [0.9, 0.9, 0.9], ...
+    'FaceAlpha', 0, 'LineColor', [0.5,0.5,0.5], 'CntrlPts', 'off', 'Faces', 'off' );
 
 hold on
 
-wingPlotGeometry( wing_deform, 3, 1 );
+wingPlotGeometry( wing_deform, varargin{:} );
 
 end

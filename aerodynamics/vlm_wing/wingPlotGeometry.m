@@ -1,18 +1,15 @@
-function [] = wingPlotGeometry( wing, dim, varargin )
+function [] = wingPlotGeometry( wing, varargin )
 %plotWingGeometry depicts the wing
 %   plotWingGeometry displays the designed wing according to its definition
 %   by the number of vortices and panels respectively, or by its
 %   parameters. Moreover, the plot can either be a 3D- or a 2D-plot.
 %
-% Syntax: [] = plotWingGeometry( wing, dim, type, panel )
+% Syntax: [] = plotWingGeometry( wing, name, value )
 %
 % Input:
 %    wing                   A struct containing all inforamtion about the
 %                           wing
 %                           (struct)
-%    dim                    Dimension, determines whether a 2D- or a
-%                           3D-plot is created
-%                           (double)
 % 
 
 % Disclamer:
@@ -23,18 +20,45 @@ function [] = wingPlotGeometry( wing, dim, varargin )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-% check value of dim
-if dim ~= 3 && dim ~= 2
-    error('Check entered dimension of plot. Only 2D- (2) and 3D-plots (3)!')
+
+FaceColor = [0.1,0.4,0.7];
+FlapFaceColor = [0.3,0.4,0.5];
+FaceAlpha = 0.5;
+LineColor = [0,0,0];
+CntrlPtsColor = 'b';
+is_cntrl_pt = true;
+is_face = true;
+Dim = 3;
+for i = 1:length(varargin)
+    if strcmp(varargin{i},'FlapFaceColor')
+        FlapFaceColor = varargin{i+1};
+    elseif strcmp(varargin{i},'FaceColor')
+        FaceColor = varargin{i+1};
+    elseif strcmp(varargin{i},'CntrlPts')
+        if strcmp(varargin{i+1},'on')
+            is_cntrl_pt = true;
+        elseif strcmp(varargin{i+1},'off')
+            is_cntrl_pt = false;
+        end
+    elseif strcmp(varargin{i},'LineColor')
+        LineColor = varargin{i+1};
+    elseif strcmp(varargin{i},'CntrlPtsColor')
+        CntrlPtsColor = varargin{i+1};
+    elseif strcmp(varargin{i},'Dim')
+        Dim = varargin{i+1};
+        if Dim ~= 3 && Dim ~= 2
+            error('Check entered dimension of plot. Only 2D- (2) and 3D-plots (3)!')
+        end
+    elseif strcmp(varargin{i}, 'Faces')
+        if strcmp(varargin{i+1},'on')
+            is_face = true;
+        elseif strcmp(varargin{i+1},'off')
+            is_face = false;
+        end
+    end
 end
 
-if ~isempty(varargin)
-    FaceColor = varargin{1};
-else
-    FaceColor = 'y';
-end
-
-LineColor = [0.5,0.5,0.2];
+LineColor25 = [0.5,0.5,0.2];
 
 
 % rotation matrices
@@ -137,32 +161,53 @@ x_flap_right(:) = pos_flap_right(1,:);
 z_flap_right(:) = pos_flap_right(3,:);
 
 % plot
-plot3( quarter_chord, y,z, '--', 'Color', LineColor )
+plot3( quarter_chord, y,z, '--', 'Color', LineColor25 )
 hold on
 grid on
 
 
 for i = 1:wing.n_panel
     % wing
-    patch( ...
+    if is_face
+        fun = 'patch';
+        C = {1};
+    else
+        fun = 'plot3';
+        C = {};
+    end
+    h = feval( fun, ...
         [x_lead(i),x_lead(i+1),x_trail_right(i+1),x_trail_left(i),x_lead(i)], ...
         [y(i),y(i+1),y(i+1),y(i),y(i)], ...
-        [z_lead(i),z_lead(i+1),z_trail_right(i+1),z_trail_left(i),z_lead(i)], ...
-        FaceColor, 'EdgeColor','k' ...
-        )
+        [z_lead(i),z_lead(i+1),z_trail_right(i+1),z_trail_left(i),z_lead(i)], C{:} );
+    if is_face
+        set(h,'FaceColor',FaceColor);
+        set(h,'FaceAlpha',FaceAlpha);
+        set(h,'EdgeColor',LineColor);
+    else
+        set(h,'Color',LineColor);
+    end
     % flap
-    patch( ...
+    h = feval( fun, ...
         [x_trail_left(i),x_trail_right(i+1),x_flap_right(i+1),x_flap_left(i),x_trail_left(i)], ...
         [y(i),y(i+1),y(i+1),y(i),y(i)], ...
-        [z_trail_left(i),z_trail_right(i+1),z_flap_right(i+1),z_flap_left(i),z_trail_left(i)], ...
-        [0.3,0.4,0.5], 'EdgeColor','k' ...
-        )
+        [z_trail_left(i),z_trail_right(i+1),z_flap_right(i+1),z_flap_left(i),z_trail_left(i)], C{:} );
+    if is_face
+        set(h,'FaceColor',FlapFaceColor);
+        set(h,'FaceAlpha',FaceAlpha);
+        set(h,'EdgeColor',LineColor);
+    else
+        set(h,'Color',LineColor);
+    end
 end
 
 wing.geometry.ctrl_pt.pos = M * wing.geometry.ctrl_pt.pos;
-plot3( wing.geometry.ctrl_pt.pos(1,:) + wing.geometry.origin(1), ...
-    wing.geometry.ctrl_pt.pos(2,:) + wing.geometry.origin(2), ...
-    wing.geometry.ctrl_pt.pos(3,:) + wing.geometry.origin(3), 'bo')
+
+if is_cntrl_pt
+    plot3( wing.geometry.ctrl_pt.pos(1,:) + wing.geometry.origin(1), ...
+        wing.geometry.ctrl_pt.pos(2,:) + wing.geometry.origin(2), ...
+        wing.geometry.ctrl_pt.pos(3,:) + wing.geometry.origin(3), 'Color', ...
+        CntrlPtsColor, 'LineStyle', 'none', 'Marker', 'o' )
+end
 
 axis equal
 
@@ -177,7 +222,7 @@ alpha(0.5);
 hold off;
 
 % perspective
-if dim==3
+if Dim==3
     view(-150,25); % azimuth, elevation
 else
     view(90,-90);
