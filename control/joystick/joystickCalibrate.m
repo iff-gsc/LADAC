@@ -91,6 +91,8 @@ js_mean = zeros(num_channels,1);
 js_max = zeros(num_channels,1);
 js_min = zeros(num_channels,1);
 
+joystickOut = {};
+
 % start calibration
 for i = 1:2*length(action)
     i_even = i/2;
