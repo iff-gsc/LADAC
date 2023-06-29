@@ -114,6 +114,39 @@ This is how you start the patched ArduPilot SITL with the custom Simulink interf
 sim_vehicle.py -v ArduPlane --model=simulink
 ```
 
+### Workaround if no connection can be established between ArduPilot SITL under WSL and MATLAB/Simulink under Windows
+
+If you have set up the ArduPilot SITL in the Windows Subsystem for Linux (WSL2), e.g. Ubuntu 22.04 LTS, and run MATLAB/Simulink under Windows, it may not be possible to establish a connection between them.
+The ArduPilot SITL and MATLAB/Simulink communicate via a UDP connection. Unfortunately, WSL2 does not yet fully support UDP port forwarding via localhost (see https://github.com/microsoft/WSL/issues/6082, https://github.com/microsoft/WSL/issues/6351, https://github.com/microsoft/WSL/issues/8610).
+But there is a workaround to establish a connection via UDP anyway. With the tool *socat*, UDP packets can be forwarded via a TCP tunnel.  
+  
+Therefore the following steps need to be executed:  
+
+1. Install *socat* in WSL2 (e.g. Ubuntu 22.04 LTS):  
+   ```
+   sudo apt install socat
+   ```
+2. Download *socat* for Windows from https://github.com/tech128/socat-1.7.3.0-windows/archive/refs/heads/master.zip.
+3. Extract the zip file to a folder of your choice and add the folder path to the Windows PATH environment variable as described here:  
+   [How to: Add Tool Locations to the PATH Environment Variable](https://learn.microsoft.com/en-us/previous-versions/office/developer/sharepoint-2010/ee537574(v=office.14))
+4. Execute each of the following commands in a separate window in the WSL (replace `<windows-ip>` with the IP address of your Windows OS, available via `ipconfig`):
+   ```
+   socat UDP4-LISTEN:9002,fork TCP4:<windows_ip>:9002
+   socat TCP4-LISTEN:9003,fork UDP4:localhost:9003
+   socat UDP4-LISTEN:14550,fork TCP4:<windows_ip>:14550
+   ```
+5. Execute each of the following commands in a separate window in PowerShell or CMD under Windows (replace `<wsl-ip>` with the IP address of your WSL distribution, available via `ip a | grep eth0`):
+   ```   
+   socat TCP4-LISTEN:9002,fork UDP4:localhost:9002
+   socat UDP4-LISTEN:9003,fork TCP4:<wsl_ip>:9003
+   socat TCP4-LISTEN:14550,fork UDP4:localhost:14550
+   ```
+6. Now the UDP ports 9002 (ArduPilot SITL to Simulink), 9003 (Simulink to ArduPilot SITL) and 14550 (ArduPilot SITL to GCS, e.g. Mission Planner or QGroundControl) are forwarded.
+   It is possible to add more ports (e.g. 5503 for ArduPilot SITL to FlightGear if installed under Windows).
+7. Run the Simulink file, start the ArduPilot SITL and open a GCS software if necessary.
+
+* A script is being worked on to simplify UDP port forwarding.  
+
 
 ## How to use?
 
