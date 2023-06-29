@@ -52,8 +52,7 @@ Using the ArduPilot custom controller interface means, that the ArduPilot EKF is
 With the ArduPilot custom controller interface you can perform software in the loop simulations as well as flight tests.
 
 As a starting point there is an example in [LADAC-Examples](https://github.com/iff-gsc/LADAC-Examples).  
-You can prepare the C++ Code Generation by running:  
-[init_Arducopter_MinnieLindiCopter](Copter/Minnie/ArduPilot_implementation/init_Arducopter_MinnieLindiCopter.m).
+You can prepare the C++ Code Generation by running [init_Arducopter_MinnieLindiCopter](https://github.com/iff-gsc/LADAC-Examples/blob/main/Copter/Minnie/ArduPilot_implementation/init_Arducopter_MinnieLindiCopter.m).
 
 **Flight Mode Info**  
 - Loiter: Note that the Loiter flight mode currently runs in NED frame.
