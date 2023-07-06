@@ -8,7 +8,7 @@ For more information about the ArduPilot SITL interfaces take a look at the
 the [ArduPilot source code](https://github.com/ArduPilot/ardupilot/blob/master/libraries/SITL/SIM_Gazebo.h),
 the [implementation of SwiftGust plugin](https://github.com/SwiftGust/ardupilot_gazebo)
 or the [implementation of khancyr plugin](https://github.com/khancyr/ardupilot_gazebo).  
-Note that the Gazebo interface does not support all kind of sensors yet while the Custom Simulink Interface provides rangefinder sensors and could be easily extended about other sensors.
+Note that the Gazebo interface does not support all kind of sensors yet while the Custom Simulink Interface provides rangefinder sensors and can easily be extended to include other sensors.
 
 
 ## Motivation
@@ -36,13 +36,13 @@ The parameters of the spiral can be adjusted by a parameter file.
 
 1. Open the MATLAB/Simulink test trajectory simulation
    1. Open MATLAB/Simulink.
-   2. Run the parameters file init_example_SITL.m.
-   3. Open the Simulink file example_SITL.slx.
+   2. Run the parameters file [init_exampleSITL.m](/utilities/interfaces_external_programs/ArduPilot_SITL/init_exampleSITL.m).
+   3. Open the Simulink file [example_SITL.slx](/utilities/interfaces_external_programs/ArduPilot_SITL/example_SITL.slx).
    4. Run the Simulink model. The green switch should activate "apply zeros"
         in order to simulate a vehicle standing on the ground.
 
 2. Prepare ArduPilot SITL
-   1. Run the SITL **in Gazebo mode** (`--model=gazebo`) from command line specifying the desired parameter, e.g. (you can replace `plane` with `copter` etc.):
+   1. Run the SITL **in Gazebo mode** (`--model=gazebo`) from command line specifying the desired parameter, e.g. (you can replace `plane` with `quad` etc.):
       ``````
       sim_vehicle.py -v ArduPlane -f plane --model=gazebo
       ``````
@@ -53,10 +53,10 @@ The parameters of the spiral can be adjusted by a parameter file.
 
 3. Get visual feedback with ground control station:  
    Run a ground control station software like Mission Planner or QGroundControl
-        and establish a connection with the SITL
+        and establish a connection with the SITL.
 
 4. Activate the test trajectory simulation
-   1. In the running Simulink model example_SITL.slx double-click the green switch
+   1. In the running Simulink model [example_SITL.slx](/utilities/interfaces_external_programs/ArduPilot_SITL/example_SITL.slx) double-click the green switch
         to activate "apply spiral".
    2. If you want to start a new test trajectory simulation, you have to stop the
         current simulation and repeat the whole procedure.
@@ -98,8 +98,8 @@ The following section describes the custom Debug Message to SIMULINK.
         
 
 3. Customizing the Interface\
-        -To change the data send by the Interface you may change the content of the sendto message in mode_custom
-        -The receiving block needs to be changed accordingly.
+        To change the data sent by the Interface you may change the content of the sendto message in mode_custom.  
+        The receiving block needs to be changed accordingly.
     
 * known issues\
       Due to the additional message expected by SIMULINK and the according Blocking time the simulation slows down significantly until mode_custom is enabled. 
@@ -113,6 +113,39 @@ This is how you start the patched ArduPilot SITL with the custom Simulink interf
 ```
 sim_vehicle.py -v ArduPlane --model=simulink
 ```
+
+### Workaround if no connection can be established between ArduPilot SITL under WSL and MATLAB/Simulink under Windows
+
+If you have set up the ArduPilot SITL in the Windows Subsystem for Linux (WSL2), e.g. Ubuntu 22.04 LTS, and run MATLAB/Simulink under Windows, it may not be possible to establish a connection between them.
+The ArduPilot SITL and MATLAB/Simulink communicate via a UDP connection. Unfortunately, WSL2 does not yet fully support UDP port forwarding via localhost (see https://github.com/microsoft/WSL/issues/6082, https://github.com/microsoft/WSL/issues/6351, https://github.com/microsoft/WSL/issues/8610).
+But there is a workaround to establish a connection via UDP anyway. With the tool *socat*, UDP packets can be forwarded via a TCP tunnel.  
+  
+Therefore the following steps need to be executed:  
+
+1. Install *socat* in WSL2 (e.g. Ubuntu 22.04 LTS):  
+   ```
+   sudo apt install socat
+   ```
+2. Download *socat* for Windows from https://github.com/tech128/socat-1.7.3.0-windows/archive/refs/heads/master.zip.
+3. Extract the zip file to a folder of your choice and add the folder path to the Windows PATH environment variable as described here:  
+   [How to: Add Tool Locations to the PATH Environment Variable](https://learn.microsoft.com/en-us/previous-versions/office/developer/sharepoint-2010/ee537574(v=office.14))
+4. Execute each of the following commands in a separate window in the WSL (replace `<windows-ip>` with the IP address of your Windows OS, available via `ipconfig`):
+   ```
+   socat UDP4-LISTEN:9002,fork TCP4:<windows_ip>:9002
+   socat TCP4-LISTEN:9003,fork UDP4:localhost:9003
+   socat UDP4-LISTEN:14550,fork TCP4:<windows_ip>:14550
+   ```
+5. Execute each of the following commands in a separate window in PowerShell or CMD under Windows (replace `<wsl-ip>` with the IP address of your WSL distribution, available via `ip a | grep eth0`):
+   ```   
+   socat TCP4-LISTEN:9002,fork UDP4:localhost:9002
+   socat UDP4-LISTEN:9003,fork TCP4:<wsl_ip>:9003
+   socat TCP4-LISTEN:14550,fork UDP4:localhost:14550
+   ```
+6. Now the UDP ports 9002 (ArduPilot SITL to Simulink), 9003 (Simulink to ArduPilot SITL) and 14550 (ArduPilot SITL to GCS, e.g. Mission Planner or QGroundControl) are forwarded.
+   It is possible to add more ports (e.g. 5503 for ArduPilot SITL to FlightGear if installed under Windows).
+7. Run the Simulink file, start the ArduPilot SITL and open a GCS software if necessary.
+
+* A script is being worked on to simplify UDP port forwarding.  
 
 
 ## How to use?
