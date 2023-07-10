@@ -132,7 +132,13 @@ for i = 1:length(eta_segments_device)-1
     segments.flap_depth(indices) = flap_depth(i);
 end
 
-% segments.y = [];
+% flap sweep angle
+segments.flap_sweep = zeros(size(segments.flap_depth));
+for i = 1:length(segments.flap_sweep)
+    pos1 = vortex.pos(:,i,1) + [-1;0;0]*(vortex.c(i)*(3/4-segments.flap_depth(i)));
+    pos2 = vortex.pos(:,i+1,1) + [-1;0;0]*(vortex.c(i+1)*(3/4-segments.flap_depth(i)));
+    segments.flap_sweep(i) = abs( atan((pos2(1)-pos1(1))/norm(pos2(2:3)-pos1(2:3),2)) );
+end
 
 
 geometry.origin = origin;
