@@ -46,12 +46,14 @@ measure.EulerAngles = zeros(3,1);
 % quaternion from NED to FRD frame (predicted and thus almost without
 % delay)
 measure.q_bg        = euler2Quat(measure.EulerAngles);
-% measured acceleration represented in NED frame, in m/s^2 (x and y
-% component almost without delay; z component seems to be delayed by
-% INS_ACCEL_FILTER)
-measure.a_Kg        = zeros(3,1);
+% measured acceleration represented in NED frame, in m/s^2 (delayed by
+% INS_ACCEL_FILTER; contains the acceleration due to gravity and is at
+% standstill [0;0;-9.81])
+measure.a_g         = zeros(3,1);
 % measured acceleration represented in FRD frame, in m/s^2
-measure.a_Kb = zeros(3,1);
+% (contains the acceleration due to gravity and is at standstill
+% M_bg*[0;0;-9.81], where M_bg is the rotation matrix from g to b frame)
+measure.a_b         = zeros(3,1);
 % velocity of FRD frame relative to the earth represented in FRD frame, in
 % m/s (predicted and thus almost without delay)
 measure.V_Kg        = zeros(3,1);
