@@ -169,7 +169,7 @@ elseif (axis_sel >= 1) && (axis_sel <= 3)
         residuum = norm( A(x,1) - b );
         
         % Check if finished
-        if (residuum < 1e-3) || (residuum_last < residuum)
+        if (residuum < 1e-6) || (residuum_last < residuum)
             if strcmp(datatype, 'single')
                 state = single(1000);
             else

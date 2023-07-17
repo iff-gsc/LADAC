@@ -135,11 +135,7 @@ if beta > 0
         v = (1/alfa)*v;
     end
     
-else
-    return;
-    
 end
-
 
 % Use a plane rotation to eliminate the damping parameter.
 % This alters the diagonal (rhobar) of the lower-bidiagonal matrix.

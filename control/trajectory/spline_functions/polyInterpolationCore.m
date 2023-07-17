@@ -1,5 +1,6 @@
 function [x, i] = polyInterpolationCore(points, degree, cycle)
-%polyInterpolation computes stepwise interpolated functions in 1D
+
+polyInterpolation computes stepwise interpolated functions in 1D
 %   The function calculates stepwise defined polynomials for any degree.
 %   The values are given are assumed to be equally spaced with a constant
 %   stepsize.
