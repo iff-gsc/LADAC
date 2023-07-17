@@ -14,9 +14,16 @@ function k = ssPlace( A, B, p )
 %   k               full state feedback gain (1xN array)
 % 
 % Example:
-%   A = rand(4,4)
-%   b = rand(4,1)
-%   k = ssPlace( A, B, p )
+%   A = rand(4,4);
+%   b = rand(4,1);
+%   p = [-1,-2+2i,-2-2i,-3];
+%   k = ssPlace( A, b, p );
+%   figure, hold on
+%   h1=plot(real(eig(A)),imag(eig(A)),'x')
+%   h2=plot(real(p),imag(p),'+')
+%   h3=plot(real(eig(A-b*k)),imag(eig(A-b*k)),'o')
+%   legend([h1,h2,h3],'open loop','desired','state feedback')
+%   axis equal, sgrid
 % 
 % See also:
 %   place

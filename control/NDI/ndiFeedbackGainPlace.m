@@ -1,4 +1,4 @@
-function [K,A,B] = ndiFeedbackGainPlace( p, T_h )
+function [K,A,B] = ndiFeedbackGainPlace( p, T_h, varargin )
 % ndiFeedbackGainPlace compute feedback gain for system with linearized
 % input-output dynamics with pole placement.
 %   With this function you can compute the state feedback gain for a SISO
@@ -28,6 +28,8 @@ function [K,A,B] = ndiFeedbackGainPlace( p, T_h )
 % 
 % Syntax:
 %   [K,A,B] = ndiFeedbackGainPlace( p, T_h )
+%   [K,A,B] = ndiFeedbackGainPlace( p, T_h, is_fb_deriv )
+%   [K,A,B] = ndiFeedbackGainPlace( p, T_h, is_fb_deriv, w )
 % 
 % Inputs:
 %   p               desired poles of the closed-loop system (1xN array),
@@ -36,6 +38,14 @@ function [K,A,B] = ndiFeedbackGainPlace( p, T_h )
 %   T_h             first-order delay time constant to account for higher
 %                   order dynamics; if no first-order dynamics should be
 %                   taken into account, set T_h <= 0
+%   is_fb_deriv     defines whether the highest derivative of e_y (e_y_dtN)
+%                   should be included in the feedback (boolean; default: 
+%                   true). If it is set to false, the last column of K will
+%                   be zero. This parameter is only considered if T_h > 0.
+%   w               weights for all desired poles p in case of output
+%                   feedback; The weighting is required because in case of
+%                   output feedback the desired poles can not be reached
+%                   perfectly.
 % 
 % Outputs:
 %   K               feedback gain matrix where the first column corresponds
@@ -66,6 +76,12 @@ function [K,A,B] = ndiFeedbackGainPlace( p, T_h )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
+if isempty(varargin)
+    is_fb_deriv = true;
+else
+    is_fb_deriv = varargin{1};
+end
+
 sys_order = length(p);
 
 is_first_order_delay = T_h > 0;
@@ -79,7 +95,21 @@ end
 % create state-space model (same as above block diagram)
 [A,B] = ndiOpenLoopSs( relative_degree, T_h );
 
-% compute full state feedback with pole placement
-K = ssPlace(A,B,p);
+if is_fb_deriv
+    % compute full state feedback with pole placement
+    K = ssPlace(A,B,p);
+else
+    % define all states as outputs except of e_y_dtN
+    C = [ eye(relative_degree), zeros(relative_degree,1) ];
+    % output feedback (output is the state vector without e_y_dtN)
+    if length(varargin) == 1
+        Ky = ssPlaceY(A,B,C,p);
+    else
+        w = varargin{2};
+        Ky = ssPlaceY(A,B,C,p,w);
+    end
+    % transform output feedback to state feedback
+    K = Ky*C;
+end
 
 end
