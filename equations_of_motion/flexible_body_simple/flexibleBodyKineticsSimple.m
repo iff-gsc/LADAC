@@ -1,6 +1,6 @@
 function [V_Kb_dt,Omega_Kb_dt,eta_from_7_dt2] = ...
     flexibleBodyKineticsSimple( m, I_b, g, structure_red, m_nodes, ...
-    cg_nodes, V_Kb, Omega_Kb, M_bg, eta_from_7, q, R_b, Q_b )
+    cg_nodes, V_Kb, Omega_Kb, M_bg, eta, eta_dt, q, R_b, Q_b )
 % flexibleBodyKineticsSimple compute state derivatives flexible equations
 %   of motion according to Waszak & Schmidt [1].
 %   All outputs are represented in "practical" mean axis system.
@@ -30,11 +30,10 @@ function [V_Kb_dt,Omega_Kb_dt,eta_from_7_dt2] = ...
 %                   in rad/s
 %   M_bg            rotation 3x3 matrix (DCM) from the earth frame (g) to 
 %                   the body-fixed frame (b), in 1         
-%   eta_from_7      Generalized displacement vector excluding the rigid
+%   eta             Generalized displacement vector excluding the rigid
 %                   body motion. The rigid body motion is assumed to be the
-%                   first 6 generalized displacements and thus this input
-%                   is the generalized displacement vector starting from
-%                   the 7th index: eta_from_7 = eta(7:end) ((N-6)x1 array)
+%                   first 6 generalized displacements (Nx1 array)
+%   eta_dt          Time-derivative of input eta (Nx1 array)
 %   q               generalized external force vector excluding gravity
 %                   (Nx1 array)
 % 
@@ -69,13 +68,14 @@ function [V_Kb_dt,Omega_Kb_dt,eta_from_7_dt2] = ...
 q = q + q_gravity;
 
 % apply "practical" mean axis constraints (see [1] and [2], sec. A.2)
-eta = [ zeros(6,1); eta_from_7 ];
+eta(1:6) = 0;
+eta_dt(1:6) = 0;
 
 % rigid body acceleration
 [Omega_Kb_dt, V_Kb_dt] = rigidBodyKinetics( R_b, Q_b, m, I_b, g, M_bg, ...
     Omega_Kb, V_Kb );
 
-[eta_dt2, ~] = structureGetAcc( structure_red, q, eta );
+[eta_dt2, ~] = structureGetAcc( structure_red, q, eta, eta_dt );
 
 eta_from_7_dt2 = eta_dt2(7:end);
 

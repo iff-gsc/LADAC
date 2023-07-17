@@ -38,6 +38,8 @@ function [geometry] = wingSetGeometryCoord(params, n_panel, spacing )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
+n_panel_x = 1;
+
 wing_25_local_line_length = vecnorm( diff(params.xyz_25.*[0;1;1],1,2),2,1 );
 wing_25_total_line_length = sum( wing_25_local_line_length );
 
@@ -85,11 +87,11 @@ switch spacing
             delta_eta_vortex_new = c_ctrl_pt / mean(c_ctrl_pt);
             % normalize so that the sum is 1 (don't manipulate span)
             delta_eta_vortex_new = delta_eta_vortex_new / (sum(delta_eta_vortex_new)/(eta_vortex(end)-eta_vortex(1)));
-            error = max(abs(delta_eta_vortex_new-delta_eta_vortex));
+            eta_error = max(abs(delta_eta_vortex_new-delta_eta_vortex));
             delta_eta_vortex = delta_eta_vortex_new;
             eta_vortex(2:end-1) = cumsum(delta_eta_vortex(1:end-1))+eta_vortex(1);
             % problems occur, if the last value is slightly greater 1
-            if error < 1e-3*1/n_panel
+            if eta_error < 1e-3*1/n_panel
                 break;
             end
         end
@@ -102,7 +104,15 @@ vortex.pos = zeros( 3, size(eta_vortex,2) );
 vortex.pos(1,:) = interp1( eta_25, xyz_25(1,:), eta_vortex );
 vortex.pos(2,:) = interp1( eta_25, xyz_25(2,:), eta_vortex );
 vortex.pos(3,:) = interp1( eta_25, xyz_25(3,:), eta_vortex );
+    
 vortex.c = interp1( eta_25, c, eta_vortex );
+
+incidence_vortex = interp1( eta_25, delta_alpha, eta_vortex );
+for i = 2:n_panel_x + 1
+    vortex.pos(1,:,i) = vortex.pos(1,:,i-1) - vortex.c .* cos(incidence_vortex);
+    vortex.pos(2,:,i) = vortex.pos(2,:,i-1);
+    vortex.pos(3,:,i) = vortex.pos(3,:,i-1) + vortex.c .* sin(incidence_vortex);
+end
 
 ctrl_pt.pos = zeros(3, size(eta_ctrl_pt,2) );
 ctrl_pt.pos(1,:) = interp1( eta_25, xyz_75(1,:), eta_ctrl_pt );
@@ -122,7 +132,13 @@ for i = 1:length(eta_segments_device)-1
     segments.flap_depth(indices) = flap_depth(i);
 end
 
-% segments.y = [];
+% flap sweep angle
+segments.flap_sweep = zeros(size(segments.flap_depth));
+for i = 1:length(segments.flap_sweep)
+    pos1 = vortex.pos(:,i,1) + [-1;0;0]*(vortex.c(i)*(3/4-segments.flap_depth(i)));
+    pos2 = vortex.pos(:,i+1,1) + [-1;0;0]*(vortex.c(i+1)*(3/4-segments.flap_depth(i)));
+    segments.flap_sweep(i) = abs( atan((pos2(1)-pos1(1))/norm(pos2(2:3)-pos1(2:3),2)) );
+end
 
 
 geometry.origin = origin;
@@ -131,4 +147,11 @@ geometry.ctrl_pt = ctrl_pt;
 geometry.segments = segments;
 geometry.rotation = [params.rot_x;params.i;0];
 
+line_25_ctrl_pos = geometry.vortex.pos(:,1:end-1,1) + 0.5*diff(geometry.vortex.pos(:,:,1),1,2);
+diff_ctrl_pos = line_25_ctrl_pos - geometry.ctrl_pt.pos;
+geometry.ctrl_pt_lever = vecnorm( diff_ctrl_pos, 2 , 1 );
+geometry.ctrl_pt_lever = geometry.ctrl_pt_lever .* sign( diff_ctrl_pos(1,:,:) );
+
+geometry.line_25.c = geometry.vortex.c;
+geometry.line_25.pos = geometry.vortex.pos(:,:,1);
 end

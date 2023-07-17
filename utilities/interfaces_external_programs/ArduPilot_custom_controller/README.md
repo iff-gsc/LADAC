@@ -2,7 +2,7 @@
 
 This is a toolchain which implements your MATLAB/Simulink controller in ArduPilot.
 Currently supported: ArduCopter and ArduPlane.  
-Note that the ArduPlane patch also contains a custom interface to ArduPilot SITL with UDP connection (see [ArduPilot SITL interface of LADAC](../ArduPilot_SITL)).
+Note that the ArduPlane patch also contains a custom interface to ArduPilot SITL with UDP connection (see [ArduPilot SITL interface of LADAC](../ArduPilot_SITL#readme)).
 
 ## Motivation
 
@@ -10,23 +10,25 @@ If you design your controllers for an existing vehicle, you have to implement yo
 Since the controller is only a (small) part of the software running on the electronic control unit, it might be beneficial to implement the controller in an existing software like ArduPilot. 
 ArduPilot supports different boards and sensors, it allows communication via MAVLink and also provides a state estimator (EKF) if needed. 
 Moreover, you can perform software in the loop (SITL) simulations and keep standard ArduPilot flight modes if you want.
-Here, the implementation of your MATLAB/Simulink controller in ArduPilot is discribed.
+Here, the implementation of your MATLAB/Simulink controller in ArduPilot is described.
 
 ## Installation
 
-- You must install [LADAC](../../../README.md) (you need the MATLAB Coder and Simulink Embedded Coder).
+- You must install [LADAC](https://github.com/iff-gsc/LADAC#readme) (you need the MATLAB Coder and Simulink Embedded Coder).
 - You must install the [ArduPilot SITL](https://ardupilot.org/dev/docs/SITL-setup-landingpage.html).
 - Clone the following ArduPilot **fork** and check out one of the following branches:
   - ArduCopter 4.2.0
     ```
     git clone -b Copter-Matlab-4.2.0-dev https://github.com/ybeyer/ardupilot
+    cd ardupilot
     git submodule update --init --recursive
     ```
   - ArduPlane 4.3.0
     ```
     git clone -b Plane-Matlab-4.3 https://github.com/ybeyer/ardupilot
+    cd ardupilot
     git submodule update --init --recursive
-- These instructions assume that you have a basic understanding of ArduPilot and the ArduPilot SITL. Please also note the [ArduPilot SITL interface of LADAC](../ArduPilot_SITL).
+- These instructions assume that you have a basic understanding of ArduPilot and the ArduPilot SITL. Please also note the [ArduPilot SITL interface of LADAC](../ArduPilot_SITL#readme).
 
 
 ## Tests
@@ -55,7 +57,7 @@ Note that the steps are slightly different for ArduCopter and ArduPlane.
    - Terminate the simulation with `Cntrl+C`.
    - You can now review the [logs](https://ardupilot.org/dev/docs/using-sitl-for-ardupilot-testing.html). The actuator commands should be equal to the outputs of the MATLAB/Simulink dummy controller.
    Moreover, there should be a `ML1` struct which contains the custom logs of the MATLAB/Simulink dummy controller.
-2. Upload the code on your board.  
+3. Upload the code to your board.  
    - You can build the code for supported boards and upload it according to the [Building ArduPilot documentation](https://github.com/ArduPilot/ardupilot/blob/master/BUILD.md).
    - For example, if your board is a Pixhawk 1, use the following commands:
      ```
@@ -64,8 +66,8 @@ Note that the steps are slightly different for ArduCopter and ArduPlane.
      ./waf --upload copter
      ```
      (Note that you have to replace `copter` with `plane` if you want to build ArduPlane.)
-3. Test the MATLAB/Simulink controller in flight tests **(CAUTION: THIS MIGHT BE DANGEROUS, PLEASE ASSURE SAFETY ARRANGEMENTS!)**.
-   - Only do flight tests after careful and comprehensive [SITL tests](../ArduPilot_SITL/README.md).
+4. Test the MATLAB/Simulink controller in flight tests **(CAUTION: THIS MIGHT BE DANGEROUS, PLEASE ASSURE SAFETY ARRANGEMENTS!)**.
+   - Only do flight tests after careful and comprehensive [SITL tests](../ArduPilot_SITL#readme).
    - Only do flight tests at dedicated terrain.
    - Only do flight tests if you are sure that you can deactivate the MATLAB/Simulink controller at all times.
    - Only do flight tests if you have implemented a radio failsafe action that will cause acceptable reactions of the quadcopter in case of transmitter/receiver connection loss.
@@ -89,19 +91,19 @@ Step 1 must be adjusted as follows.
 
 ## How to use?
 
-Take a look at the Simulink model `ArduCopter_TemplateController` in the [ArduCopter](ArduCopter) subfolder and the `ArduPlane_TemplateController` in this folder.
+Take a look at the Simulink models [`ArduCopter_TemplateController`](ArduCopter_TemplateController.slx) and [`ArduPlane_TemplateController`](ArduPlane_TemplateController.slx) in this folder.
 They contain the dummy controller in the middle.
 On the left and on the right, there are interfaces to the ArduPilot fork.
 In this case, the dummy controller sends constant values to the actuators and it logs some signals.  
-To get to run your MATLAB/Simulink controller in ArduPilot you have to generate C++ code from your Simulink model and you must copy it inside the ArduPilot fork.
+To get your MATLAB/Simulink controller to run in ArduPilot you need to generate C++ code from your Simulink model and copy it into the ArduPilot fork.
 
-1. Make a copy of one of the `MatlabController` template Simulink files, insert your controller block and connect the inputs and outputs with the Simulink blocks in `LADAC/utilities/interfaces_external_programs/ardupilot_custom_controller`. You have to initialize the Simulink bus objects in the first place in Matlab:
+1. Make a copy of one of the `Ardu<Copter/Plane>_TemplateController` Simulink files, replace the *dummy test controller* with your own controller block and connect the inputs and outputs with the interface blocks to ArduPilot (*Actuator muxer*, *log muxer* etc.). The interface blocks are provided by the Simulink library [`ardupilot_custom_controller_lib`](ardupilot_custom_controller_lib.slx). You must first initialise the Simulink bus objects in MATLAB:
     ```
     ardupilotCreateInputBuses
     ```
 2. Generate C++ code from the Simulink file (click top right button "Build Model"): https://de.mathworks.com/help/dsp/ug/generate-c-code-from-simulink-model.html  
   Note that floating points should be 32-bit. This is assured in the Simulink template files because the following parameters were set: `set_param(gcs, 'DefaultUnderspecifiedDataType', 'single')` and `set_param(gcs, 'DataTypeOverride', 'Single','DataTypeOverrideAppliesTo','Floating-point')`
-3. You need only four files of the generated code: `MatlabController.cpp`, `MatlabController.h`, `MatlabController_data.cpp` and `rtwtypes.h`.
+3. You only need four files of the generated code: `MatlabController.cpp`, `MatlabController.h`, `MatlabController_data.cpp` and `rtwtypes.h`.
    Store these files in one folder and copy the content into your local ArduPilot repository.  
    **ArduCopter:**
      ```
@@ -111,13 +113,13 @@ To get to run your MATLAB/Simulink controller in ArduPilot you have to generate 
      ```
      cp -rf <your_source_folder>/. <path_to_ardupilot>/libraries/AP_Common/
      ```
-4. You should now be able to compile the modified ArduPilot project and use flight mode 26 (ArduCopter) or mode 25 (ArduPlane).  
+4. You should now be able to compile the modified ArduPilot project and use flight mode 29 (ArduCopter) or mode 26 (ArduPlane).  
 Note that it is probably required to delete the `build` folder in your local ArduPilot repository or to perform a `./waf clean`.
 
 
 ## Contribute
 
-If you generally want to understand how the interface works or if you want to use a different ArduPilot commit, you may have to look inside the ArduPilot code. 
+If you want to understand in general how the interface works, or if you want to use a different ArduPilot commit, you may need to look into the ArduPilot code. 
 This is a guide of how to adjust the code.
 
 For each step there is a git commit in the ArduPilot fork. 

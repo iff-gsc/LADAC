@@ -57,6 +57,7 @@ Mr = T' * structure.M * T;
 % set structure struct
 structure_red.K = Kr;
 structure_red.M = Mr;
+structure_red.d = zeros(DOF+N,1);
 structure_red.M_inv = inv( structure_red.M );
 structure_red.xyz = structure.xyz;
 structure_red.modal.T = T;

@@ -54,8 +54,8 @@ function convexSolid = wingSegment2convexSolid(wingGeometry,origin,idx)
 wing_rel_thickness = 0.1;
 convexSolid = zeros(4,6); % six planes (hexaeder)
 
-chord_left = wingGeometry.vortex.c(idx);
-chord_right = wingGeometry.vortex.c(idx+1);
+chord_left = wingGeometry.line_25.c(idx);
+chord_right = wingGeometry.line_25.c(idx+1);
 chord = 0.5*(chord_left+chord_right);
 
 thickness = chord * wing_rel_thickness;
@@ -63,16 +63,16 @@ thickness = chord * wing_rel_thickness;
 in = wingGeometry.ctrl_pt.local_incidence(idx);
 s_in = sin(in);
 c_in = cos(in);
-xyz_lead = wingGeometry.vortex.pos(:,idx:idx+1) + ...
+xyz_lead = wingGeometry.line_25.pos(:,idx:idx+1) + ...
     origin + ...
     [c_in,0,s_in;0,1,0;-s_in,0,c_in] * [chord_left,chord_right;0,0;0,0]/4;
-xyz_trail = wingGeometry.vortex.pos(:,idx:idx+1) + ...
+xyz_trail = wingGeometry.line_25.pos(:,idx:idx+1) + ...
     origin - ...
     [c_in,0,s_in;0,1,0;-s_in,0,c_in] * [chord_left,chord_right;0,0;0,0]*3/4;
 
 % bound_vortex_vector = wingGetSpatialVectorAlongBoundSegment(wingGeometry.vortex,idx:idx+1);
-point_vortex_left = wingGeometry.vortex.pos(:,idx) + origin;
-point_vortex_right = wingGeometry.vortex.pos(:,idx+1) + origin;
+point_vortex_left = wingGeometry.line_25.pos(:,idx) + origin;
+point_vortex_right = wingGeometry.line_25.pos(:,idx+1) + origin;
 
 % upper plane
 u_n_1 = wingGetNormalVectorFromGeometry(wingGeometry,idx);

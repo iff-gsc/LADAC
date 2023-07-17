@@ -1,4 +1,4 @@
-function [eta_dt2,q_elastic] = structureGetAcc( structure_red, q, eta ) %#codegen
+function [eta_dt2,q_elastic] = structureGetAcc( structure_red, q, eta, eta_dt ) %#codegen
 % structureGetAcc compute acceleration of generalized load vector of a
 % structural dynamics model
 % 
@@ -11,6 +11,7 @@ function [eta_dt2,q_elastic] = structureGetAcc( structure_red, q, eta ) %#codege
 %   q               generalized external force vector excluding gravity
 %                   (Nx1 array)
 %   eta             generalized displacement vector (Nx1 array)
+%   eta_dt          time-derivative of input eta (Nx1 array)
 % 
 % Outputs:
 %   eta_dt2         second time derivative of input eta (Nx1 array)
@@ -31,7 +32,8 @@ function [eta_dt2,q_elastic] = structureGetAcc( structure_red, q, eta ) %#codege
 % *************************************************************************
 
 % [1], eq. (3.1)
-q_elastic = structure_red.K*eta;
-eta_dt2 = structure_red.M_inv * (q-q_elastic);
+q_elastic   = structure_red.K*eta;
+q_damp      = structure_red.d.*eta_dt;
+eta_dt2     = structure_red.M_inv * (q-q_elastic-q_damp);
 
 end

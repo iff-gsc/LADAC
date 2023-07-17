@@ -126,6 +126,12 @@ geo.fsym = zeros(1,geo.nelem);
 % set flaps (Tornado only supports symmetric and anti-symmetric)
 geo.flap_vector = zeros(1,geo.nelem);
 flap_unique = unique(flap_idx(flap_idx~=0));
+if length(flap_pos) ~= length(flap_unique)
+    error(['The flaps were defined incorrectly. ', ...
+        'The number of defined flaps and the length of input ', ...
+        '"flap_pos" must be equal.']);
+end
+        
 for i = 1:max(flap_idx)
     geo.flap_vector(flap_idx==i) = flap_pos(find(flap_unique==i));
     geo.fsym(flap_idx==i) = is_flap_sym(find(flap_unique==i));

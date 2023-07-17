@@ -39,6 +39,8 @@ function [geometry] = wingSetGeometry(params, n_panel, varargin )
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
+n_panel_x = 1;
+
 is_elliptical = false;
 
 for i = 1:length(varargin)
@@ -56,7 +58,11 @@ for i = 1:length(varargin)
 end
 
 % create planform wing geometry
-geometry = geometryPlanform( params, n_panel, is_elliptical );
+geometry = geometryPlanform( params, n_panel, is_elliptical, n_panel_x );
+
+if n_panel_x > 1
+    geometry = geometryCamber( params, geometry );
+end
 
 % set segments
 geometry = geometrySegments( params, geometry );
@@ -73,11 +79,16 @@ geometry = geometrySweep( params, geometry );
 % apply global positioning
 geometry = geometryGlobal( params, geometry );
 
+line_25_ctrl_pos = geometry.line_25.pos(:,1:end-1,:) + 0.5*diff(geometry.line_25.pos,1,2);
+diff_ctrl_pos = line_25_ctrl_pos - geometry.ctrl_pt.pos;
+geometry.ctrl_pt_lever = vecnorm( diff_ctrl_pos, 2 , 1 );
+geometry.ctrl_pt_lever = geometry.ctrl_pt_lever .* sign( diff_ctrl_pos(1,:,:) );
+
 end
 
 
 
-function geometry = geometryPlanform( params, n_panel, is_elliptical )
+function [geometry] = geometryPlanform( params, n_panel, is_elliptical, n_panel_x )
 
     geometry = wingInitGeometry( n_panel );
 
@@ -96,12 +107,16 @@ function geometry = geometryPlanform( params, n_panel, is_elliptical )
     else
         n_panel_side = n_panel;
     end
-    ny_vec = ones( 1, n_panel );
-    while length(eta_partitions_ny) < n_panel_side + 1
-        [max_diff,idx_max_diff] = max(diff(eta_partitions_ny));
-        idx_max_diff_ny = max(find(eta_partitions<eta_partitions_ny(idx_max_diff+1)));
-        ny_vec(idx_max_diff_ny) = ny_vec(idx_max_diff_ny) + 1;
-        eta_partitions_ny = [eta_partitions_ny(1:idx_max_diff),mean(eta_partitions_ny(idx_max_diff:idx_max_diff+1)),eta_partitions_ny(idx_max_diff+1:end)];
+    if true
+        ny_vec = ones( 1, n_panel );
+        while length(eta_partitions_ny) < n_panel_side + 1
+            [max_diff,idx_max_diff] = max(diff(eta_partitions_ny));
+            idx_max_diff_ny = max(find(eta_partitions<eta_partitions_ny(idx_max_diff+1)));
+            ny_vec(idx_max_diff_ny) = ny_vec(idx_max_diff_ny) + 1;
+            eta_partitions_ny = [eta_partitions_ny(1:idx_max_diff),mean(eta_partitions_ny(idx_max_diff:idx_max_diff+1)),eta_partitions_ny(idx_max_diff+1:end)];
+        end
+    else
+        eta_partitions_ny = linspace(0,1,n_panel_side+1);
     end
     
     if params.is_symmetrical
@@ -127,16 +142,33 @@ function geometry = geometryPlanform( params, n_panel, is_elliptical )
     else
         geometry.vortex.c(:) = interp1( y_segments_wing, c_segments_wing, y_vortex );
     end
-    geometry.ctrl_pt.c(:) = interp1( y_vortex, geometry.vortex.c, y_ctrl_pt );
+    c_mid = median(geometry.vortex.c);
+    % avoid singularities
+    geometry.vortex.c(geometry.vortex.c<0.01*c_mid) = 0.01 * c_mid;
+    geometry.line_25.c = geometry.vortex.c;
+    geometry.ctrl_pt.c(:) = repmat(interp1( y_vortex, geometry.vortex.c, y_ctrl_pt )/n_panel_x,1,1,n_panel_x);
     
-    x_vortex = -params.c(1)/4*ones(1,n_vortex);
+    x_25 = -params.c(1)/4*ones(1,n_vortex);
+    z_25 = zeros(1,n_vortex);
+    geometry.line_25.pos = [x_25;y_vortex;z_25];
+    
     z_vortex = zeros(1,n_vortex);
-    
-    x_cntrl = -params.c(1)/4 - 0.5*geometry.ctrl_pt.c;
     z_cntrl = zeros(1,n_panel);
+    for i = 1:n_panel_x+1
+        x_vortex = x_25 + geometry.line_25.c/4 - geometry.line_25.c/n_panel_x*(i-1+0.25);
+        geometry.vortex.pos(:,:,i) = [ x_vortex; y_vortex; z_vortex ];
+        if i <= n_panel_x
+            x_cntrl = x_25(1) + sum(geometry.ctrl_pt.c,3)/4 - sum(geometry.ctrl_pt.c,3)/n_panel_x*(i-1+0.75);
+            geometry.ctrl_pt.pos(:,:,i) = [ x_cntrl; y_ctrl_pt; z_cntrl ];
+        end
+    end
     
-    geometry.vortex.pos(:) = [ x_vortex; y_vortex; z_vortex ];
-    geometry.ctrl_pt.pos(:) = [ x_cntrl; y_ctrl_pt; z_cntrl ];     
+end
+
+
+function [geometry] = geometryCamber( params, geometry )
+
+    geometry = geometry;
     
 end
 
@@ -157,14 +189,34 @@ function geometry = geometrySegments( params, geometry )
     end
     for segment_index = 1:length(y_segments_device_2)-1
         % find the corresponding panel indices
-        indices_c = ( geometry.ctrl_pt.pos(2,:) >= y_segments_device_2(segment_index) ) ...
-            &  ( geometry.ctrl_pt.pos(2,:) < y_segments_device_2(segment_index + 1) );
+        indices_c = ( geometry.ctrl_pt.pos(2,:,1) >= y_segments_device_2(segment_index) ) ...
+            &  ( geometry.ctrl_pt.pos(2,:,1) < y_segments_device_2(segment_index + 1) );
         % set trailing edge type to panel indices
         for j = 1:size(params.control_input_index,1)
             geometry.segments.control_input_index_local(j,indices_c) = params.control_input_index(j,segment_index);
         end
         geometry.segments.type_local(indices_c) = section_type_2(segment_index);
         geometry.segments.flap_depth(indices_c) = flap_depth_2(segment_index);
+    end
+    y_seg = params.b/2*params.eta_segments_wing;
+    x_25 = zeros(size(y_seg));
+    for i = 2:length(x_25)
+        x_25(i) = x_25(i-1) - (y_seg(i)-y_seg(i-1)) * params.lambda(i-1);
+    end
+    flap_depth_unique = unique(flap_depth_2);
+    flap_depth_unique(flap_depth_unique==0) = [];
+    dist = vecnorm(geometry.ctrl_pt.pos(2:3,:),2,1);
+    dist_max = norm(geometry.line_25.pos(2:3,end),2);
+    rel_dist = dist/dist_max;
+    for i = 1:length(flap_depth_unique)
+        x_seg_hinge = x_25 + params.c/4 - (1-flap_depth_unique(i)).*params.c;
+        flap_sweep_seg = atan(diff(-x_seg_hinge)./diff(y_seg));
+        is_depth = geometry.segments.flap_depth == flap_depth_unique(i);
+        for j = 1:length(params.eta_segments_wing)-1
+            is_seg = rel_dist >= params.eta_segments_wing(j) & rel_dist < params.eta_segments_wing(j+1);
+            is_match = is_seg & is_depth;
+            geometry.segments.flap_sweep(is_match) = flap_sweep_seg(j);
+        end
     end
 
 end
@@ -186,11 +238,18 @@ function geometry = geometryDihedral( params, geometry )
         y_segments_sym = params.y_segments_wing;
     end
     
-    geometry.vortex.pos(3,:) = geometry.vortex.pos(3,:) + ...
-        interp1( y_segments_sym, z_segments_sym, geometry.vortex.pos(2,:) );
+    n_panel_x = size(geometry.ctrl_pt.pos,3);
     
-    geometry.ctrl_pt.pos(3,:) = geometry.ctrl_pt.pos(3,:) + ...
-        interp1( geometry.vortex.pos(2,:), geometry.vortex.pos(3,:), geometry.ctrl_pt.pos(2,:) );
+    for i = 1:n_panel_x+1
+        geometry.vortex.pos(3,:,i) = geometry.vortex.pos(3,:,i) + ...
+            interp1( y_segments_sym, z_segments_sym, geometry.vortex.pos(2,:,i) );
+        if i <= n_panel_x
+            geometry.ctrl_pt.pos(3,:,i) = geometry.ctrl_pt.pos(3,:,i) + ...
+                interp1( geometry.vortex.pos(2,:,i), geometry.vortex.pos(3,:,i), geometry.ctrl_pt.pos(2,:,i) );   
+        end
+    end
+    geometry.line_25.pos(3,:) = geometry.line_25.pos(3,:) + ...
+        interp1( y_segments_sym, z_segments_sym, geometry.line_25.pos(2,:) );
 
 end
 
@@ -198,21 +257,56 @@ function geometry = geometryTwist( params, geometry )
     
     if params.is_symmetrical
         twist_segments_sym = [ flip(params.epsilon), 0, params.epsilon ];
+        c_segments_sym = [ flip(params.c), params.c(2:end) ];
         y_segments_sym = [ flip(-params.y_segments_wing(2:end)), params.y_segments_wing ];
     else
         twist_segments_sym = [0,params.epsilon];
+        c_segments_sym = params.c;
         y_segments_sym = params.y_segments_wing;
     end
     
-    twist_vortex = interp1( y_segments_sym, twist_segments_sym, geometry.vortex.pos(2,:) );
-    geometry.ctrl_pt.local_incidence(:) = interp1( geometry.vortex.pos(2,:), twist_vortex, geometry.ctrl_pt.pos(2,:) ) ...
-        + params.i;
+    pos_le_segments = interp1( geometry.vortex.pos(2,:,1), geometry.vortex.pos(:,:,1)', y_segments_sym )' ...
+        + [ c_segments_sym/4.*cos(twist_segments_sym); zeros(size(c_segments_sym)); -c_segments_sym/4.*sin(twist_segments_sym) ];
     
+    pos_te_segments = interp1( geometry.vortex.pos(2,:,1), geometry.vortex.pos(:,:,1)', y_segments_sym )' ...
+        - [ c_segments_sym*3/4.*cos(twist_segments_sym); zeros(size(c_segments_sym)); -c_segments_sym*3/4.*sin(twist_segments_sym) ];
     
-    for i = 1:length(geometry.ctrl_pt.local_incidence)
-        geometry.ctrl_pt.pos(:,i) =  geometry.vortex.pos(:,i) + ...
-            axisAngle( geometry.ctrl_pt.pos(:,i) - geometry.vortex.pos(:,i), ...
-            geometry.vortex.pos(:,i+1) - geometry.vortex.pos(:,i), geometry.ctrl_pt.local_incidence(i)-params.i );
+    pos_le = interp1( y_segments_sym, pos_le_segments', geometry.vortex.pos(2,:,1) )';
+    pos_te = interp1( y_segments_sym, pos_te_segments', geometry.vortex.pos(2,:,1) )';
+    
+    % linear edges
+    twist_vortex = asin( divideFinite(pos_te(3,:)-pos_le(3,:), vecnorm(pos_te-pos_le,2,1) ) );
+    
+    % linear twist angle
+%     twist_vortex = interp1( y_segments_sym, twist_segments_sym, geometry.vortex.pos(2,:,1) );
+    
+    n_panel = size(geometry.ctrl_pt.pos,2);
+    n_panel_x = size(geometry.ctrl_pt.pos,3);
+    for i = 1:n_panel+1
+        for j = 1:n_panel_x+1
+            if i<=n_panel && j<=n_panel_x
+                geometry.ctrl_pt.local_incidence(1,:,j) = interp1( geometry.vortex.pos(2,:,j), twist_vortex, geometry.ctrl_pt.pos(2,:,j) ) ...
+                    + params.i;
+                geometry.ctrl_pt.pos(:,i,j) = geometry.line_25.pos(:,i) + ...
+                    axisAngle( geometry.ctrl_pt.pos(:,i,j) - geometry.line_25.pos(:,i), ...
+                    geometry.line_25.pos(:,i+1) - geometry.line_25.pos(:,i), geometry.ctrl_pt.local_incidence(1,i,j)-params.i );
+            end
+            jj = min(j,n_panel_x);
+            if i == 1
+                rot_line = geometry.line_25.pos(:,i+1) - geometry.line_25.pos(:,i);
+                rot_angle = geometry.ctrl_pt.local_incidence(1,i,jj);
+            elseif i == n_panel+1
+                rot_line = geometry.line_25.pos(:,i) - geometry.line_25.pos(:,i-1);
+                rot_angle = geometry.ctrl_pt.local_incidence(1,i-1,jj);
+            else
+                rot_line = geometry.line_25.pos(:,i+1) - geometry.line_25.pos(:,i-1);
+                rot_angle = 0.5*( geometry.ctrl_pt.local_incidence(1,i-1,jj) ...
+                    + geometry.ctrl_pt.local_incidence(1,i,jj) );
+            end
+            geometry.vortex.pos(:,i,j) = geometry.line_25.pos(:,i) + ...
+                axisAngle( geometry.vortex.pos(:,i,j) - geometry.line_25.pos(:,i), ...
+                rot_line, rot_angle-params.i );
+        end
     end
 
 end
@@ -226,19 +320,23 @@ function geometry = geometrySweep( params, geometry )
     end
     
     if params.is_symmetrical
-        x_segments_sym = [ x_segments(2:end), x_segments ];
-        y_segments_sym = [ -params.y_segments_wing(2:end), params.y_segments_wing ];
+        x_segments_sym = [ flip(x_segments(2:end)), x_segments ];
+        y_segments_sym = [ -flip(params.y_segments_wing(2:end)), params.y_segments_wing ];
     else
         x_segments_sym = x_segments;
         y_segments_sym = params.y_segments_wing;
     end
-    
-    Delta_x_vortex = interp1( y_segments_sym, x_segments_sym, geometry.vortex.pos(2,:) );
-    geometry.vortex.pos(1,:) = geometry.vortex.pos(1,:) + Delta_x_vortex;
-    
-    geometry.ctrl_pt.pos(1,:) = geometry.ctrl_pt.pos(1,:) + ...
-        interp1( geometry.vortex.pos(2,:), Delta_x_vortex, geometry.ctrl_pt.pos(2,:) );
-
+    n_panel_x = size(geometry.ctrl_pt.pos,3);
+    for j = 1:n_panel_x + 1
+        Delta_x_vortex = interp1( y_segments_sym, x_segments_sym, geometry.vortex.pos(2,:,j),'linear','extrap' );
+        geometry.vortex.pos(1,:,j) = geometry.vortex.pos(1,:,j) + Delta_x_vortex;
+        if j <= n_panel_x
+            geometry.ctrl_pt.pos(1,:,j) = geometry.ctrl_pt.pos(1,:,j) + ...
+                interp1( geometry.vortex.pos(2,:,j), Delta_x_vortex, geometry.ctrl_pt.pos(2,:,j),'linear','extrap' );
+        end
+    end
+    Delta_x_line_25 = interp1( y_segments_sym, x_segments_sym, geometry.line_25.pos(2,:),'linear','extrap' );
+    geometry.line_25.pos(1,:) = geometry.line_25.pos(1,:) + Delta_x_line_25;
 end
 
 function geometry = geometryGlobal( params, geometry )
@@ -256,15 +354,25 @@ function geometry = geometryGlobal( params, geometry )
         0, -sin(params.rot_x), cos(params.rot_x) ...
         ];
 
-    % vortex
-    geometry.vortex.pos(:) = M_incidence * M_rot_x * geometry.vortex.pos;
-
-    % control points
-    geometry.ctrl_pt.pos(:) = M_incidence * M_rot_x * geometry.ctrl_pt.pos;
+    n_panel_x = size( geometry.ctrl_pt.pos, 3 );
+    
+    for j = 1:n_panel_x+1
+        
+        % vortex
+        geometry.vortex.pos(:,:,j) = M_incidence * M_rot_x * geometry.vortex.pos(:,:,j);
+        
+        if j <= n_panel_x
+            % control points
+            geometry.ctrl_pt.pos(:,:,j) = M_incidence * M_rot_x * geometry.ctrl_pt.pos(:,:,j);
+        end
+        
+    end
+    
+    geometry.line_25.pos = M_incidence * M_rot_x * geometry.line_25.pos;
     
     % origin
     geometry.origin(:) = [params.x;0;params.z];
-    
+
     % rotation
     geometry.rotation(:) = [params.rot_x;params.i;0];
     

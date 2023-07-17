@@ -1,4 +1,4 @@
-function wing = wingCreateWithCPACS( tiglHandle, wing_idx, n_panel, varargin )
+function wing = wingCreateWithCPACS( tiglHandle, wing_idx, n_panel, n_panel_x, varargin )
 
 % Disclamer:
 %   SPDX-License-Identifier: GPL-3.0-only
@@ -14,6 +14,17 @@ is_stall    = 1;
 is_le_shock = 0;
 spacing = 'like_chord';
 is_infl_recomputed = 0;
+method = 'IVLM';
+n_trail = 1;
+Ma = 0;
+Delta_jig_twist_data = [linspace(-1,1,n_panel);zeros(1,n_panel)];
+if wing_idx == 1
+    controls_filename = 'wingControls_params_mainDefault';
+elseif wing_idx == 2
+    controls_filename = 'wingControls_params_htpDefault';
+elseif wing_idx == 3
+    controls_filename = 'wingControls_params_vtpDefault';
+end
 
 % set user parameters
 for i = 1:length(varargin)
@@ -62,6 +73,19 @@ for i = 1:length(varargin)
             else
                 error('Invalid option for parameter is_infl_recomputed.')
             end
+        case 'controlsdef'
+            if ischar(varargin{i+1})
+                controls_filename = varargin{i+1};
+            else
+                error('Invalid option for parameter control_filename.');
+            end
+        case 'DLM'
+            method = 'DLM';
+            n_trail = varargin{i+1};
+        case 'Mach'
+            Ma = varargin{i+1};
+        case 'AdjustJigTwist'
+            Delta_jig_twist_data(:) = varargin{i+1};
     end
 end
 
@@ -69,7 +93,7 @@ end
 %% define aircraft parameters
 
 % load wing parameters
-prm = wingGetParamsFromCPACS( tiglHandle, wing_idx );
+prm = wingGetParamsFromCPACS( tiglHandle, wing_idx, controls_filename );
 
 % set further wing parameters
 wing.params = wingSetParams(prm);
@@ -78,11 +102,31 @@ wing.params = wingSetParams(prm);
 %% compute geometry
 
 wing.n_panel = n_panel;
+wing.n_panel_x = n_panel_x;
+wing.n_trail = n_trail;
 wing.geometry = wingSetGeometryCoord( wing.params, wing.n_panel, spacing );
 
+Delta_jig_twist = interp1( Delta_jig_twist_data(1,:), Delta_jig_twist_data(2,:), ...
+    wing.geometry.ctrl_pt.pos(2,:), 'linear', 'extrap' );
+wing.geometry.ctrl_pt.local_incidence(:) = ...
+        wing.geometry.ctrl_pt.local_incidence + Delta_jig_twist;
+
+cntrl_prm = loadParams(controls_filename);
+if contains(cntrl_prm.lad_mode,'everywhere')
+    lad_mode_split = strsplit(cntrl_prm.lad_mode,'-');
+    rel_border = str2double(lad_mode_split{2});
+    is_lad = abs(wing.geometry.ctrl_pt.pos(2,:)/wing.params.b*2) > rel_border;
+    num_lads = sum( is_lad );
+    lad_idx_min = min(wing.geometry.segments.control_input_index_local(2,:));
+    wing.geometry.segments.control_input_index_local(2,is_lad) = ...
+        lad_idx_min:(num_lads+lad_idx_min-1);
+    wing.geometry.segments.control_input_index_local(2,~is_lad) = 0;
+    wing.params.num_lads = num_lads;
+    wing.params.num_actuators = wing.params.num_flaps + wing.params.num_lads;
+end
 
 %% init state
-wing.state = wingCreateState( wing.params.num_actuators, n_panel, wing.geometry );
+wing.state = wingCreateState( wing.params.num_actuators, wing.n_panel, wing.geometry );
 
 
 %% set airfoil aerodynamics
@@ -122,6 +166,7 @@ end
 
 wing.config.is_unsteady = double(is_unsteady);
 wing.config.is_flexible = double(is_flexible);
+wing.config.method      = method;
 wing.config.is_stall    = double(is_stall);
 wing.config.is_le_shock = double(is_le_shock);
 if wing.config.is_unsteady
@@ -134,6 +179,6 @@ wing.config.actuator_2_type = actuator_2_type;
 wing.config.is_infl_recomputed = is_infl_recomputed;
 
 %% set interim results
-wing.interim_results = wingSetInterimResults( wing );
+wing.interim_results = wingSetInterimResults( wing, Ma );
 
 end

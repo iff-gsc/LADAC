@@ -6,8 +6,8 @@
 %
 % Literature:
 %   [1] Schlichting, H.; Truckenbrodt, E.; "Aerodynamik des FLugzeugs -
-%       Zweiter Band: Aerodynamik des Tragfl�gels (Teil II), des Rumpfes,
-%       der Fl�gel-Rumpf-Anordnung und der Leitwerke", 3. Auflage,
+%       Zweiter Band: Aerodynamik des Tragfluegels (Teil II), des Rumpfes,
+%       der Fluegel-Rumpf-Anordnung und der Leitwerke", 3. Auflage,
 %       Springer-Verlag, Berlin, Heidelberg, 2001
 %
 
@@ -21,11 +21,14 @@
 %% set wing parameters
 
 % set two vectors for sweep and aspect ratio variation
-sweep_vec = deg2rad(-50:1:50);
+sweep_vec = deg2rad(-50:10:50);
 AR_vec = flip([2,4,6,8,1000]);
+AR_vec = ([2,4,6,8,1000]);
+
 
 % number of panels
-n_panel = 50;
+n_panel = 40;
+n_panel_x = 1;
 
 %% define current wing state
 
@@ -51,15 +54,15 @@ len_A = length(AR_vec);
 C_L_alpha = zeros(len_A,len_s);
 C_L_alphaVLM = C_L_alpha;
 
+num_total_loops = len_s*len_A;
 Legend = [];
-
 % load wing parameters
 for i = 1:len_A
     
     for j = 1:len_s
         
         % create wing
-        wing = wingCreate( wing_parametric(AR_vec(i),1,sweep_vec(j),0), n_panel );
+        wing = wingCreate( wing_parametric(AR_vec(i),1,sweep_vec(j),0), n_panel, n_panel_x, 'IVLM', 1 );
         
         % compute aerodynamics
         wing = wingSetState(wing,alpha,beta,V,omega,actuators_pos,actuators_rate,[0;0;0]);
@@ -72,6 +75,9 @@ for i = 1:len_A
         C_XYZ_a = M_ba * wing.state.aero.coeff_glob.C_XYZ_b;
         C_L_alpha(i,j) = -C_XYZ_a(3)/alpha;
         
+        num_loops = (i-1)*len_s + j;
+        disp( ['progress: ',num2str(num_loops / num_total_loops * 100),'%'] )
+        
     end
     
     Legend{i} = ['\Lambda = ',num2str(AR_vec(i))];
@@ -79,12 +85,13 @@ for i = 1:len_A
 end
 
 %% plot results
+figure
 plot(rad2deg(sweep_vec),C_L_alpha)
 hold on
 [C_L_alpha_max,idx_max] = max(C_L_alpha');
 plot(rad2deg(sweep_vec(idx_max)),C_L_alpha_max,'kx')
 grid on
-xlabel('sweep angle, �')
+xlabel(['sweep angle,',char(176)])
 ylabel('lift curve slope, -')
 legend([Legend,'maximum'],'location','south')
 ylim([0 7])

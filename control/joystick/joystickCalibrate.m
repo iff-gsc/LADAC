@@ -40,8 +40,8 @@ function joystickCalibrate( joystickname )
 accuracy = 0.01;
 
 % set how much time the user has to react, in seconds
-time_move = 1;
-time_centered = 1;
+time_move = 2;
+time_centered = 2;
 
 % list of all actions during the calibration (in between a stick centered
 % request will be added)
@@ -90,6 +90,8 @@ function_8 = 0;
 js_mean = zeros(num_channels,1);
 js_max = zeros(num_channels,1);
 js_min = zeros(num_channels,1);
+
+joystickOut = {};
 
 % start calibration
 for i = 1:2*length(action)

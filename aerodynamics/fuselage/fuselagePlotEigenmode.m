@@ -26,20 +26,21 @@ if num_eigenmode > size(fuselage.aeroelasticity.T_cs,2)
     error('Requested eigenmode exceeds the number of eigenmodes.')
 end
 
-if ~isempty(varargin)
-    factor = varargin{1};
-else
-    factor = 1;
+scaling = 1;
+for i = 1:length(varargin)
+    if strcmp(varargin{i},'Scaling')
+        scaling = varargin{i+1};
+    end
 end
 
-modal_state = pinv(structure.modal.T) * structure.modal.T(:,num_eigenmode) * factor;
-fuselage_deform = fuselageSetGeometryState( fuselage, modal_state );
+modal_state = pinv(structure.modal.T) * structure.modal.T(:,num_eigenmode+6) * scaling;
+fuselage_deform = fuselageSetGeometryState( fuselage, 'pos', modal_state );
 fuselage_deform.geometry = fuselage_deform.state.geometry;
 
-fuselagePlotGeometry( fuselage );
+fuselagePlotGeometry( fuselage, varargin{:}, 'LineColor', [0.5,0.5,0.5] );
 
 hold on
 
-fuselagePlotGeometry( fuselage_deform );
+fuselagePlotGeometry( fuselage_deform, varargin{:} );
 
 end

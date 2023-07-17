@@ -82,7 +82,7 @@ omega_Kb | angular velocity of the wing relative to the earth (3x1 array), in ra
 atmosphere | Simulink bus based on the isAtmosphere function
 actuators_pos | actuator positions (1xN_a array, where N_a is the number of actuators), usually in deg
 actuators_rate | actuator rates (1xN_a array), usually in deg/s
-incidence | incidence angle of the wing frame with respect to the aircraft frame (scalar), in rad 
+incidence | incidence angle of the wing frame with respect to the aircraft frame (scalar), in deg 
 xyz_cg_wing | center of gravity position in the wing frame (3x1 array), in m 
 V_Kb_dt | time-derivative of the velocity of the center of gravity relative to the earth (3x1 array), in m/s^2 
 omega_Kb_dt | time-derivative of omega_Kb (3x1 array), in rad/s^2 

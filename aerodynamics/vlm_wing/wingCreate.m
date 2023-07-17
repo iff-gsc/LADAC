@@ -68,6 +68,7 @@ is_le_shock = 0;
 spacing = 'like_chord';
 is_infl_recomputed = 0;
 is_elliptical = false;
+Ma = 0;
 
 % set user parameters
 for i = 1:length(varargin)
@@ -122,6 +123,8 @@ for i = 1:length(varargin)
             else
                 error('Invalid option for parameter is_elliptical.')
             end
+        case 'Mach'
+            Ma = varargin{i+1};
     end
 end
 
@@ -171,6 +174,9 @@ else
     error('second actuator type not specified correctly');
 end
 
+%% wake
+% wing.wake = wingCreateWake( wing.params, wing.geometry, n_trail );
+
 %% structure coupling
 if is_flexible
     % structure nodes - wing nodes - coupling
@@ -197,6 +203,6 @@ wing.config.actuator_2_type = actuator_2_type;
 wing.config.is_infl_recomputed = is_infl_recomputed;
 
 %% set interim results
-wing.interim_results = wingSetInterimResults( wing );
+wing.interim_results = wingSetInterimResults( wing, Ma );
 
 end
