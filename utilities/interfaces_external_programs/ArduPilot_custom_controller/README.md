@@ -126,16 +126,24 @@ For each step there is a git commit in the ArduPilot fork.
 Please study the git commits. 
 The diff and the commit message should be comprehensible.
 In general, it is recommended to [learn the ArduPilot code](https://ardupilot.org/dev/docs/learning-the-ardupilot-codebase.html) and to [use an IDE with debugger (e.g. VS Code with GDB)](https://ardupilot.org/dev/docs/debugging-with-gdb-on-linux.html).  
-The ArduPilot version was updated to 4.2.0 (copter) and 4.3.0 (plane) and some additional changes were implemented.
+
+Originally the interfaces were created based on `Copter 4.0.0` (tag `Copter-Matlab-4.0.0-dev` which is based on commit `f69be707`) and based on `Plane 4.1` (tag `Plane-Matlab-4.1.0` which is based on commit `6711c479`).
+However, this has not been further developed for a long time.
+Instead, the ArduPilot version was updated to `Copter 4.2.0` (branch `Copter-Matlab-4.2.0-dev` which is based on commit `999c2692`), `Copter 4.4.0 beta` (branch `Copter-Matlab-4.4.0-beta2` which is based on commit `07f11531`) and `Plane 4.3.0` (branch `Copter-Matlab-4.3` which is based on commit `033266f9`).
+Several improvements have been implemented in these branches.
+For understanding it is very helpful to use a Git GUI which shows the history well.
+The basic functionality of the interface can be understood from the original history.  
+
+The original history consists of the following steps:
 
 **ArduCopter:**
-  1. Create new custom flight mode (see commit `fa17eec3`).
-  2. Change a compiler flag to avoid errors (see commit `49a72363`).
-  3. Get measured values and commanded values in the new custom flight mode (see commit `c878dc3b`).
-  4. Integrate the MATLAB/Simulink controller (C/C++ code) (see commit `fca5741a`).
+  1. Create new custom flight mode (see commit `284a3e8f`).
+  2. Change a compiler flag to avoid errors (see commit `16fc4968`).
+  3. Get measured values and commanded values in the new custom flight mode (see commit `1f9633bb`).
+  4. Integrate the MATLAB/Simulink controller (C/C++ code) (see commit `84ea9cd0`).
   5. Send motor commands (This is somewhat complicated because no way was found without modifying the ArduCopter main loop. Two soluations are presented.).
-     1. Send motor commands directly and deactivate all standard ArduCopter flight modes (easy) (see commit `d3561c69`).
-     2. Send motor command maintaining all standard ArduCopter flight modes (more difficult) (see commit `3ee0bbc1`).  
+     1. Send motor commands directly and deactivate all standard ArduCopter flight modes (easy) (see commit `f1378e72`).
+     2. Send motor command maintaining all standard ArduCopter flight modes (more difficult) (see commit `ea316281`).  
 
 **ArduPlane:**  
-Take a look at the commits `ac83a79a`, `d7de0039`, `7d5df96d`, `9170301e`, `b7032a62`, `77f85326`, `71be8f5d`.
+Take a look at the commits `540b1a7a`, `090fd2d1`, `458fb653`, `e06e0f57`, `50b83360`, `05e8e5f4`.
