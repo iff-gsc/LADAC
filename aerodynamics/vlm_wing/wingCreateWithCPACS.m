@@ -112,12 +112,26 @@ wing.geometry.ctrl_pt.local_incidence(:) = ...
         wing.geometry.ctrl_pt.local_incidence + Delta_jig_twist;
 
 cntrl_prm = loadParams(controls_filename);
+if contains(cntrl_prm.flap_mode,'everywhere')
+    flap_mode_split = strsplit(cntrl_prm.flap_mode,'-');
+    rel_border = str2double(flap_mode_split{2});
+    is_flap = abs(wing.geometry.ctrl_pt.pos(2,:)/wing.params.b*2) > rel_border;
+    num_flaps = sum( is_flap );
+    flap_idx_min = 1;
+    wing.geometry.segments.control_input_index_local(1,is_flap) = ...
+        flap_idx_min:(num_flaps+flap_idx_min-1);
+    wing.geometry.segments.control_input_index_local(1,~is_flap) = 0;
+    wing.params.num_flaps = num_flaps;
+    wing.params.num_actuators = wing.params.num_flaps;
+else
+    num_flaps = max(cntrl_prm.control_input_index(1,:));
+end
 if contains(cntrl_prm.lad_mode,'everywhere')
     lad_mode_split = strsplit(cntrl_prm.lad_mode,'-');
     rel_border = str2double(lad_mode_split{2});
     is_lad = abs(wing.geometry.ctrl_pt.pos(2,:)/wing.params.b*2) > rel_border;
     num_lads = sum( is_lad );
-    lad_idx_min = min(wing.geometry.segments.control_input_index_local(2,:));
+    lad_idx_min = max(min(wing.geometry.segments.control_input_index_local(2,:)),num_flaps+1);
     wing.geometry.segments.control_input_index_local(2,is_lad) = ...
         lad_idx_min:(num_lads+lad_idx_min-1);
     wing.geometry.segments.control_input_index_local(2,~is_lad) = 0;
