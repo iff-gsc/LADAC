@@ -67,7 +67,12 @@ if is_first_order_delay
     t1_top = [' ',repmat('-',1,t1_width-2),' '];
     first_row = [first_row,arrow_spaces,t1_top];
     t1_space_num = repmat(' ',1,floor((t1_width-2)/2));
-    second_row = [second_row,arrow_spaces,'|',t1_space_num,'1',t1_space_num,'|'];
+    if mod(t1_width,2) == 0
+        t1_space_num_1 = t1_space_num(1:end-1);
+    else
+        t1_space_num_1 = t1_space_num;
+    end
+    second_row = [second_row,arrow_spaces,'|',t1_space_num_1,'1',t1_space_num,'|'];
     third_row = [third_row,arrow_,'| ',t1_top(3:end-2),' |'];
     fourth_row = [fourth_row,arrow_spaces,'| ',T_h_str,'*s + 1 |'];
     
