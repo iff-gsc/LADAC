@@ -123,8 +123,8 @@ state.aero.unsteady.z_dt            = zeros( 2, n_panel );
 state.aero.unsteady.z               = zeros( 2, n_panel );
 
 % 2nd actuator state (first order delay)
-state.aero.unsteady.z2_dt           = zeros( 1, n_panel );
-state.aero.unsteady.z2              = zeros( 1, n_panel );
+state.aero.unsteady.z2_dt           = zeros( 2, n_panel );
+state.aero.unsteady.z2              = zeros( 2, n_panel );
 
 %% geometry
 state.geometry = geometry;

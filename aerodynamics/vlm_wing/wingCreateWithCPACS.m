@@ -162,6 +162,8 @@ if strcmp( wing.params.actuator_2_type(1,:), 'none' )
 elseif contains( wing.params.actuator_2_type(1,:), 'airfoilMicroTab' )
     wing.airfoil.micro_tab = airfoilMicroTabLoadParams(wing.params.actuator_2_type(1,:));
     actuator_2_type = 'micro-tab';
+elseif contains( wing.params.actuator_2_type(1,:), 'custom' )
+    actuator_2_type = 'custom';
 else
     error('second actuator type not specified correctly');
 end
