@@ -1,20 +1,32 @@
 function [ Delta_u, W, iter ] = caIndiWls( ca, ...
-    B, Delta_nu, u, Delta_u_d, Delta_gamma, Delta_diag_W_v )
+    B, Delta_nu, u, varargin )
 % caIndiWls adapt WLS control allocation for INDI
 %   The adaption of WLS control allocation for INDI is described in [1].
 % 
+% Syntax:
+%   [Delta,W,iter] = caIndiWls(ca,B,Delta_nu,u)
+%   [Delta,W,iter] = caIndiWls(ca,B,Delta_nu,u,Name,Value)
+% 
 % Inputs:
-%   ca                  control allocation parameters struct, see
+%   ca                  Control allocation parameters struct, see
 %                       controlAllocationWlsLoadParams
-%   B                   control effectiveness matrix (NxM array)
+%   B                   Control effectiveness matrix (NxM array)
 %   Delta_nu            Incremental pseudo-control input vector (Nx1 array)
-%   u                   current control input vector (Mx1 array)
-%   Delta_u_d           online adjustment of desired u (scalar or Mx1
-%                       array); should be 0 if not needed.
-%   Delta_gamma         online adjustment of ca.gamma (scalar); should be 0
-%                       if not needed.
-%   Delta_diag_W_v      online adjustment of ca.W_v diagonal (scalar or 
-%                       Nx1 array); should be 0 if not needed
+%   u                   Current control input vector (Mx1 array)
+%   Name                The following optional 'Name' arguments can be
+%                       passed (string) followed by Value:
+%                           'DeltaUd'       followed by Delta_u_d
+%                           'DeltaGamma'    followed by Delta_gamma
+%                           'DeltaDiagWv'   followed by Delta_diag_W_v
+%                           'DeltaUmax'     followed Delta_u_max
+%   Delta_u_d           (optional) Online adjustment of desired u (scalar
+%                       or Mx1 array); default: 0
+%   Delta_gamma         (optional) Online adjustment of ca.gamma (scalar);
+%                       default: 0
+%   Delta_diag_W_v      (optinal) Online adjustment of ca.W_v diagonal
+%                       (scalar or Nx1 array); default: 0
+%   Delta_u_max         (optional) Maximum control increment (scalar or Mx1
+%                       array); default: abs(ca.u_max-ca.u_min)
 %   
 % Outputs:
 %   Delta_u             optimal incremental control input vector (Mx1
@@ -39,11 +51,31 @@ function [ Delta_u, W, iter ] = caIndiWls( ca, ...
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
+Delta_u_d       = zeros( size(ca.u_d) );
+Delta_gamma     = 0;
+Delta_diag_W_v  = zeros( size(Delta_nu) );
+Delta_u_max     = abs(ca.u_max-ca.u_min);
+for i = 1:length(varargin)
+    if strcmp(varargin{i},'DeltaUd')
+        Delta_u_d(:) = varargin{i+1};
+    elseif strcmp(varargin{i},'DeltaGamma')
+        Delta_gamma(:) = varargin{i+1};
+    elseif strcmp(varargin{i},'DeltaDiagWv')
+        Delta_diag_W_v(:) = varargin{i+1};
+    elseif strcmp(varargin{i},'DeltaUmax')
+        Delta_u_max(:) = varargin{i+1};
+    end    
+end
+
 % adjustments according to [1]
 umin    = ca.u_min - u;
 umax    = ca.u_max - u;
 ud      = ca.u_d - u;
 u0      = 0.5 * (umin+umax);
+
+% apply u rate limit
+umin    = max( umin, -Delta_u_max );
+umax    = min( umax, Delta_u_max );
 
 % adjustments of online WLS parameter changes
 gamma   = ca.gamma + Delta_gamma;
