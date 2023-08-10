@@ -205,4 +205,14 @@ wing.config.is_infl_recomputed = is_infl_recomputed;
 %% set interim results
 wing.interim_results = wingSetInterimResults( wing, Ma );
 
+%% set custom actuator
+custom_path = which('wingCustomActuator','-all');
+if length(custom_path) > 1
+    for i = 1:length(custom_path)
+        if contains(custom_path{i},'/ladac/') || contains(custom_path{i},'/LADAC/')
+            rmpath(fileparts(custom_path{i}));
+        end
+    end
+end
+
 end
