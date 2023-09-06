@@ -30,6 +30,11 @@ function prop_map_scatter = propMapScatterCreate(prop_name)
 load('DATA_APC');
 
 ind = find(strcmp(DATA_APC(:,1),prop_name));
+if isempty(ind)
+    [prop_name_match,ind,scaling] = propMapMatch(prop_name);
+else
+    scaling = 1;
+end
 DATAp = DATA_APC(ind,:);
 
 num_rpm = size(DATAp,1)-1;
@@ -55,9 +60,9 @@ Tau = P./(RPM*2*pi/60);
 Tau(isnan(Tau)) = 0;
 
 prop_map_scatter.RPM = RPM;
-prop_map_scatter.V = V;
-prop_map_scatter.thrust = T;
-prop_map_scatter.power = P;
-prop_map_scatter.torque = Tau;
+prop_map_scatter.V = V * scaling;
+prop_map_scatter.thrust = T * scaling^4;
+prop_map_scatter.power = P * scaling^4;
+prop_map_scatter.torque = Tau * scaling^4;
 
 end

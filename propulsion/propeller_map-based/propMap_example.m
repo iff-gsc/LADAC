@@ -32,3 +32,8 @@ propMapGridPlot( prop_grid, 'torque' );
 
 % get list of available propellers
 name_list = propMapGetNameList();
+
+% You can also create propeller maps for propellers that are not inside the
+% APC Propeller database. However, this feature should be used with
+% caution (see propMapMatch).
+prop_fit = propMapFitCreate( '30x10.5' );

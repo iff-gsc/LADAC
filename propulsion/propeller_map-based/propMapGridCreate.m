@@ -45,6 +45,11 @@ load('DATA_APC');
 
 DATAp = DATA_APC;
 ind = find(strcmp(DATAp(:,1),prop_name));
+if isempty(ind)
+    [prop_name_match,ind,scaling] = propMapMatch(prop_name);
+else
+    scaling = 1;
+end
 DATAp = DATAp(ind,:);
 
 %% parameters
@@ -131,9 +136,9 @@ end
 Tau(isnan(Tau)) = 0;
 
 prop_map_grid.RPM = RPM';
-prop_map_grid.V = V';
-prop_map_grid.T = T';
-prop_map_grid.P = P';
-prop_map_grid.Tau = Tau';
+prop_map_grid.V = V'*scaling;
+prop_map_grid.T = T'*scaling^4;
+prop_map_grid.P = P'*scaling^4;
+prop_map_grid.Tau = Tau'*scaling^4;
 
 end
