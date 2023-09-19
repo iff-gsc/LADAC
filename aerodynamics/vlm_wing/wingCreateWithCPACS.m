@@ -121,6 +121,7 @@ if contains(cntrl_prm.flap_mode,'everywhere')
     wing.geometry.segments.control_input_index_local(1,is_flap) = ...
         flap_idx_min:(num_flaps+flap_idx_min-1);
     wing.geometry.segments.control_input_index_local(1,~is_flap) = 0;
+    wing.geometry.segments.flap_depth(1,~is_flap) = 0;
     wing.params.num_flaps = num_flaps;
     wing.params.num_actuators = wing.params.num_flaps;
 else
