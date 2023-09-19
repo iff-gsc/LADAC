@@ -45,20 +45,27 @@ end
 
 n_nodes = length( structure.xyz(1,:) );
 M_int = structureGetNodesConnections( structure );
+xyz_cg = structure.xyz + structureGetNodeCg(structure,1:size(structure.xyz,2));
 
 for i = 1:n_nodes
     % get indices of connected nodes
     [~,indices1] = find( M_int(i,:) == true );
+    indices2 = indices1(indices1>=i);
     % plot connections of nodes
-    pairs = nchoosek(indices1, 2)';
+    if length(indices2)>1
+        pairs = nchoosek(indices2, 2)';
+        pairs(:,pairs(1,:)~=i)=[];
+    else
+        pairs = [];
+    end
     plot3( structure.xyz(1,pairs), structure.xyz(2,pairs), structure.xyz(3,pairs), 'Color', structure_color, 'LineStyle', '-', 'LineWidth', line_width*1.5 )
     hold on
-    plot3( structure.xyz(1,pairs), structure.xyz(2,pairs), structure.xyz(3,pairs), 'Color', structure_color, 'LineStyle', 'none', 'Marker', '.', 'MarkerSize', 13*node_size )
+    plot3( structure.xyz(1,i), structure.xyz(2,i), structure.xyz(3,i), 'Color', structure_color, 'LineStyle', 'none', 'Marker', '.', 'MarkerSize', 13*node_size )
     % marker size should be proportional to third root of node mass
     mass = structureGetNodeMass( structure, i );
     MarkerSize = mass_size * max( 2*mass^(1/3), 0.1 );
     % plot nodes with marker size indicating the node mass
-    scatter3( structure.xyz(1,i), structure.xyz(2,i), structure.xyz(3,i), MarkerSize.^2, 'MarkerFaceColor', mass_color, 'MarkerFaceAlpha', 0.5, 'MarkerEdgeColor', mass_color )
+    scatter3( xyz_cg(1,i), xyz_cg(2,i), xyz_cg(3,i), MarkerSize.^2, 'MarkerFaceColor', mass_color, 'MarkerFaceAlpha', 0.5, 'MarkerEdgeColor', mass_color )
     % plot3( structure.xyz(1,i), structure.xyz(2,i), structure.xyz(3,i), 'mo', 'MarkerSize', MarkerSize, 'MarkerFaceColor', 'm' );
 end
 
