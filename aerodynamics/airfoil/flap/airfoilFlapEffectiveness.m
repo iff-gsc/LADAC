@@ -1,4 +1,4 @@
-function [F_10,F_11]= airfoilFlapEffectiveness(E)
+function F = airfoilFlapEffectiveness(E)
 % airfoilFlapEffectiveness computes geometric flap effectiveness parameters
 %   F_10 and F_11 are parameters that are needed to compute the quasisteady
 %   equivalent angle of attack due to flap deflection (F_10) and deflection
@@ -28,9 +28,17 @@ function [F_10,F_11]= airfoilFlapEffectiveness(E)
 % convert relative flap length to "e", see [1], fig. 1
 e = 1-2*E;
 
+e2 = powerFast(e,2);
+sqrt_1_e2 = sqrt(1-e2);
+acos_e = acos(e);
+
 % [1], eq. (3)
-F_10 = sqrt(1-powerFast(e,2)) + acos(e);
-F_11 = (1-2*e).*acos(e) + (2-e).*sqrt(1-powerFast(e,2));
+F.e = e;
+F.F_1 = -1/3*sqrt_1_e2.*(2+e2)+e.*acos_e;
+F.F_4 = -acos_e+e.*sqrt_1_e2;
+F.F_8 = -1/3*sqrt_1_e2.*(2*e2+1)+e.*acos_e;
+F.F_10 = sqrt_1_e2 + acos_e;
+F.F_11 = (1-2*e).*acos_e + (2-e).*sqrt_1_e2;
 
 end
 

@@ -134,8 +134,8 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
     beta_Ma_flap = 1./sqrtReal(1-Ma_flap.^2);
 
     % quasi-steady flap deflection with sweep compensation
-    [F_10,F_11] = airfoilFlapEffectiveness(wing.geometry.segments.flap_depth);
-    wing.state.aero.circulation.delta_qs = airfoilFlapDeltaQs( F_10, F_11,...
+    F = airfoilFlapEffectiveness(wing.geometry.segments.flap_depth);
+    wing.state.aero.circulation.delta_qs = airfoilFlapDeltaQs( F.F_10, F.F_11,...
         abs_V_i, sum(wing.state.geometry.ctrl_pt.c,3), deg2rad(wing.state.actuators.segments.pos(1,:)), ...
         deg2rad(wing.state.actuators.segments.rate(1,:)) ) .* cos(wing.geometry.segments.flap_sweep);
     if ~wing.config.is_unsteady
