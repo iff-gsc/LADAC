@@ -30,6 +30,7 @@ y_root = interp1(rel_dist,dist,0.1,'linear');
 interim_results.sweep50(:) = atan((x_root-pos_50.pos(1,end))/(norm(pos_50.pos(2:3,end),2)-y_root));
 
 Ma = Ma_inf * cos(interim_results.sweep50);
+interim_results.Ma = Ma;
 
 spanwise_vector_yz = spanwise_vector;
 spanwise_vector_yz(1,:) = 0;

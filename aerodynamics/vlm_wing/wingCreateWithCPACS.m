@@ -17,6 +17,7 @@ is_infl_recomputed = 0;
 method = 'IVLM';
 n_trail = 1;
 Ma = 0;
+alt = 0;
 Delta_jig_twist_data = [linspace(-1,1,n_panel);zeros(1,n_panel)];
 if wing_idx == 1
     controls_filename = 'wingControls_params_mainDefault';
@@ -84,6 +85,8 @@ for i = 1:length(varargin)
             n_trail = varargin{i+1};
         case 'Mach'
             Ma = varargin{i+1};
+        case 'Alt'
+            alt = varargin{i+1};
         case 'AdjustJigTwist'
             Delta_jig_twist_data(:) = varargin{i+1};
     end
@@ -142,7 +145,7 @@ end
 
 %% init state
 wing.state = wingCreateState( wing.params.num_actuators, wing.n_panel, wing.geometry );
-
+wing.state.external.atmosphere = isAtmosphere(alt);
 
 %% set airfoil aerodynamics
 wing.airfoil.simple = airfoilAnalyticSimpleInit();
@@ -201,11 +204,20 @@ wing.interim_results = wingSetInterimResults( wing, Ma );
 %% set custom actuator
 custom_path = which('wingCustomActuator','-all');
 if length(custom_path) > 1
+    custom_act_split = strsplit(wing.params.actuator_2_type(1,:),'-');
+    custom_act_name = custom_act_split{end};
     for i = 1:length(custom_path)
-        if contains(custom_path{i},'/ladac/') || contains(custom_path{i},'/LADAC/')
+        folder_names_split = strsplit(custom_path{i},{'/','\'});
+        custom_folder_name = folder_names_split{end-1};
+        if ~strcmp(custom_folder_name,custom_act_name)
             rmpath(fileparts(custom_path{i}));
         end
     end
 end
+custom_path = which('wingCustomActuator','-all');
+if length(custom_path) > 1
+    error('Custom actuator was not specified correctly.');
+end
+wing = wingCustomActuatorSetup(wing);
 
 end
