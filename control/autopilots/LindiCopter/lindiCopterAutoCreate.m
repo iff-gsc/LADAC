@@ -90,13 +90,6 @@ ap.ca.W_v(2,2) = 30;
 ap.ca.W_v(3,3) = 0.01;
 ap.ca.W_v(4,4) = 300;
 
-% maximum number of waypoints
-ap.traj.wpmax = 4;
-% boolean if last and first waypoint should be connected (true) or not
-ap.traj.cycle = true;
-% degree of spline polynomials
-ap.traj.degree = 5;
-
 num_motors = size(copter.config.propPos_c,2);
 
 [k,d] = propMapFitGetFactors(copter.prop.map_fit);
@@ -247,8 +240,6 @@ leanfreq_force = 2*pi*sqrt( 0.25*acc_roll_pitch_max / lean_max );
 yawratetc_force = ap.atc.rm.yawratemax / acc_yaw_max;
 
 ap.mtc = copter.motor.R*copter.prop.I/copter.motor.KT^2;
-
-ap.ts = 0.0025;
 
 % sensor filter
 ap.sflt.D = 1;
