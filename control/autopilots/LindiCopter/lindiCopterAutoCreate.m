@@ -25,6 +25,7 @@ function ap = lindiCopterAutoCreate( copter, varargin )
 %                       - 'LeanMax': desired maximum lean angle, rad
 %                       - 'AllowFlip': allow flip and force set maximum
 %                           lean angle to pi, boolean
+%                       - 'FilterFreq': set sensor filter frequency, rad
 %   Value           value of Name-Value Arguments (see input Name)
 % 
 % Outputs:
@@ -46,6 +47,7 @@ filter_strength             = 0;
 cntrl_effect_scaling_factor = 1;
 lean_max_des                = [];
 is_flip_allowed             = false;
+filter_omega_des            = [];
 
 % parse name-value arguments
 for i = 1:length(varargin)
@@ -62,6 +64,8 @@ for i = 1:length(varargin)
             lean_max_des = varargin{i+1};
         elseif isequal(varargin{i}, 'AllowFlip')
             is_flip_allowed = varargin{i+1};
+        elseif isequal(varargin{i}, 'FilterFreq')
+            filter_omega_des = varargin{i+1};
         end
     end
 end
@@ -305,7 +309,11 @@ ap.mtc = copter.motor.R*copter.prop.I/copter.motor.KT^2;
 ap.mtc = 1.2*ap.mtc;
 
 % sensor filter (PT2)
-ap.sflt.omega = filter_factor*2/ap.mtc;
+if ~isempty(filter_omega_des)
+    ap.sflt.omega = filter_omega_des;
+else
+    ap.sflt.omega = filter_factor*2/ap.mtc;
+end
 ap.sflt.D = 1;
 
 % combined motor + sensor time constant
