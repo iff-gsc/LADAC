@@ -294,10 +294,12 @@ ap.atc.rm.leanfreq = min( leanfreq_force, leanfreq_sep );
 ap.atc.rm.leandamp = 1;
 
 % combined motor + sensor + attitude (lean) time constant
-T_h_pos = T_h_1 + 2/ap.atc.rm.leanfreq;
+T_h_atti = T_h_1 + 2/ap.atc.rm.leanfreq;
 
 % position reference model (PT1)
-ap.psc.rm.veltc = 1.25/aggr_pos * ap.psc.rm.velxymax / ap.psc.rm.accxymax;
+posveltc_force = 1.25/aggr_pos * ap.psc.rm.velxymax / ap.psc.rm.accxymax;
+posveltc_sep = sep_factor_pos * T_h_atti;
+ap.psc.rm.veltc = max( posveltc_force, posveltc_sep );
 
 
 
@@ -321,10 +323,10 @@ ap.atc.k.leanacc = k(3);
 % position feedback controller
 % p = -0.5*[1+1i,1-1i,4] * aggr / T_h;
 % p = -0.5*[1,1,1] * aggr / T_h;
-p = -1.3/sep_factor_pos * [1.7,1+0.65i,1-0.65i] / T_h_pos;
+p = -1.3/ap.psc.rm.veltc * [1.7,1+0.65i,1-0.65i];
 % p = -sep_factor*aggr*[ 1/T_h, 0.7/T_h*(1+0.65i), 0.7/T_h*(1-0.65i) ];
 % p = -aggr/sep_factor*[ 1, 1, 1 ]*2/T_h;
-k = ndiFeedbackGainPlace(p,T_h_pos);
+k = ndiFeedbackGainPlace(p,T_h_atti);
 ap.psc.k.pos = k(1);
 ap.psc.k.vel = k(2);
 ap.psc.k.acc = k(3);
