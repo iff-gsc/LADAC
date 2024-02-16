@@ -28,11 +28,12 @@ function ap = lindiCopterAutoCreate( copter, varargin )
 %   ap              LindiCopter autopilot parameters struct as defined by
 %                   this function
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2022 Yannic Beyer
-%   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
+%   Copyright (C) 2024 Jonas Withelm
+%   Copyright (C) 2024 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
 % initialize default tuning parameters
@@ -78,27 +79,39 @@ sep_factor_max = 5;
 sep_factor_atti = sep_factor_min + (1-aggr_atti)/(1-aggr_min)*(sep_factor_max-sep_factor_min);
 sep_factor_pos = sep_factor_min + (1-aggr_pos)/(1-aggr_min)*(sep_factor_max-sep_factor_min);
 
-
-
-is_flipped_allowed = 1;
-
-g = 9.81;
-
+% load control allocation parameters
 ap.ca = loadParams( 'caWls_params_default' );
-ap.ca.W_v(1,1) = 30;
-ap.ca.W_v(2,2) = 30;
-ap.ca.W_v(3,3) = 0.01;
-ap.ca.W_v(4,4) = 300;
+ap.ca.W_v(1,1) = 30;    % Attitude Lean 1
+ap.ca.W_v(2,2) = 30;    % Attitude Lean 2
+ap.ca.W_v(3,3) = 0.01;  % Yaw
+ap.ca.W_v(4,4) = 300;   % z
+
+
+
+%% Environment Parameters
+g = 9.81;
+rho = 1.225;
+
+
+%% Configuration Parameters
+yawratemax = 2*pi;
+is_flip_allowed = 1;
+
 
 num_motors = size(copter.config.propPos_c,2);
 
+
+%% ---------------------------- Propulsion ---------------------------- %%
+% get propeller
 [k,d] = propMapFitGetFactors(copter.prop.map_fit);
-omega_max = motorStaticSpeed(copter.motor.KT,copter.motor.R,copter.bat.V,d,ap.ca.u_max);
-omega_min = motorStaticSpeed(copter.motor.KT,copter.motor.R,copter.bat.V,d,ap.ca.u_min);
 
-
+% calculate min/max propulsion state
+omega_max = motorStaticSpeed(copter.motor.KT, copter.motor.R, copter.bat.V, d, ap.ca.u_max);
+omega_min = motorStaticSpeed(copter.motor.KT, copter.motor.R, copter.bat.V, d, ap.ca.u_min);
 thrust_max = sum( k*omega_max.^2 );
 thrust_min = sum( k*omega_min.^2 );
+
+% calculate hover propulsion state
 thrust_hover = copter.body.m * g;
 
 omega_hover = sqrt( thrust_hover / num_motors / k );
@@ -122,63 +135,12 @@ omega_delta_min = sqrt( ( thrust_hover - delta_thrust_max ) / k );
 torque_delta_max = d * omega_delta_max^2;
 torque_delta_min = d * omega_delta_min^2;
 
-acc_up_max = thrust_max / copter.body.m;
-acc_down_max = thrust_min / copter.body.m;
-
-ap.psc.rm.accumax = aggr_pos * ( acc_up_max - g );
-ap.psc.rm.accdmax = aggr_pos * ( g - acc_down_max );
-
-prop_name_cell = strsplit(copter.prop.name,'x');
-prop_diameter = str2num(prop_name_cell{1}) * 2.54/100;
-A = num_motors * pi/4 * prop_diameter^2;
-[ ~, ~, v_i0 ] = inducedVelocityWithUnitsAngleOfAttack( 0, -pi/2, thrust_hover, 1.225, A );
 
 
-% temp: to do
-ap.psc.rm.veldmax = aggr_pos * v_i0;
-
-
-omega = 0;
-V = 0;
-dt = 0.01;
-while true
-    u = aggr_pos;
-    torque = propMapFitGetZ(copter.prop.map_fit,omega*60/(2*pi),V,'torque');
-    thrust = propMapFitGetZ(copter.prop.map_fit,omega*60/(2*pi),V,'thrust');
-    dot_omega = copter.motor.KT/copter.motor.R/copter.prop.I*(copter.bat.V*u-copter.motor.KT*omega)-torque/copter.prop.I;
-    acc = 1/copter.body.m * ( num_motors*thrust - 0.5*1.225*copter.aero.S*copter.aero.C_Dmax*V^2 );
-    omega = omega + dot_omega*dt;
-    V = V + acc*dt;
-    if abs(dot_omega) < 0.1 && abs(acc) < 0.01
-        break;
-    end
-end
-
-ap.psc.rm.velumax = aggr_pos * V;
-ap.psc.rm.velxymax = aggr_pos * V;
-
-lean_max = acos( g / acc_up_max );
-if isreal(lean_max)
-    acc_xy_max = acc_up_max * sin( lean_max );
-else
-    error('Not enough thrust to hover.')
-end
-if is_flipped_allowed
-    ap.atc.rm.leanmax = pi;
-else
-    ap.atc.rm.leanmax = lean_max;
-end
-ap.atc.rm.leandamp = 1;
-ap.atc.rm.yawratemax = 2*pi;
-
-ap.psc.rm.accxymax = aggr_pos * acc_xy_max;
-ap.psc.rm.veltc = 1.25/aggr_pos * ap.psc.rm.velxymax / ap.psc.rm.accxymax;
-
-
-
+%% ----------------------- Control Effectiveness ----------------------- %%
 M = zeros(3,num_motors);
 for i=1:num_motors
-    M(:,i) = evalin('caller',['copter.config.M_b_prop',num2str(i)]) * [1;0;0];
+    M(:,i) = copter.config.(['M_b_prop' num2str(i)]) * [1;0;0];
 end
 
 % propeller control effectiveness parameters
@@ -206,62 +168,139 @@ ap.ceb.iyz  = cntrl_effect_scaling_factor * -copter.body.I(2,3);
 
 
 
+%% ------------------------ Translatoric Limits ------------------------ %%
+% vertical (z) acceleration limits
+acc_up_max = thrust_max / copter.body.m;
+acc_down_max = thrust_min / copter.body.m;
+
+ap.psc.rm.accumax = aggr_pos * ( acc_up_max - g );
+ap.psc.rm.accdmax = aggr_pos * ( g - acc_down_max );
+
+
+% vertical (z) velocity limits
+prop_name_cell = strsplit(copter.prop.name,'x');
+prop_diameter = str2num(prop_name_cell{1}) * 2.54/100;
+A = num_motors * pi/4 * prop_diameter^2;
+
+% - set veldmax depending on induced velocity of rotor
+[ ~, ~, v_i0 ] = inducedVelocityWithUnitsAngleOfAttack( 0, -pi/2, thrust_hover, rho, A );
+% temp: to do
+ap.psc.rm.veldmax = aggr_pos * v_i0;
+
+% - set velumax depending on capability of Copter (steady state at full allowed throttle)
+omega = 0;
+V = 0;
+dt = 0.01;
+while true
+    u = aggr_pos;
+    torque = propMapFitGetZ(copter.prop.map_fit,omega*60/(2*pi),V,'torque');
+    thrust = propMapFitGetZ(copter.prop.map_fit,omega*60/(2*pi),V,'thrust');
+    dot_omega = copter.motor.KT/copter.motor.R/copter.prop.I*(copter.bat.V*u-copter.motor.KT*omega)-torque/copter.prop.I;
+    q = rho/2 * V^2;
+    acc = 1/copter.body.m * ( num_motors*thrust - q*copter.aero.S*copter.aero.C_Dmax );
+    omega = omega + dot_omega*dt;
+    V = V + acc*dt;
+    if abs(dot_omega) < 0.1 && abs(acc) < 0.01
+        break;
+    end
+end
+ap.psc.rm.velumax = aggr_pos * V;
+ap.psc.rm.velxymax = aggr_pos * V;
+
+
+% horizontal (xy) acceleration limits and
+% lean angle (xy) limits
+lean_max = acos( g / acc_up_max );    % max lean angle without height loss
+if isreal(lean_max)
+    acc_xy_max = acc_up_max * sin( lean_max );
+else
+    error('Not enough thrust to hover.')
+end
+ap.psc.rm.accxymax = aggr_pos * acc_xy_max;
+
+if is_flip_allowed
+    ap.atc.rm.leanmax = pi;
+else
+    ap.atc.rm.leanmax = lean_max;
+end
+
+
+
+%% ------------------------- Rotatoric Limits ------------------------- %%
 L = cross( copter.config.propPos_c, M );
 
+
+% roll acceleration
 thrust_vector = zeros( num_motors, 1 );
-torque_vector = zeros( num_motors, 1 );
-
-
 thrust_vector(L(1,:)'>0) = ( thrust_hover + delta_thrust_max ) / num_motors;
 thrust_vector(L(1,:)'<0) = ( thrust_hover - delta_thrust_max ) / num_motors;
 roll_moment_max = L(1,:) * thrust_vector;
-
 acc_roll_max = roll_moment_max / copter.body.I(1,1);
 
+% pitch acceleration
 thrust_vector(L(2,:)'>0) = ( thrust_hover + delta_thrust_max ) / num_motors;
 thrust_vector(L(2,:)'<0) = ( thrust_hover - delta_thrust_max ) / num_motors;
 pitch_moment_max = L(2,:) * thrust_vector;
-
 acc_pitch_max = pitch_moment_max / copter.body.I(2,2);
 
+% maximum combined roll pitch acceleration
 acc_roll_pitch_max = min( acc_roll_max, acc_pitch_max );
 
 
+% yaw acceleration
+torque_vector = zeros( num_motors, 1 );
 torque_vector(ap.cep.a>0) = torque_delta_max/num_motors;
 torque_vector(ap.cep.a<0) = -torque_delta_min/num_motors;
-yaw_moment_max = sum( torque_vector );
 
+% yaw torque from propeller aerodynamic drag
+yaw_moment_max = sum( torque_vector );
 acc_yaw_max1 = yaw_moment_max / copter.body.I(3,3);
+
+% yaw torque from propulsion acceleration
 Delta_u_yaw = 0.1;
 acc_yaw_max2 = Delta_u_yaw * copter.motor.KT/copter.motor.R/copter.prop.I*copter.bat.V * num_motors * copter.prop.I/copter.body.I(3,3);
+
+% maximum yaw acceleration
 acc_yaw_max = mean([acc_yaw_max1,acc_yaw_max2]);
 
-leanfreq_force = 2*pi*sqrt( 0.25*acc_roll_pitch_max / lean_max );
-yawratetc_force = ap.atc.rm.yawratemax / acc_yaw_max;
 
+% yaw rate limit (not calculated, but set)
+ap.atc.rm.yawratemax = yawratemax;
+
+
+
+%% ------------------------- Reference Models ------------------------- %%
+% motor model (PT1)
 ap.mtc = copter.motor.R*copter.prop.I/copter.motor.KT^2;
-
-% sensor filter
-ap.sflt.D = 1;
-ap.sflt.omega = filter_factor*2/ap.mtc;
-
 ap.mtc = 1.2*ap.mtc;
 
+% sensor filter (PT2)
+ap.sflt.omega = filter_factor*2/ap.mtc;
+ap.sflt.D = 1;
+
+% combined motor + sensor time constant
 T_h_1 = ap.mtc + 2/ap.sflt.omega;
 
-leanfreq_sep = 1/sep_factor_atti*2/( T_h_1 );
-yawratetc_sep = sep_factor_atti*( T_h_1 );
-ap.atc.rm.leanfreq = min( leanfreq_force, leanfreq_sep );
+% yaw reference model (PT1)
+yawratetc_force = ap.atc.rm.yawratemax / acc_yaw_max;
+yawratetc_sep = sep_factor_atti * T_h_1;
 ap.atc.rm.yawratetc = max( yawratetc_force, yawratetc_sep );
 
-% lean angle controller
-% max_roll_pitch_atti_error = 2;
-% k = maxError2FeedbackGain( max_roll_pitch_atti_error, acc_roll_pitch_max, T_h, aggr );
-k = ndiFeedbackGainPlace(-ap.atc.rm.leanfreq*[1,1,1],T_h_1);
-ap.atc.k.lean = k(1);
-ap.atc.k.leanrate = k(2);
-ap.atc.k.leanacc = k(3);
+% attitude (lean) reference model (PT2)
+leanfreq_force = 2*pi*sqrt( 0.25*acc_roll_pitch_max / lean_max );
+leanfreq_sep = 1/sep_factor_atti * 2/T_h_1;
+ap.atc.rm.leanfreq = min( leanfreq_force, leanfreq_sep );
+ap.atc.rm.leandamp = 1;
 
+% combined motor + sensor + attitude (lean) time constant
+T_h_pos = T_h_1 + 2/ap.atc.rm.leanfreq;
+
+% position reference model (PT1)
+ap.psc.rm.veltc = 1.25/aggr_pos * ap.psc.rm.velxymax / ap.psc.rm.accxymax;
+
+
+
+%% ------------------------- Controller Gains ------------------------- %%
 % yaw controller
 % max_yaw_atti_error = pi;
 % k = maxError2FeedbackGain( max_yaw_atti_error, acc_yaw_max, T_h, aggr );
@@ -270,8 +309,15 @@ ap.atc.k.yaw = k(1);
 ap.atc.k.yawrate = k(2);
 ap.atc.k.yawacc = k(3);
 
+% attitude (lean) controller
+% max_roll_pitch_atti_error = 2;
+% k = maxError2FeedbackGain( max_roll_pitch_atti_error, acc_roll_pitch_max, T_h, aggr );
+k = ndiFeedbackGainPlace(-ap.atc.rm.leanfreq*[1,1,1],T_h_1);
+ap.atc.k.lean = k(1);
+ap.atc.k.leanrate = k(2);
+ap.atc.k.leanacc = k(3);
+
 % position feedback controller
-T_h_pos = T_h_1 + 2/ap.atc.rm.leanfreq;
 % p = -0.5*[1+1i,1-1i,4] * aggr / T_h;
 % p = -0.5*[1,1,1] * aggr / T_h;
 p = -1.3/sep_factor_pos * [1.7,1+0.65i,1-0.65i] / T_h_pos;
