@@ -22,6 +22,9 @@ function ap = lindiCopterAutoCreate( copter, varargin )
 %                           effectiveness with values between 0.75 ... 1
 %                           (0.75: reduce to 75%, 1: no scaling),
 %                           default: 1
+%                       - 'LeanMax': desired maximum lean angle, rad
+%                       - 'AllowFlip': allow flip and force set maximum
+%                           lean angle to pi, boolean
 %   Value           value of Name-Value Arguments (see input Name)
 % 
 % Outputs:
@@ -41,6 +44,8 @@ agility_atti                = 0;
 agility_pos                 = 0;
 filter_strength             = 0;
 cntrl_effect_scaling_factor = 1;
+lean_max_des                = [];
+is_flip_allowed             = false;
 
 % parse name-value arguments
 for i = 1:length(varargin)
@@ -53,6 +58,10 @@ for i = 1:length(varargin)
             filter_strength(:) = varargin{i+1};
         elseif isequal(varargin{i},'CntrlEffectScaling')
             cntrl_effect_scaling_factor(:) = varargin{i+1};
+        elseif isequal(varargin{i}, 'LeanMax')
+            lean_max_des = varargin{i+1};
+        elseif isequal(varargin{i}, 'AllowFlip')
+            is_flip_allowed = varargin{i+1};
         end
     end
 end
@@ -97,8 +106,22 @@ rho = 1.225;
 % minimum thrust-to-weight ratio that a copter must have to fly safely
 t2w_min = 1.25;
 
+% minimum override lean angle
+lean_min = acos(1/t2w_min);
+
 yawratemax = 2*pi;
-is_flip_allowed = 1;
+
+
+
+%% Override Checks
+if ~isempty(lean_max_des)
+    if lean_max_des < lean_min
+        error('''LeanMax'' override (%.1f deg) should be more than %.1f deg!', rad2deg(lean_max_des), rad2deg(lean_min));
+    end
+end
+if is_flip_allowed
+    warning('Flip enabled, setting ''LeanMax'' to 180 degrees!');
+end
 
 
 num_motors = size(copter.config.propPos_c,2);
@@ -216,7 +239,13 @@ ap.psc.rm.velxymax = aggr_pos * V;
 % horizontal (xy) acceleration limits and
 % lean angle (xy) limits
 lean_max = acos( g / acc_up_max );    % max lean angle without height loss
-acc_xy_max = acc_up_max * sin( lean_max );
+
+% consider lean max override
+if ~isempty(lean_max_des)
+    lean_max = min(lean_max, lean_max_des);
+end
+
+acc_xy_max = tan(lean_max) * g;
 ap.psc.rm.accxymax = aggr_pos * acc_xy_max;
 
 if is_flip_allowed
@@ -288,7 +317,7 @@ yawratetc_sep = sep_factor_atti * T_h_1;
 ap.atc.rm.yawratetc = max( yawratetc_force, yawratetc_sep );
 
 % attitude (lean) reference model (PT2)
-leanfreq_force = 2*pi*sqrt( 0.25*acc_roll_pitch_max / lean_max );
+leanfreq_force = 2*pi*sqrt( 0.25*acc_roll_pitch_max / ap.atc.rm.leanmax );
 leanfreq_sep = 1/sep_factor_atti * 2/T_h_1;
 ap.atc.rm.leanfreq = min( leanfreq_force, leanfreq_sep );
 ap.atc.rm.leandamp = 1;
