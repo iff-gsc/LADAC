@@ -26,6 +26,8 @@ function ap = lindiCopterAutoCreate( copter, varargin )
 %                       - 'AllowFlip': allow flip and force set maximum
 %                           lean angle to pi, boolean
 %                       - 'FilterFreq': set sensor filter frequency, rad
+%                       - 'caWls_params': path to control allocation
+%                           parameter file (see 'caWls_params_default')
 %   Value           value of Name-Value Arguments (see input Name)
 % 
 % Outputs:
@@ -48,6 +50,7 @@ cntrl_effect_scaling_factor = 1;
 lean_max_des                = [];
 is_flip_allowed             = false;
 filter_omega_des            = [];
+caWls_params                = 'caWls_params_default';
 
 % parse name-value arguments
 for i = 1:length(varargin)
@@ -66,6 +69,8 @@ for i = 1:length(varargin)
             is_flip_allowed = varargin{i+1};
         elseif isequal(varargin{i}, 'FilterFreq')
             filter_omega_des = varargin{i+1};
+        elseif isequal(varargin{i}, 'caWls_params')
+            caWls_params = varargin{i+1};
         end
     end
 end
@@ -93,11 +98,7 @@ sep_factor_atti = sep_factor_min + (1-aggr_atti)/(1-aggr_min)*(sep_factor_max-se
 sep_factor_pos = sep_factor_min + (1-aggr_pos)/(1-aggr_min)*(sep_factor_max-sep_factor_min);
 
 % load control allocation parameters
-ap.ca = loadParams( 'caWls_params_default' );
-ap.ca.W_v(1,1) = 30;    % Attitude Lean 1
-ap.ca.W_v(2,2) = 30;    % Attitude Lean 2
-ap.ca.W_v(3,3) = 0.01;  % Yaw
-ap.ca.W_v(4,4) = 300;   % z
+ap.ca = loadParams( caWls_params );
 
 
 
