@@ -94,6 +94,9 @@ rho = 1.225;
 
 
 %% Configuration Parameters
+% minimum thrust-to-weight ratio that a copter must have to fly safely
+t2w_min = 1.25;
+
 yawratemax = 2*pi;
 is_flip_allowed = 1;
 
@@ -113,14 +116,16 @@ thrust_min = sum( k*omega_min.^2 );
 
 % calculate hover propulsion state
 thrust_hover = copter.body.m * g;
-
 omega_hover = sqrt( thrust_hover / num_motors / k );
 torque_hover = d * omega_hover.^2;
 
-u_hover = motorStaticSpeed2u(copter.motor.KT, copter.motor.R, copter.bat.V, d, omega_hover);
-if u_hover > 0.95
-    error('Not enough thrust to hover.')
+% check if thrust is sufficient
+t2w = thrust_max/thrust_hover;
+if t2w < t2w_min
+    error('Thrust to weight ratio is %.1f < %.1f!', t2w, t2w_min)
 end
+
+u_hover = motorStaticSpeed2u(copter.motor.KT, copter.motor.R, copter.bat.V, d, omega_hover);
 u_hover_2 = u_hover^2;
 u_min_2 = ap.ca.u_min.^2;
 u_max_2 = ap.ca.u_max.^2;
@@ -211,11 +216,7 @@ ap.psc.rm.velxymax = aggr_pos * V;
 % horizontal (xy) acceleration limits and
 % lean angle (xy) limits
 lean_max = acos( g / acc_up_max );    % max lean angle without height loss
-if isreal(lean_max)
-    acc_xy_max = acc_up_max * sin( lean_max );
-else
-    error('Not enough thrust to hover.')
-end
+acc_xy_max = acc_up_max * sin( lean_max );
 ap.psc.rm.accxymax = aggr_pos * acc_xy_max;
 
 if is_flip_allowed
