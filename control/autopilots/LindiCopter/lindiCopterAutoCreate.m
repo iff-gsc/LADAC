@@ -117,7 +117,7 @@ thrust_hover = copter.body.m * g;
 omega_hover = sqrt( thrust_hover / num_motors / k );
 torque_hover = d * omega_hover.^2;
 
-u_hover = (torque_hover/copter.prop.I / (copter.motor.KT/(copter.motor.R*copter.prop.I)) + copter.motor.KT*omega_hover) / copter.bat.V;
+u_hover = motorStaticSpeed2u(copter.motor.KT, copter.motor.R, copter.bat.V, d, omega_hover);
 if u_hover > 0.95
     error('Not enough thrust to hover.')
 end
