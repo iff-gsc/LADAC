@@ -8,6 +8,9 @@ wp_rad = min([wp_radius,dist1/2,dist2/2]);
 
 alpha = wrapAngle( acosReal( divideFinite( dot(diff1,diff2), dist1*dist2 ) ) );
 
+if alpha < 100*eps(alpha)
+    wp_rad = 0;
+end
 d = 2*wp_rad*cos(alpha/2);
 r = sqrtReal( divideFinite( (d/2)^2, (1-(cos(alpha/2))^2) ) );
 
@@ -41,5 +44,7 @@ circ_seg.start = seg_start;
 circ_seg.end = seg_end;
 % Resulting waypoint radius (wp_radius or smaller)
 circ_seg.wp_rad = wp_rad;
+% Waypoint
+circ_seg.wp = waypoints3x3(:,2);
 
 end

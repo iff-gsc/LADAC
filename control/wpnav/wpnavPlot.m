@@ -10,7 +10,7 @@ end
 if dim == 2
     plot(waypoints(1,:),waypoints(2,:),'k--o')
 elseif dim == 3
-    plot3(waypoints(1,:),waypoints(2,:),waypoints(3,:),'k--o')
+    plot3(waypoints(1,:),waypoints(2,:),-waypoints(3,:),'k--o')
     view(-37.5,30)
 end
 hold on
@@ -26,13 +26,14 @@ for i = 1:num_wp
         alpha_s = linspace(0,circ_seg.angle,res);
         circ = zeros(3,res);
         for j = 1:res
-            circ(:,j) = circ_seg.center + axisAngle(circ_seg.start-circ_seg.center,circ_seg.n,alpha_s(j));
+            t = divideFinite( alpha_s(j), circ_seg.angle );
+            circ(:,j) = wpnavCircSegGetPos( circ_seg, t );
         end
 
         if dim == 2
             plot(circ(1,:),circ(2,:),'r-')
         elseif dim == 3
-            plot3(circ(1,:),circ(2,:),circ(3,:),'r-')
+            plot3(circ(1,:),circ(2,:),-circ(3,:),'r-')
         end
         wp_rad = circ_seg.wp_rad;
     else
@@ -51,12 +52,19 @@ grid on
 box on
 axis equal
 
-xlabel('East, m')
-ylabel('North, m')
+xlabel('North, m')
+ylabel('East, m')
+
 
 if dim == 3
+    view(-130,30); % azimuth, elevation
     zlabel('Altitude, m')
+    set(gca, 'YDir','reverse')
+else
+    view(90,-90);
 end
+
+% set(gca, 'ZDir','reverse')
 
 hold off
 
