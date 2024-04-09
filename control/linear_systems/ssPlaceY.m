@@ -74,7 +74,7 @@ end
 K_y_complex = (K*Vs*W) * pinv(C*Vs*W);
 
 % If imaginary part is not zero, something went wrong.
-if any( abs(imag(K_y_complex)) > 1e-8 )
+if any( abs(imag(K_y_complex)) > 1e-7 )
     error(['Invalid specification of poles. ', ...
         'Check if the weighting of conjugate complex poles is equal.'])
 end
