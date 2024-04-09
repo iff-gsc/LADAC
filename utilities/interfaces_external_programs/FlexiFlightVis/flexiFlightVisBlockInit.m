@@ -5,7 +5,11 @@ function [ffv,ffv_double_array,ffv_double_idx] = flexiFlightVisBlockInit(block_p
 num_wings = length(wing_cell);
 num_fuse = length(fuse_cell);
 
-flexiFlightVisInputFormat(block_path,num_wings,num_fuse);
+block_path_split = strsplit(block_path,'/');
+model_name = block_path_split{1};
+if strcmp(get_param(model_name,"FastRestart"),"off")
+    flexiFlightVisInputFormat(block_path,num_wings,num_fuse);
+end
 
 [ffv,ffv_double_array,ffv_double_idx] = flexiFlightVisProtocol( wing_cell, fuse_cell );
 
