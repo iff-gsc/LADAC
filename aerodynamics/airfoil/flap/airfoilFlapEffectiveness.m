@@ -16,6 +16,8 @@ function F = airfoilFlapEffectiveness(E)
 % Literature:
 %   [1] Leishman, J. G. (1994). Unsteady lift of a flapped airfoil by
 %       indicial concepts. Journal of Aircraft, 31(2), 288-297.
+%   [2] Theodorsen, T. (1935). General Theory of Aerodynamic Instability
+%       and the Mechanism of Flutter. NACA Rept. 496.
 % 
 
 % Disclamer:
@@ -29,14 +31,16 @@ function F = airfoilFlapEffectiveness(E)
 e = 1-2*E;
 
 e2 = powerFast(e,2);
-sqrt_1_e2 = sqrt(1-e2);
+sqrt_1_e2 = sqrtReal(1-e2);
 acos_e = acos(e);
 
 % [1], eq. (3)
 F.e = e;
 F.F_1 = -1/3*sqrt_1_e2.*(2+e2)+e.*acos_e;
 F.F_4 = -acos_e+e.*sqrt_1_e2;
+% [2], p. 5
 F.F_8 = -1/3*sqrt_1_e2.*(2*e2+1)+e.*acos_e;
+% [1], eq. (3)
 F.F_10 = sqrt_1_e2 + acos_e;
 F.F_11 = (1-2*e).*acos_e + (2-e).*sqrt_1_e2;
 

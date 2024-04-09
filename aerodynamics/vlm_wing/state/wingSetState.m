@@ -19,7 +19,7 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 %                       'V_Wb_dt'           Next variable is V_Wb_dt,
 %                       'structure_pos'     Next variable is structure_pos,
 %                       'structure_vel'     Next variable is structure_vel,
-%                       'unst_aero_state'   Next variable is unst_aero_state,
+%                       'unst_airfoil_state'Next variable is unst_airfoil_state,
 %                       'dyn_stall_state'   Next variable is dyn_stall_state,
 %                       'unst_flap_state'   Next variable is unst_flap_state,
 %                       'unst_act2_state'   Next variable is unst_act2_state,
@@ -36,7 +36,7 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 %                       usually in modal space (unit unknown)
 %   structure_vel       velocity of structure (size(wing.T_vs,2)x1 array),
 %                       usually in modal space (unit unknown)
-%   unst_aero_state     unsteady airfoil state per segment
+%   unst_airfoil_state  unsteady airfoil state per segment
 %                       (wing.state.aero.unsteady.x)
 %   dyn_stall_state     dynamic stall state per segment
 %                       (wing.state.aero.unsteady.X)
@@ -64,7 +64,7 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 %   % pass velocity of structure (usually modal):
 %   wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuators_rate, xyz_cg, 'structure_vel', structure_vel )
 %   % pass unsteady airfoil state (potential flow):
-%   wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuators_rate, xyz_cg, 'unst_aero_state', unst_aero_state )
+%   wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuators_rate, xyz_cg, 'unst_aero_state', unst_airfoil_state )
 %   % pass dynamic stall state:
 %   wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuators_rate, xyz_cg, 'dyn_stall_state', dyn_stall_state )
 %   % pass unsteady state of flap:
