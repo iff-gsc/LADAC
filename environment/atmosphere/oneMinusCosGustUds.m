@@ -7,8 +7,7 @@
 %   gustGradDist            Gust Gradient Distance H \in [30ft,350ft], in m
 % 
 % Outputs:
-%   U_ds                    Design Gust Velocity, in m/s. U_ds will be NaN
-%                           if the input gustGradDist exceeds its bounds.
+%   U_ds                    Design Gust Velocity, in m/s
 % 
 % Literature:
 %   https://www.faa.gov/documentLibrary/media/Advisory_Circular/AC_25_341-1.pdf
@@ -26,16 +25,7 @@ function U_ds = oneMinusCosGustUds( U_ref, gustGradDist, F_g ) %#codegen
 % convert from m to ft
 gustGradDist_ft = m2ft( gustGradDist );
 
-% define maximum gust gradient distance, in ft [1, p. 5]
-gustGradDistMax = 350;
-% define minimum gust gradient distance, in ft [1, p. 5]
-gustGradDistMin = 30;
-
-% set Gust Gradient Distance to NaN if bounds are violated
-gustGradDist_ft( gustGradDist_ft > gustGradDistMax ) = NaN;
-gustGradDist_ft( gustGradDist_ft < gustGradDistMin ) = NaN;
-
 % compute Design Gust Velocity, in ft [1, p. 6]
-U_ds = U_ref * F_g * ( gustGradDist_ft / gustGradDistMax ).^(1/6);
+U_ds = U_ref * F_g * ( max( 0, gustGradDist_ft / gustGradDistMax ) ).^(1/6);
 
 end
