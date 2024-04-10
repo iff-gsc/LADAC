@@ -74,7 +74,7 @@ for i = 1:length(varargin)
             else
                 error('Invalid option for parameter is_infl_recomputed.')
             end
-        case 'controlsdef'
+        case 'ControlsFilename'
             if ischar(varargin{i+1})
                 controls_filename = varargin{i+1};
             else
