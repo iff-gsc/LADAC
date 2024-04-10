@@ -25,6 +25,9 @@ function U_ds = oneMinusCosGustUds( U_ref, gustGradDist, F_g ) %#codegen
 % convert from m to ft
 gustGradDist_ft = m2ft( gustGradDist );
 
+% define maximum gust gradient distance, in ft [1, p. 5]
+gustGradDistMax = 350;
+
 % compute Design Gust Velocity, in ft [1, p. 6]
 U_ds = U_ref * F_g * ( max( 0, gustGradDist_ft / gustGradDistMax ) ).^(1/6);
 
