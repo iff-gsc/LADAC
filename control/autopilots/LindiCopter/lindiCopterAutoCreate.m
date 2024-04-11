@@ -220,25 +220,33 @@ A = num_motors * pi/4 * prop_diameter^2;
 % temp: to do
 ap.psc.rm.veldmax = aggr_pos * v_i0;
 
-% - set velumax depending on capability of Copter (steady state at full allowed throttle)
-omega = 0;
-V = 0;
+% - set velumax depending on capability of copter (steady state at full allowed throttle)
+omega = omega_hover;
+V_z = 0;
 dt = 0.01;
+u = 0.85*min(ap.ca.u_max);    % scale down bat.V due to voltage sag under load
+
 while true
-    u = aggr_pos;
-    torque = propMapFitGetZ(copter.prop.map_fit,omega*60/(2*pi),V,'torque');
-    thrust = propMapFitGetZ(copter.prop.map_fit,omega*60/(2*pi),V,'thrust');
+    % propulsion
+    torque = propMapFitGetZ(copter.prop.map_fit, omega*60/(2*pi), V_z, 'torque');
+    thrust = propMapFitGetZ(copter.prop.map_fit, omega*60/(2*pi), V_z, 'thrust');
+    
     dot_omega = copter.motor.KT/copter.motor.R/copter.prop.I*(copter.bat.V*u-copter.motor.KT*omega)-torque/copter.prop.I;
-    q = rho/2 * V^2;
-    acc = 1/copter.body.m * ( num_motors*thrust - q*copter.aero.S*copter.aero.C_Dmax );
     omega = omega + dot_omega*dt;
-    V = V + acc*dt;
-    if abs(dot_omega) < 0.1 && abs(acc) < 0.01
+    
+    % vertical movement
+    q = rho/2 * V_z^2;
+    
+    acc_z = 1/copter.body.m * ( num_motors*thrust - q*copter.aero.S*copter.aero.C_Dmax ) - g;
+    V_z = V_z + acc_z*dt;
+    
+    if abs(dot_omega) < 0.1 && abs(acc_z) < 0.01
         break;
     end
 end
-ap.psc.rm.velumax = aggr_pos * V;
-ap.psc.rm.velxymax = aggr_pos * V;
+
+ap.psc.rm.velumax = aggr_pos * V_z;
+
 
 
 % horizontal (xy) acceleration limits and
@@ -258,6 +266,42 @@ if is_flip_allowed
 else
     ap.atc.rm.leanmax = lean_max;
 end
+
+
+% horizontal (xy) velocity limits
+omega = omega_hover;
+V_xy = 0;
+dt = 0.01;
+u = 0.85*min(ap.ca.u_max);    % scale down bat.V due to voltage sag under load
+
+while true    
+    % propulsion
+    torque = propMapFitGetZ(copter.prop.map_fit, omega*60/(2*pi), V_xy, 'torque');
+    thrust = propMapFitGetZ(copter.prop.map_fit, omega*60/(2*pi), V_xy, 'thrust');
+    
+    dot_omega = copter.motor.KT/copter.motor.R/copter.prop.I*(copter.bat.V*u-copter.motor.KT*omega)-torque/copter.prop.I;
+    omega = omega + dot_omega*dt;
+    
+    % horizontal movement
+    if num_motors*thrust > copter.body.m*g
+        
+        lean = acos( (copter.body.m*g) / (num_motors*thrust) );
+        lean = min(lean, lean_max);
+        
+        thrust_xy = tan(lean) * copter.body.m*g;
+        
+        q = rho/2 * V_xy^2;
+        
+        acc_xy = 1/copter.body.m * ( thrust_xy - q*copter.aero.S*copter.aero.C_Dmax );
+        V_xy = V_xy + acc_xy*dt;
+        
+        if abs(dot_omega) < 0.1 && abs(acc_xy) < 0.01
+            break;
+        end
+    end
+end
+
+ap.psc.rm.velxymax = aggr_pos * V_xy;
 
 
 
