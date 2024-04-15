@@ -323,7 +323,7 @@ pitch_moment_max = L(2,:) * thrust_vector;
 acc_pitch_max = pitch_moment_max / copter.body.I(2,2);
 
 % maximum combined roll pitch acceleration
-acc_roll_pitch_max = min( acc_roll_max, acc_pitch_max );
+acc_roll_pitch_max = sin(atan(acc_pitch_max/acc_roll_max)) * acc_roll_max;
 
 
 % yaw acceleration
