@@ -28,6 +28,8 @@ function ap = lindiCopterAutoCreate( copter, varargin )
 %                       - 'FilterFreq': set sensor filter frequency, rad
 %                       - 'caWls_params': path to control allocation
 %                           parameter file (see 'caWls_params_default')
+%                       - 'MtcScaling': define scaling of the motor time
+%                           constant (mtc), default: 1
 %   Value           value of Name-Value Arguments (see input Name)
 % 
 % Outputs:
@@ -51,6 +53,7 @@ lean_max_des                = [];
 is_flip_allowed             = false;
 filter_omega_des            = [];
 caWls_params                = 'caWls_params_default';
+mtc_scaling_factor          = 1;
 
 % parse name-value arguments
 for i = 1:length(varargin)
@@ -71,6 +74,8 @@ for i = 1:length(varargin)
             filter_omega_des = varargin{i+1};
         elseif isequal(varargin{i}, 'caWls_params')
             caWls_params = varargin{i+1};
+        elseif isequal(varargin{i}, 'MtcScaling')
+            mtc_scaling_factor = varargin{i+1};
         end
     end
 end
@@ -350,8 +355,8 @@ ap.atc.rm.yawratemax = yawratemax;
 
 %% ------------------------- Reference Models ------------------------- %%
 % motor model (PT1)
-ap.mtc = copter.motor.R*copter.prop.I/copter.motor.KT^2;
-ap.mtc = 1.2*ap.mtc;
+mtc = copter.motor.R*copter.prop.I/copter.motor.KT^2;
+ap.mtc = mtc_scaling_factor*mtc;
 
 % sensor filter (PT2)
 if ~isempty(filter_omega_des)
