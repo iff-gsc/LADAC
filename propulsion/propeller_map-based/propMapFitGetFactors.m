@@ -1,4 +1,13 @@
 function [k,d] = propMapFitGetFactors( prop_map_fit )
+% PROPMAPFITGETFACTORS returns the propeller thrust and torque constant
+%   depending on propeller speed omega (rad).
+% 
+% Inputs:
+%   prop_map_fit    
+% 
+% Outputs:
+%   k   Propeller thrust constant, N/rad^2
+%   d   Propeller torque constant, N.m/rad^2
 
 % Disclamer:
 %   SPDX-License-Identifier: GPL-3.0-only
