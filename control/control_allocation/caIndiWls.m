@@ -53,7 +53,7 @@ function [ Delta_u, W, iter ] = caIndiWls( ca, ...
 
 Delta_u_d       = zeros( size(ca.u_d) );
 Delta_gamma     = 0;
-Delta_diag_W_v  = zeros( size(Delta_nu) );
+Delta_diag_W_v  = zeros( size(ca.W_v) );
 Delta_u_max     = abs(ca.u_max-ca.u_min);
 for i = 1:length(varargin)
     if strcmp(varargin{i},'DeltaUd')
@@ -80,9 +80,14 @@ umax    = min( umax, Delta_u_max );
 % adjustments of online WLS parameter changes
 gamma   = ca.gamma + Delta_gamma;
 ud      = ud + Delta_u_d;
-W_v     = ca.W_v + diag( Delta_diag_W_v );
+W_v     = diag( ca.W_v + Delta_diag_W_v );
+
+W_u     = diag( ca.W_u );
+
+% not used yet, dummy values
+W       = zeros( length(ca.W_u), 1, superiorfloat(ca.W_u) );
 
 [ Delta_u, W, iter ] = wls_alloc( B, Delta_nu, umin, umax, ...
-    W_v, ca.W_u, ud, gamma, u0, ca.W, ca.i_max );
+    W_v, W_u, ud, gamma, u0, W, ca.i_max );
 
 end

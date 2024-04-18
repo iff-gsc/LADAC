@@ -144,8 +144,8 @@ num_motors = size(copter.config.propPos_c,2);
 % calculate min/max propulsion state
 omega_max = motorStaticSpeed(copter.motor.KT, copter.motor.R, copter.bat.V, d, ap.ca.u_max);
 omega_min = motorStaticSpeed(copter.motor.KT, copter.motor.R, copter.bat.V, d, ap.ca.u_min);
-thrust_max = sum( k*omega_max.^2 );
-thrust_min = sum( k*omega_min.^2 );
+thrust_max = num_motors * k * omega_max^2;
+thrust_min = num_motors * k * omega_min^2;
 
 % calculate hover propulsion state
 thrust_hover = copter.body.m * g;
@@ -229,7 +229,7 @@ ap.psc.rm.veldmax = aggr_pos * v_i0;
 omega = omega_hover;
 V_z = 0;
 dt = 0.01;
-u = 0.85*min(ap.ca.u_max);    % scale down bat.V due to voltage sag under load
+u = 0.85*ap.ca.u_max;    % scale down bat.V due to voltage sag under load
 
 while true
     % propulsion
@@ -277,7 +277,7 @@ end
 omega = omega_hover;
 V_xy = 0;
 dt = 0.01;
-u = 0.85*min(ap.ca.u_max);    % scale down bat.V due to voltage sag under load
+u = 0.85*ap.ca.u_max;    % scale down bat.V due to voltage sag under load
 
 while true    
     % propulsion
