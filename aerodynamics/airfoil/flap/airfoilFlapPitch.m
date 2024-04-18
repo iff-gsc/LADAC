@@ -3,14 +3,12 @@ function c_m_c = airfoilFlapPitch(flap_depth,delta,Ma,delta_dt,V,c) %#codegen
 %   according to [1].
 % 
 % Inputs:
-%   V           Airspeed (1xN array), in m/s
-%   Ma          Mach number (1xN array), dimensionless
-%   c           Airfoil chord (1xN array), in m
-%   F           Flap control effectiveness struct, see 
-%               airfoilFlapEffectiveness
+%   flap_depth  Flap depth relative to the chord, dimensionless
 %   delta       Flap deflection angle (1xN array), in rad
-%   delta       Flap deflection rate (1xN array), in rad/s
-%   z           State variable (1xN array)
+%   Ma          Mach number (1xN array), dimensionless
+%   delta_dt	Flap deflection rate (1xN array), in rad/s
+%   V           Airspeed (1xN array), in m/s
+%   c           Airfoil chord (1xN array), in m
 % 
 % Outputs:
 %   c_m_c       Circulatory part of the unsteady pitching moment

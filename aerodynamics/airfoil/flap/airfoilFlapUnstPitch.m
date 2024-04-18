@@ -3,13 +3,13 @@ function [c_m_c,z_3_dt] = airfoilFlapUnstPitch(flap_depth,delta,Ma,delta_dt,V,c,
 %   according to [1].
 % 
 % Inputs:
-%   V           airspeed (1xN array), in m/s
+%   flap_depth  Flap depth relative to the chord, dimensionless
+%   delta       Flap deflection angle (1xN array), in rad
 %   Ma          Mach number (1xN array), dimensionless
+%   delta_dt	Flap deflection rate (1xN array), in rad/s
+%   V           airspeed (1xN array), in m/s
 %   c           airfoil chord (1xN array), in m
-%   delta_qs    quasisteady angle of attack due to the imposed flap
-%               deflection [1], eq. (5), see airfoilFlapDeltaQs
-%               (1xN array), in rad
-%   z           state variable (2xN array)
+%   z           state variable (1xN array)
 % 
 % Outputs:
 %   c_m_c       Circulatory part of the unsteady pitching moment
@@ -42,7 +42,7 @@ delta_qs_M = -(F.F_4+F.F_10)./(2*pi.*beta).*delta ...
 z_3_dt = -(2*V./c)*b_3.*powerFast(beta,2).*z_3 + delta_qs_M;
 
 % [1], eq. (50)
-c_m_c = divideFinite(pi,beta)*b_3.*(2*V./c).*z_3;
+c_m_c = pi*beta*b_3.*(2*V./c).*z_3;
 
 end
 
