@@ -1,5 +1,7 @@
 function [] = wpnavPlot( waypoints, wp_radius, varargin )
 
+grey = [0.8,0.8,0.8];
+
 dim = 2;
 for i = 1:length(varargin)
     if strcmp(varargin{i},'dim')
@@ -9,36 +11,46 @@ end
 
 if dim == 2
     plot(waypoints(1,:),waypoints(2,:),'k--o')
+    hold on
+    plot(waypoints(1,1),waypoints(2,1),'g*')
+    plot(waypoints(1,end),waypoints(2,end),'r*')
+    plot(waypoints(1,[end,1]),waypoints(2,[end,1]),'LineStyle','--','Color',grey)
 elseif dim == 3
     plot3(waypoints(1,:),waypoints(2,:),-waypoints(3,:),'k--o')
+    hold on
+    plot3(waypoints(1,1),waypoints(2,1),-waypoints(3,1),'g*')
+    plot3(waypoints(1,end),waypoints(2,end),-waypoints(3,end),'r*')
+    plot3(waypoints(1,[end,1]),waypoints(2,[end,1]),-waypoints(3,[end,1]),'LineStyle','--','Color',grey)
     view(-37.5,30)
 end
-hold on
 
 res = 100;
 ang = linspace(0,2*pi,res);
 num_wp = size(waypoints,2);
 for i = 1:num_wp
-    if i>1 && i<num_wp
-        
+    if i == 1
+        circ_seg = wpnavCircSeg( waypoints(:,[end,1,2]), wp_radius );
+        circ_color = grey;
+    elseif i>1 && i<num_wp
         circ_seg = wpnavCircSeg( waypoints(:,i-1:i+1), wp_radius );
-        
-        alpha_s = linspace(0,circ_seg.angle,res);
-        circ = zeros(3,res);
-        for j = 1:res
-            t = divideFinite( alpha_s(j), circ_seg.angle );
-            circ(:,j) = wpnavCircSegGetPos( circ_seg, t );
-        end
-
-        if dim == 2
-            plot(circ(1,:),circ(2,:),'r-')
-        elseif dim == 3
-            plot3(circ(1,:),circ(2,:),-circ(3,:),'r-')
-        end
-        wp_rad = circ_seg.wp_rad;
-    else
-        wp_rad = wp_radius;
+        circ_color = 'c';
+    elseif i == num_wp
+        circ_seg = wpnavCircSeg( waypoints(:,[end-1,end,1]), wp_radius );
+        circ_color = grey;
     end
+    alpha_s = linspace(0,circ_seg.angle,res);
+    circ = zeros(3,res);
+    for j = 1:res
+        t = divideFinite( alpha_s(j), circ_seg.angle );
+        circ(:,j) = wpnavCircSegGetPos( circ_seg, t );
+    end
+
+    if dim == 2
+        plot(circ(1,:),circ(2,:),'LineStyle','-','Color',circ_color)
+    elseif dim == 3
+        plot3(circ(1,:),circ(2,:),-circ(3,:),'LineStyle','-','Color',circ_color)
+    end
+    wp_rad = circ_seg.wp_rad;
     
     if dim == 2
         x = wp_rad*cos(ang);

@@ -22,7 +22,7 @@ if wp_idx < 1
     wp_idx = 1;
 end
 
-while wp_idx <= num_wp
+while true
     
     if wp_idx == 2
         is_initial_line = true;
@@ -86,13 +86,14 @@ while wp_idx <= num_wp
             end
         end
     end
-end
-
-if wp_idx > num_wp
-    if is_cycle
-        wp_idx = 1;
-    else
-        wp_idx = num_wp;
+    if wp_idx > num_wp
+        if is_cycle
+            wp_idx = 1;
+        else
+            % To do: What to do if last waypoint is reached but no cycle is
+            % desired?
+            break;
+        end
     end
 end
 
