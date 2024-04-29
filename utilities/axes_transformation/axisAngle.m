@@ -23,7 +23,7 @@ function v_rot = axisAngle( v, axis, angle ) %#codegen
 v_rot       = zeros( size(v) );
 axis_length = vecnorm( axis, 2, 1 );
 for i = 1:3
-    axis(i,:) = axis(i,:) ./ axis_length;
+    axis(i,:) = divideFinite( axis(i,:), axis_length );
 end
 cos_angle   = cos(angle);
 cos_angle_1 = 1-cos_angle;
