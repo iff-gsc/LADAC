@@ -9,7 +9,7 @@ wp_rad = min([wp_radius,dist1/2,dist2/2]);
 alpha = wrapAngle( acosReal( divideFinite( dot(diff1,diff2), dist1*dist2 ) ) );
 
 if alpha < 100*eps(alpha)
-    wp_rad = 0;
+    wp_rad(:) = 0;
 end
 d = 2*wp_rad*cos(alpha/2);
 r = sqrtReal( divideFinite( (d/2)^2, (1-(cos(alpha/2))^2) ) );
@@ -17,8 +17,8 @@ r = sqrtReal( divideFinite( (d/2)^2, (1-(cos(alpha/2))^2) ) );
 n = cross( diff1, diff2 );
 n = divideFinite( n, norm(n,2) );
 if r > 100000
-    r = 100000;
-    n = [0;0;1];
+    r(:) = 100000;
+    n(:) = [0;0;1];
 end
 diff1_unit = divideFinite( diff1, norm(diff1,2) );
 diff2_unit = divideFinite( diff2, norm(diff2,2) );

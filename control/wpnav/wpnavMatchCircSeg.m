@@ -27,7 +27,7 @@ R_center_unit = divideFinite( R_center, R_center_norm );
 R_p = p - circ_seg.wp;
 D = dot( R_p, R_center_unit );
 if D > R_center_norm
-    t = 2;
+    t(:) = 2;
 end
 
 end

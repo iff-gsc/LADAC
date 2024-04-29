@@ -16,10 +16,10 @@ d = zeros(1,1,superiorfloat(waypoints));
 %     stage = 1;
 % end
 if wp_idx > num_wp
-    wp_idx = num_wp;
+    wp_idx(:) = num_wp;
 end
 if wp_idx < 1
-    wp_idx = 1;
+    wp_idx(:) = 1;
 end
 
 while true
@@ -44,7 +44,7 @@ while true
         
         %D = divideFinite( dot( p-waypoints(:,wp_idx-1), circ_seg.end-waypoints(:,wp_idx-1) ), norm(circ_seg.end-waypoints(:,wp_idx-1),2) );
         if t > 1% || D > norm(circ_seg.end-waypoints(:,wp_idx-1),2)
-            stage = 1;
+            stage(:) = 1;
         else
             break;
         end
@@ -74,13 +74,13 @@ while true
         end
         line_length = norm( p1 - p2, 2);
         if line_length < 1
-            stage = 0;
-            wp_idx = wp_idx + 1;
+            stage(:) = 0;
+            wp_idx(:) = wp_idx + 1;
         else
             [p_match(:),t(:),d(:)] = wpnavMatchLine(p1,p2,p);
             if t > 1 && norm(p-p2,2) < wp_radius
-                stage = 0;
-                wp_idx = wp_idx + 1;
+                stage(:) = 0;
+                wp_idx(:) = wp_idx + 1;
             else
                 break;
             end
@@ -88,7 +88,7 @@ while true
     end
     if wp_idx > num_wp
         if is_cycle
-            wp_idx = 1;
+            wp_idx(:) = 1;
         else
             % To do: What to do if last waypoint is reached but no cycle is
             % desired?

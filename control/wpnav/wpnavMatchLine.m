@@ -4,7 +4,7 @@ b = p2-p1;
 
 denom = dot(b,b);
 if denom < 1
-    denom = 1;
+    denom(:) = 1;
 end
 
 t = divideFinite( dot(p-p1,b), denom );
