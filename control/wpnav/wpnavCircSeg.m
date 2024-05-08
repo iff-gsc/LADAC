@@ -1,4 +1,30 @@
 function circ_seg = wpnavCircSeg( waypoints3x3, wp_radius )
+% wpnavCircSeg create circle segment struct from 3 waypoints
+% 
+% Syntax:
+%   circ_seg = wpnavCircSeg( waypoints3x3, wp_radius )
+% 
+% Inputs:
+%   waypoints3x3        3x 3D waypoints (3x3 matrix), where each column is
+%                       one waypoint in north-east-down coordinate system,
+%                       in m
+%   wp_radius           Waypoint radius (scalar), in m
+% 
+% Outputs:
+%   circ_seg            Circle segment (struct as defined by this
+%                       function), which connects the lines from waypoint
+%                       1-->2 and waypoint 2-->3 with a circle segment (see
+%                       waypoint_example)
+% 
+% See also:
+%   wpnavMatchCircSeg, wpnavCircSegGetPos, wpnavCircSegGetVel
+
+% Disclaimer:
+%   SPDX-License-Identifier: GPL-3.0-only
+% 
+%   Copyright (C) 2024 Yannic Beyer
+%   Copyright (C) 2024 TU Braunschweig, Institute of Flight Guidance
+% *************************************************************************
 
 diff1 = waypoints3x3(:,2)-waypoints3x3(:,1);
 diff2 = waypoints3x3(:,3)-waypoints3x3(:,2);
@@ -30,21 +56,21 @@ seg_end = waypoints3x3(:,2) + wp_rad*diff2_unit;
         
 center = waypoints3x3(:,2) - wp_rad*diff1_unit + r_vec;
 
-% Radius
+% Radius, in m
 circ_seg.r = r;
-% 3D center
+% 3D center in g frame, in m
 circ_seg.center = center;
-% 3D normal vector
+% 3D normal vector in g frame
 circ_seg.n = n;
-% Angle of circle segment, rad
+% Angle of circle segment, in rad
 circ_seg.angle = alpha;
-% Start position of circle segment
+% Start position of circle segment in g frame, in m
 circ_seg.start = seg_start;
-% End position of circle segment
+% End position of circle segment in g frame, in m
 circ_seg.end = seg_end;
-% Resulting waypoint radius (wp_radius or smaller)
+% Resulting waypoint radius (wp_radius or smaller), in m
 circ_seg.wp_rad = wp_rad;
-% Waypoint
+% Waypoint in g frame, in m
 circ_seg.wp = waypoints3x3(:,2);
 
 end

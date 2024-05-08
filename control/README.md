@@ -36,3 +36,5 @@ Trajectory is about autonomous flight along given waypoints.
 It contains function to compute smooth trajectorys from waypoints. 
 Functions for determining the closest point of the trajectory to the current aircraft position.
 And to determine the reference variables for attitude and acceleration as a function of the current airspeed in order to be able to follow the trajectory exactly.
+- [**Waypoint navigation**](wpnav)
+Waypoint is about automatic flight along given waypoints using computationally efficient line and circle segment.

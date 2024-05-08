@@ -1,4 +1,33 @@
-function [p_match,t,d] = wpnavMatchCircSeg(circ_seg,p)
+function [p_match,t,d] = wpnavMatchCircSeg( circ_seg, p )
+% wpnavMatchCircSeg match the current position to the circle segment
+%   This function performs the matching of a given current point p to the
+%   specified circle segment and returns the matched position.
+% 
+% Syntax:
+%   [p_match,t,d] = wpnavMatchCircSeg( circ_seg, p )
+% 
+% Inputs:
+%   circ_seg            Circle segment (struct as defined by wpnavCircSeg)
+%   p                   Current position (3x1 array) in g frame
+%                       (north-east-down), in m
+% 
+% Outputs:
+%   p_match             Matched position (3x1 array) on circle segment in
+%                       g frame (north-east-down), in m
+%   t                   Non-dimensional time on circle segment (scalar):
+%                       0 is at the start and 1 is at the end
+%   d                   Position error (scalar): distance from the current
+%                       position to the matched position, in m
+% 
+% See also:
+%   wpnavMatch, wpnavMatchLine
+
+% Disclaimer:
+%   SPDX-License-Identifier: GPL-3.0-only
+% 
+%   Copyright (C) 2024 Yannic Beyer
+%   Copyright (C) 2024 TU Braunschweig, Institute of Flight Guidance
+% *************************************************************************
 
 % project point p to circle plane
 H = dot( p - circ_seg.center, circ_seg.n );

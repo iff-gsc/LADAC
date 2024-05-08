@@ -1,4 +1,28 @@
 function [] = wpnavPlot( waypoints, wp_radius, varargin )
+% wpnavPlot plot the specified waypoint track with line and circle segments
+% 
+% Syntax:
+%   wpnavPlot( waypoints, wp_radius )
+%   wpnavPlot( waypoints, wp_radius, 'dim', dim )
+% 
+% Inputs:
+%   waypoints           Waypoints (3xN array, where N is the number of
+%                       wapyoints) in g frame (north-east-down), in m
+%   wp_radius           Waypoint radius (scalar), in m
+%   dim                 Dimension (2D or 3D) (scalar): 2 for 2D, 3 for 3D
+% 
+% Outputs:
+%   -
+% 
+% See also:
+%   wpnavMatch, wpnavCircSeg
+
+% Disclaimer:
+%   SPDX-License-Identifier: GPL-3.0-only
+% 
+%   Copyright (C) 2024 Yannic Beyer
+%   Copyright (C) 2024 TU Braunschweig, Institute of Flight Guidance
+% *************************************************************************
 
 grey = [0.8,0.8,0.8];
 

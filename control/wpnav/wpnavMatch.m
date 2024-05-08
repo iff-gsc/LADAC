@@ -1,4 +1,48 @@
-function [p_match,wp_idx,stage,t,d] = wpnavMatch(waypoints,wp_radius,wp_idx,stage,p)
+function [p_match,wp_idx,stage,t,d] = wpnavMatch( waypoints, wp_radius, wp_idx, stage, p )
+% wpnavMatch match the current position to the specified waypoint track
+%   This function performs the matching of a given current point p to the
+%   specified waypoint track and returns the matched position.
+%   The inputs wp_idx and stage define the current active waypoint and if
+%   we are currently on a line segment or on a circle segment (that
+%   connects two lines). wp_idx and stage may be updated by this function
+%   if the end of the current segment way reached since the last call.
+% 
+% Syntax:
+%   [p_match,wp_idx,stage,t,d] = wpnavMatch( waypoints, wp_radius, wp_idx, stage, p )
+% 
+% Inputs:
+%   waypoints           Waypoints (3xN array, where N is the number of
+%                       wapyoints) in g frame (north-east-down), in m
+%   wp_radius           Waypoint radius (scalar), in m
+%   wp_idx              Waypoint index (scalar): Next waypoint on the
+%                       waypoint track
+%   stage               Stage (scalar, 0 or 1): 0 if we are on a circle
+%                       segment, 1 if we are on a line segment
+%   p                   Current position (3x1 array) in g frame
+%                       (north-east-down), in m
+% 
+% Outputs:
+%   p_match             Matched position (3x1 array) on line segment or
+%                       circle segment on the waypoint track in g frame
+%                       (north-east-down), in m
+%   wp_idx              Waypoint index (scalar): Next waypoint on the
+%                       waypoint track
+%   stage               Stage (scalar, 0 or 1): 0 if we are on a circle
+%                       segment, 1 if we are on a line segment
+%   t                   Non-dimensional time (scalar): 0 at the start of
+%                       the segment, 1 at the end of the segment
+%   d                   Position error (scalar): distance from the current
+%                       position to the matched position, in m
+% 
+% See also:
+%   wpnavMatchLine, wpnavMatchCircSeg
+
+% Disclaimer:
+%   SPDX-License-Identifier: GPL-3.0-only
+% 
+%   Copyright (C) 2024 Yannic Beyer
+%   Copyright (C) 2024 TU Braunschweig, Institute of Flight Guidance
+% *************************************************************************
 
 num_wp = size(waypoints,2);
 
