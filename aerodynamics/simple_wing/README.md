@@ -46,10 +46,10 @@ its README.](../../README.md)
 
 - Read the wing aerodynamics chapter in [1] to understand the method.
 - You can define your desired wing:
-  - Make a copy of the `params_aero_simple_wing_default` template file (outside of LADAC)
+  - Make a copy of the `simpleWing_params_default` template file (outside of LADAC)
   - Make yourself familiar with the required parameters as well as the structure and order of initializations and the parameter structs
   - Adjust the parameters in your copy of the template file
-- In the test scripts in the [Tests](#Tests) section you can now exchange the `'params_aero_simple_wing_default'`
+- In the test scripts in the [Tests](#Tests) section you can now exchange the `'simpleWing_params_default'`
 string with the filename of your copy
 - Continue with step 2 of the [Tests](#Tests) section.
 

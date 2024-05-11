@@ -1,18 +1,19 @@
+% simpleWing example with VLM correction
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-% init simple wing struct
-wing = simpleWingLoadParams( 'simpleWing_params_default' );
+% init simple wing struct with VLM correction
+wing = simpleWingCreate( 'wing_params_default', 'simpleWing_params_default' );
 
 % Example 1 (visualize C_L over alpha_M and beta_M):
 alpha_M         = [-pi/2:0.05:pi/2]';
 beta_M          = [-pi:0.05:pi]';
-eta             = [0,0];
+eta             = [0,0,0,0];
 [ Alpha, Beta ] = meshgrid( alpha_M, beta_M );
 C_L = zeros(size(Alpha));
 C_L(:)          = mean(simpleWingGetCl( wing, Alpha(:)*[1,1], Beta(:)*[1,1], eta ),2);
@@ -26,7 +27,7 @@ beta_M          = 0;
 eta             = [-10,0,10]'*pi/180;
 figure
 for i = 1:length(eta)
-  C_L = simpleWingGetCl( wing, alpha_M(:)*[1,1], beta_M*[1,1], eta(i)*[1,1] );
+  C_L = simpleWingGetCl( wing, alpha_M(:)*[1,1], beta_M*[1,1], eta(i)*[1,1,1,1] );
   plot( rad2deg(alpha_M), C_L )
   hold on
 end
@@ -36,5 +37,5 @@ xlabel('\alpha_M, deg'), ylabel('C_L'), grid on;
 %           a two point model):
 alpha_M         = [ 0.11, 0.1 ];
 beta_M          = [ 0.2, 0.15 ];
-eta             = [ -0.1, 0.05 ];
+eta             = [ -0.1, 0, 0, 0.05 ];
 C_L = simpleWingGetCl( wing, alpha_M, beta_M, eta )

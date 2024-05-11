@@ -6,6 +6,6 @@
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-wing = simpleWingLoadParams( 'params_aero_simple_wing_default' );
+wing = simpleWingLoadParams( 'simpleWing_params_default' );
 
 open('simpleWing_example_simModel');

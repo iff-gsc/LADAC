@@ -91,7 +91,10 @@ function [ C_L, C_L_eta ] = simpleWingGetCl( wing, alpha_M, beta_M, eta ) %#code
     
     % change the angle of attack for high angles of attack to shift the zero
     % crossing of the lift coefficient at 90deg angle of attack
-    Delta_alpha_flap = wing.flap.dalpha_deta * eta  .* sin(alpha_M);
+    Delta_alpha_flap_all = wing.flap.dalpha_deta .* eta;
+    Delta_left = sum(Delta_alpha_flap_all(1:end/2));
+    Delta_right = sum(Delta_alpha_flap_all(end/2+1:end));
+    Delta_alpha_flap = [Delta_left,Delta_right] .* sin(alpha_M);
     
     % The polar is only defined for +-90deg angle of attack. If the flow
     % comes from behind, take the same polar (but sign must be reversed)
@@ -102,7 +105,12 @@ function [ C_L, C_L_eta ] = simpleWingGetCl( wing, alpha_M, beta_M, eta ) %#code
     C_L_beta0 = interp1( alpha_M_vector, C_L_vsAlphaVec, alpha_M_interp + Delta_alpha_flap,'linear','extrap' ) ...
         .* sign( -abs(beta_M) + pi/2 );
     
-    C_L_eta = C_L_dEta * eta .* cos(alpha_M) .* cos(beta_M);
+    C_L_eta_all = C_L_dEta.*eta;
+    C_L_eta = [ C_L_eta_all(1:end/2) * cos(alpha_M(1)) * cos(beta_M(1)), ...
+        C_L_eta_all(end/2+1:end) * cos(alpha_M(2)) * cos(beta_M(2)) ];
+    C_L_eta_left = sum(C_L_eta_all(1:end/2));
+    C_L_eta_right = sum(C_L_eta_all(end/2+1:end));
+    C_L_eta_2 = [C_L_eta_left,C_L_eta_right];
         
     % add the lift coefficient depending on a flap deflection angle eta
     C_L_alpha = C_L_beta0 .* abs(cos(beta_M_eff));
@@ -114,7 +122,7 @@ function [ C_L, C_L_eta ] = simpleWingGetCl( wing, alpha_M, beta_M, eta ) %#code
     
     % compute the final lift coefficient depending on alpha_M, beta_M and
     % eta
-    C_L(1:end,1:end) = C_L_alpha + C_L_eta ...
-        + C_L_beta90 .* sin(beta_M_eff).^2;
+    C_L(1:end,1:end) = C_L_alpha + C_L_eta_2 + ...
+        C_L_beta90 .* sin(beta_M_eff).^2;
     
 end

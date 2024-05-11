@@ -54,7 +54,9 @@ wing.xyz_cntrl_pt_wing = [ ...
     ];
 
 % compute center of pressure for lift due to camber
-wing.x_cp0_camber_wing = - wing.xyz_wing_np(2,2)*sin(wing.geometry.phi) - wing.geometry.c/4;
+wing.x_cp0_camber_wing = - abs(wing.xyz_wing_np(2,:))*sin(wing.geometry.phi) - wing.geometry.c/4;
+wing.flap.x_cp0_wing = wing.x_cp0_camber_wing;
+wing.flap.y_cp_wing = wing.xyz_wing_np(2,:);
 
 % roll rate reduction factor
 wing = simpleWingSetRollRateRed( wing );
