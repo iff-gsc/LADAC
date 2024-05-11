@@ -144,7 +144,8 @@ end
 %% compute geometry
 
 wing.n_panel = n_panel;
-wing.geometry = wingSetGeometry( wing.params, wing.n_panel, 'is_elliptical', is_elliptical );
+wing.geometry = wingSetGeometry( wing.params, wing.n_panel, ...
+    'is_elliptical', is_elliptical, 'spacing', spacing );
 
 
 %% init state

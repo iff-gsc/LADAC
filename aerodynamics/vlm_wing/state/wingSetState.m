@@ -3,8 +3,8 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 % 
 % Inputs:
 %   wing            wing struct, see wingCreate
-%   alpha           flight path angle of attack (scalar), in deg
-%   beta            flight path sideslip angle (scalar), in deg
+%   alpha           flight path angle of attack (scalar), in rad
+%   beta            flight path sideslip angle (scalar), in rad
 %   omega           kinematic angular velocity (3x1 array), in rad/s
 %   actuators_pos   positions of 1st and 2nd actuator (2xN array), usually
 %                   in deg
