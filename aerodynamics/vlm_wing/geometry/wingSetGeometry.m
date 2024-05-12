@@ -42,6 +42,7 @@ function [geometry] = wingSetGeometry(params, n_panel, varargin )
 n_panel_x = 1;
 
 is_elliptical = false;
+spacing = 'constant';
 
 for i = 1:length(varargin)
     if ~ischar(varargin{i})
@@ -54,11 +55,13 @@ for i = 1:length(varargin)
             else
                 error('Invalid option for parameter is_elliptical.')
             end
+        case 'spacing'
+            spacing = varargin{i+1};
     end
 end
 
 % create planform wing geometry
-geometry = geometryPlanform( params, n_panel, is_elliptical, n_panel_x );
+geometry = geometryPlanform( params, n_panel, is_elliptical, n_panel_x, spacing );
 
 if n_panel_x > 1
     geometry = geometryCamber( params, geometry );
@@ -88,7 +91,7 @@ end
 
 
 
-function [geometry] = geometryPlanform( params, n_panel, is_elliptical, n_panel_x )
+function [geometry] = geometryPlanform( params, n_panel, is_elliptical, n_panel_x, spacing )
 
     geometry = wingInitGeometry( n_panel );
 
@@ -107,7 +110,7 @@ function [geometry] = geometryPlanform( params, n_panel, is_elliptical, n_panel_
     else
         n_panel_side = n_panel;
     end
-    if true
+    if ~strcmp(spacing,'constant')
         ny_vec = ones( 1, n_panel );
         while length(eta_partitions_ny) < n_panel_side + 1
             [max_diff,idx_max_diff] = max(diff(eta_partitions_ny));
@@ -130,7 +133,7 @@ function [geometry] = geometryPlanform( params, n_panel, is_elliptical, n_panel_
     else
         y_vortex = params.y_segments_wing(end) * eta_partitions_ny ;
         segment_width = diff( y_vortex );
-        y_vortex = params.y_segments_wing(1) + ((1:n_vortex) - 1) * segment_width;
+        % y_vortex = params.y_segments_wing(1) + ((1:n_vortex) - 1) * segment_width;
         y_ctrl_pt = y_vortex(1:n_panel) + segment_width / 2;
         y_segments_wing = params.y_segments_wing;
         c_segments_wing = params.c;
@@ -183,7 +186,7 @@ function geometry = geometrySegments( params, geometry )
         section_type_2 = [ flip(params.section_type), params.section_type ];
         flap_depth_2 = [ flip(params.flap_depth), params.flap_depth ];
     else
-        y_segments_device_2 = y_segments_device;
+        y_segments_device_2 = 2*y_segments_device;
         section_type_2 = params.section_type;
         flap_depth_2 = params.flap_depth;
     end

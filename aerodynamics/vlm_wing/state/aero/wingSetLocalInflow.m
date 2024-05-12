@@ -32,6 +32,8 @@ pos_ref_wing = pos_ref_c - wing.geometry.origin;
 % local airspeed from rotation
 r_cntrl_ref = wing.state.geometry.ctrl_pt.pos ...
     - repmat( pos_ref_wing, 1, wing.n_panel, n_panel_x );
+r_cntrl_ref_25 = r_cntrl_ref;
+r_cntrl_ref_25(1,:) = r_cntrl_ref_25(1,:) + wing.geometry.ctrl_pt_lever;
 V_Ab = dcmBaFromAeroAngles( wing.state.body.alpha, wing.state.body.beta ) ...
     * [ wing.state.body.V; 0; 0 ];
 
@@ -40,7 +42,8 @@ wing.state.aero.local_inflow.V_75(:,:) = velocityFromRot( V_Ab, wing.state.body.
     + wing.state.geometry.ctrl_pt_dt.pos(:,:) - wing.state.external.V_Wb(:,:);
 
 % approx. airspeed and angle of attack at 25% chord
-wing.state.aero.local_inflow.V_25 = wing.state.aero.local_inflow.V_75;
+wing.state.aero.local_inflow.V_25(:,:) = velocityFromRot( V_Ab, wing.state.body.omega, r_cntrl_ref_25(:,:) ) ...
+    + wing.state.geometry.ctrl_pt_dt.pos(:,:) - wing.state.external.V_Wb(:,:);
 for i = 1:n_panel_x
     wing.state.aero.local_inflow.V_25(3,:,i) = ...
         wing.state.aero.local_inflow.V_25(3,:,i) - ...
