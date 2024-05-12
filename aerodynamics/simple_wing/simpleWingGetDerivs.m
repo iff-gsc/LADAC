@@ -1,4 +1,54 @@
-function derivs = simpleWingGetDerivs(wing,varargin)
+function [derivs,more] = simpleWingGetDerivs(wing,varargin)
+% simpleWingGetDerivs get aerodynamic derivatives of simple wing struct
+% 
+% Syntax:
+%   derivs = simpleWingGetDerivs( wing )
+%   derivs = simpleWingGetDerivs( wing, Name, Value )
+%   [derivs,more] = simpleWingGetDerivs( wing, Name, Value )
+% 
+% Inputs:
+%   wing                Simple wing struct, see simpleWingLoadParams.m
+%   Name                Name (string) followed by a value (see below)
+%       - 'V_Ab'        Airspeed vector (3x1 array) in body frame, in m/s
+%       - 'Omega_Ab'    Angular velocity vector (3x1 array) in body frame,
+%                       in rad/s
+%       - 'rho'         Air density (scalar), in kg/m^3
+%       - 'V_Ab_prop'   Propeller induced velocity (3x2 array) in body
+%                       frame, in m/s
+%       - 'eta'         Flap deflection vector (1xN array for N flaps), in
+%                       rad
+%       - 'incidence'   Wing incidence angle (scalar), in rad
+%       - 'pos_cg'      Position of simple wing origin measured from center
+%                       of gravity in body frame (3x1 array), in m
+% 
+% Outputs:
+%   derivs              Aerodynamic derivatives (table), the rows are
+%                       derived w.r.t. the columns, where the rows are the
+%                       force and moment coefficients (non-dimensional) and
+%                       the columns are:
+%                       - alpha     Angle of attack, in rad
+%                       - beta      Sideslip angle, in rad
+%                       - P         Normalized pitch rate P=p*=p(b/2)/V, 
+%                                   non-dimensional
+%                       - Q         Normalized roll rate Q=q*=qc/V,
+%                                   non-dimensional
+%                       - R         Normalized yaw rate R=r*=r(b/2)/V,
+%                                   non-dimensional
+%                       - eta       Flap deflections, in rad
+%   more                More information (struct) with fields:
+%                       - Coeff_0   Force and moment coefficients (6x1
+%                                   array) at specified operating point,
+%                                   non-dimensional
+% 
+% See also:
+%   simpleWingCreate, simpleWingLoadParams, simpleWingRun
+
+% Disclaimer:
+%   SPDX-License-Identifier: GPL-3.0-only
+% 
+%   Copyright (C) 2024 Yannic Beyer
+%   Copyright (C) 2024 TU Braunschweig, Institute of Flight Guidance
+% *************************************************************************
 
 V_Ab_0          = [20;0;0];
 Omega_0         = zeros(3,1);
@@ -88,13 +138,15 @@ end
 
 alpha   = Coeff_dalpha;
 beta    = Coeff_dbeta;
-p       = Coeff_dp * V_0 / (wing.geometry.b/2);
-q       = Coeff_dq * V_0 / wing.geometry.c;
-r       = Coeff_dr * V_0 / (wing.geometry.b/2);
+P       = Coeff_dp * V_0 / (wing.geometry.b/2);
+Q       = Coeff_dq * V_0 / wing.geometry.c;
+R       = Coeff_dr * V_0 / (wing.geometry.b/2);
 eta     = Coeff_deta;
 
 
-derivs = table( alpha, beta, p, q, r, eta, ...
+derivs = table( alpha, beta, P, Q, R, eta, ...
     'RowNames', {'C_X','C_Y','C_Z','C_l','C_m','C_n'} );
+
+more.Coeff_0 = Coeff_0;
 
 end

@@ -1,6 +1,25 @@
 function wing = simpleWingCreate( filename_wing, filename_airfoil )
+% simpleWingCreate create simple wing struct with help of VLM
+% 
+% Syntax:
+%   wing = simpleWingCreate( filename_wing, filename_airfoil )
+% 
+% Inputs:
+%   filename_wing       File name of the parameters file (string), see
+%                       wing_params_default.m
+%   filename_airfoil    File name of airfoil parameters including stall
+%                       (string), see simple_wing_params_default.m (the
+%                       geometrical parameters will be ignored and will be
+%                       taken from the filename_wing)
+% 
+% Outputs:
+%   wing                Simple wing struct, as defined by this function or
+%                       by simpleWingLoadParams.m
+% 
+% See also:
+%   simpleWingLoadParams, wingCreate, simpleWingGetDerivs, wingGetDerivs
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2024 Yannic Beyer

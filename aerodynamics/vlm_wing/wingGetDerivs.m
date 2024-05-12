@@ -1,23 +1,85 @@
 function [derivs,more] = wingGetDerivs( wing, varargin )
+% wingGetDerivs get aerodynamic derivatives of VLM wing struct
+% 
+% Syntax:
+%   derivs = wingGetDerivs( wing )
+%   derivs = wingGetDerivs( wing, Name, Value )
+%   [derivs,more] = wingGetDerivs( wing, Name, Value )
+% 
+% Inputs:
+%   wing                Simple wing struct (see simpleWingLoadParams)
+%   Name                Name (string) followed by a value (see below)
+%       -'MomentRefOpt' Moment reference point option with expected
+%                       values: 'CoG' (center of gravity; default), 'NP'
+%                       (neutral point), 'WingOrigin' (origin of wing),
+%                       'Custom' (can be specified via the input
+%                       'MomentRefCustom')
+%       -'MomentRefCustom' Specification of custom moment reference point
+%                       (3x1 array) (only used if input 'MomentRefOpt' is
+%                       set to 'Custom'), in m
+%       - 'CG'          Center of gravity (3x1 array), default: zeros(3,1),
+%                       in m
+%       - 'V'           Airspeed vector (scalar), in m/s
+%       - 'alpha'       Angle of attack (scalar), in rad
+%       - 'beta'        Sideslip angle (scalar), in rad
+% 
+% Outputs:
+%   derivs              Aerodynamic derivatives (table), the rows are
+%                       derived w.r.t. the columns, where the rows are the
+%                       force and moment coefficients (non-dimensional) and
+%                       the columns are:
+%                       - alpha     Angle of attack, in rad
+%                       - beta      Sideslip angle, in rad
+%                       - P         Normalized pitch rate P=p*=p(b/2)/V, 
+%                                   non-dimensional
+%                       - Q         Normalized roll rate Q=q*=qc/V,
+%                                   non-dimensional
+%                       - R         Normalized yaw rate R=r*=r(b/2)/V,
+%                                   non-dimensional
+%                       - eta       Flap deflections, in rad
+%   more                More information (struct) with fields:
+%                       - x_NP      Longitudinal neutral point position
+%                                   w.r.t. moment reference point (scalar),
+%                                   in m
+%                       - Coeff_0   Force and moment coefficients (6x1
+%                                   array) at specified operating point,
+%                                   non-dimensional
+% 
+% See also:
+%   wingCreate, wingSetState
+
+% Disclaimer:
+%   SPDX-License-Identifier: GPL-3.0-only
+% 
+%   Copyright (C) 2024 Yannic Beyer
+%   Copyright (C) 2024 TU Braunschweig, Institute of Flight Guidance
+% *************************************************************************
 
 moment_ref_default = {'CoG'};
 moment_ref_expected = {'CoG','NP','WingOrigin','Custom'};
-
 moment_ref_custom_default = zeros(3,1);
-
 cog_default = zeros(3,1);
+alpha_0     = 0;
+beta_0      = 0;
+V_0         = 20;
 
 p = inputParser;
 
 addParameter(p,'MomentRefOpt',moment_ref_default,@(x) any(validatestring(x,moment_ref_expected)));
 addParameter(p,'MomentRefCustom',moment_ref_custom_default,@(x) all(size(x)==[3,1]));
 addParameter(p,'CG',cog_default,@(x) all(size(x)==[3,1]));
+addParameter(p,'V',V_0,@(x) length(x)==1);
+addParameter(p,'alpha',alpha_0,@(x) length(x)==1);
+addParameter(p,'beta',beta_0,@(x) length(x)==1);
 
 parse(p,varargin{:});
 
 moment_ref_opt      = p.Results.MomentRefOpt;
 moment_ref_custom	= p.Results.MomentRefCustom;
 cog                 = p.Results.CG;
+V_0                 = p.Results.V;
+alpha_0             = p.Results.alpha;
+beta_0              = p.Results.beta;
 
 %%
 
@@ -25,9 +87,7 @@ wing.config.is_unsteady = 0;
 wing.geometry.origin(:) = 0;
 du = 1e-3;
 
-alpha_0     = 0;
-beta_0      = 0;
-V_0         = 1;
+
 Omega_0     = zeros(3,1);
 num_actuators       = length(wing.state.actuators.pos);
 actuators_pos_0     = zeros(1,num_actuators);
@@ -119,16 +179,17 @@ end
 
 alpha   = Coeff_dalpha;
 beta    = Coeff_dbeta;
-p       = Coeff_dp * V_0 / (wing.params.b/2);
-q       = Coeff_dq * V_0 / c;
-r       = Coeff_dr * V_0 / (wing.params.b/2);
+P       = Coeff_dp * V_0 / (wing.params.b/2);
+Q       = Coeff_dq * V_0 / c;
+R       = Coeff_dr * V_0 / (wing.params.b/2);
 eta     = Coeff_du;
 
 
-derivs = table( alpha, beta, p, q, r, eta, ...
+derivs = table( alpha, beta, P, Q, R, eta, ...
     'RowNames', {'C_X','C_Y','C_Z','C_l','C_m','C_n'} );
 
 more.x_NP = x_NP;
+more.Coeff_0 = Coeff_0;
 
 
     function Coeff_a = coeffb2a(Coeff_b,alpha,beta)

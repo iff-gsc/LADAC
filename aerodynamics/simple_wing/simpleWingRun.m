@@ -1,4 +1,51 @@
 function out = simpleWingRun(wing,V_Ab,Omega_Ab,rho,V_Ab_prop,eta,incidence,pos_cg_b)
+% simpleWingRun run simple wing calculation for one time step
+% 
+% Syntax:
+%   out = simpleWingRun(wing,V_Ab,Omega_Ab,rho,V_Ab_prop,eta,incidence,pos_cg_b)
+% 
+% Inputs:
+%   wing                Simple wing struct, see simpleWingLoadParams.m or
+%                       simpleWingCreate.m
+%   V_Ab                Airspeed vector (3x1 array) in body frame, in m/s
+%	Omega_Ab            Angular velocity vector (3x1 array) in body frame,
+%                       in rad/s
+%	rho                 Air density (scalar), in kg/m^3
+% 	V_Ab_prop           Propeller induced velocity (3x2 array) in body
+%                       frame, in m/s
+%	eta                 Flap deflection vector (1xN array for N flaps), in
+%                       rad
+%	incidence           Wing incidence angle (scalar), in rad
+%	pos_cg_b            Position of simple wing origin measured from center
+%                       of gravity in body frame (3x1 array), in m
+% 
+% Outputs:
+%   out                 Several output quantities (struct) with the
+%                       following fields:
+%                       - axes.V_A_P    Airspeed at both wing sides (1x2
+%                                       array), in m/s
+%                       - axes.alpha_M_P Modified angle of attack at both
+%                                       wing sides (1x2 array), in rad
+%                       - axes.beta_M_P Sideslip angle at both wing sides
+%                                       (1x2 array), in rad
+%                       - dynWing.C_XYZ_a Force coefficients at both wing
+%                                       sides in aerodynamic frame (3x2
+%                                       array), non-dimensional
+%                       - dynBody.R_Ab	Resulting force vector in body
+%                                       frame (3x1 array), in N
+%                       - dynBody.Q_Ab	Resulting moment vector w.r.t. the
+%                                       center of gravity in body frame
+%                                       (3x1 array), in Nm
+% 
+% See also:
+%   simpleWingLoadParams, wingCreate, simpleWingGetDerivs, wingGetDerivs
+
+% Disclaimer:
+%   SPDX-License-Identifier: GPL-3.0-only
+% 
+%   Copyright (C) 2024 Yannic Beyer
+%   Copyright (C) 2024 TU Braunschweig, Institute of Flight Guidance
+% *************************************************************************
 
 [ V_A_P, q_P, alpha_M_P, beta_M_P, q_Aw, M_wb ] = ...
     simpleWingGetInflow( wing, V_Ab, Omega_Ab, rho, V_Ab_prop, ...
