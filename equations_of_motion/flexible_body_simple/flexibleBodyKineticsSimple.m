@@ -51,9 +51,9 @@ function [V_Kb_dt,Omega_Kb_dt,eta_from_7_dt2] = ...
 %       aeroelastic vehicles. Journal of Aircraft, 25(6), 563-571.
 %   [2] Reschke, C. (2006). Integrated flight loads modelling and analysis
 %       for flexible transport aircraft.
-%   [3] Schmidt, D. K. (2015). Discussion:�The Lure of the Mean Axes�
+%   [3] Schmidt, D. K. (2015). Discussion:"The Lure of the Mean Axes"
 %       (Meirovitch, L., and Tuzcu, I., ASME J. Appl. Mech., 74 (3), pp. 
-%       497�504). Journal of Applied Mechanics, 82(12).
+%       497-504). Journal of Applied Mechanics, 82(12).
 % 
 % Authors:
 %   Yannic Beyer

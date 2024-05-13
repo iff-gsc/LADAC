@@ -14,8 +14,8 @@ function fuselage = fuselageSetAeroState( fuselage, xyz_cg )
 % 
 % Literature:
 %   [1] Schlichting, H., & Truckenbrodt, E. (2001). Aerodynamik des
-%       Flugzeuges. Zweiter Band: Aerodynamik des Tragfl�gels (Teil II),
-%       des Rumpfes, der Fl�gel-Rumpf-Anordnung und der Leitwerke. 3.
+%       Flugzeuges. Zweiter Band: Aerodynamik des Tragfluegels (Teil II),
+%       des Rumpfes, der Fluegel-Rumpf-Anordnung und der Leitwerke. 3.
 %       Auflage. Springer-Verlag Berlin Heidelberg.
 
 % Disclamer:

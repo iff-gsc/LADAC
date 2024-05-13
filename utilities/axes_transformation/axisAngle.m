@@ -10,7 +10,7 @@ function v_rot = axisAngle( v, axis, angle ) %#codegen
 %   v_rot   rotated vectors (3xN array)
 % 
 % Literature:
-%   [1] https://en.wikipedia.org/wiki/Axis�angle_representation
+%   [1] https://en.wikipedia.org/wiki/Axis-angle_representation
 % 
 
 % Disclamer:

@@ -17,8 +17,8 @@ function [ xyz_np_w ] = simpleWingGetNeutralPoint( wing, alpha_M, beta_M ) %#cod
 % 
 % Literature:
 %   [1] Schlichting, H., & Truckenbrodt, E. A. (2013). Aerodynamik des
-%       Flugzeuges: Zweiter Band: Aerodynamik des Tragfl�gels (Teil II), 
-%       des Rumpfes, der Fl�gel-Rumpf-Anordnungen und der Leitwerke. 
+%       Flugzeuges: Zweiter Band: Aerodynamik des Tragfluegels (Teil II), 
+%       des Rumpfes, der Fluegel-Rumpf-Anordnungen und der Leitwerke. 
 %       Springer-Verlag.
 % 
 % See also:

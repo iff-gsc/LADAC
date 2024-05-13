@@ -16,8 +16,8 @@ function zeta = wingGetDimLessSpanwiseLengthVector( vortex )
 %       Prandtl's classic lifting-line theory. Jounal of Aircraft, 37(4),
 %       662-670.
 %   [2] Schlichting, H., & Truckenbrodt, E. A. (1969). Aerodynamik des
-%       Flugzeuges: Zweiter Band: Aerodynamik des Tragfl�gels (Teil II),
-%       des Rumpfes, der Fl�gel-Rumpf-Anordnungen und der Leitwerke. 2nd
+%       Flugzeuges: Zweiter Band: Aerodynamik des Tragfluegels (Teil II),
+%       des Rumpfes, der Fluegel-Rumpf-Anordnungen und der Leitwerke. 2nd
 %       edition. Springer-Verlag.
 % 
 

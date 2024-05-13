@@ -18,7 +18,7 @@ function [q_red,yaw] = quatReduced(q_bg)
 %   quatInv, quatMultiply
 % 
 % Literature:
-%   [1] Brescianini, D., & D�Andrea, R. (2018). Tilt-prioritized
+%   [1] Brescianini, D., & D'Andrea, R. (2018). Tilt-prioritized
 %       quadrocopter attitude control. IEEE Transactions on Control Systems
 %       Technology, 28(2), 376-387.
 % 

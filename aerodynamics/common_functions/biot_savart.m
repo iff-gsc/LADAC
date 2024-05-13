@@ -31,7 +31,7 @@ function  [v_induced] = biot_savart (x_p, x_1, x_2, nu, t)
 %    x_2                    Start of vortex line: respective right panel 
 %                           coordinates (3-D vector), in m
 %                           (array)
-%    nu                     Air kinematic viscosity, in m�/s 
+%    nu                     Air kinematic viscosity, in m^2/s 
 %                           (double)
 %    t                      Vortex age, in s
 %                           (double)

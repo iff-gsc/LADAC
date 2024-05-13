@@ -43,7 +43,7 @@ grid on
 plot(eta_wing*prm.b/2,leading_edge,'r')
 plot(eta_wing*prm.b/2,trailing_edge,'b')
 axis equal
-title(['Elliptical wing, b = ',num2str(prm.b),'m, AR = ',num2str(prm.AR),', \phi = ',num2str(prm.lambda*180/pi),'�'])
+title(['Elliptical wing, b = ',num2str(prm.b),'m, AR = ',num2str(prm.AR),', \phi = ',num2str(prm.lambda*180/pi),'deg'])
 xlabel('s, in m')
 ylabel('l, in m')
 legend('1/4 chord','leading edge','trailing edge','Location','best')
