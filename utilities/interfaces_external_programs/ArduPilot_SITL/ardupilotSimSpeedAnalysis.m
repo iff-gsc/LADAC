@@ -1,4 +1,7 @@
-function simulation_speed_analysis(sample_time, sitl_frame, print_frame_count)
+function ardupilotSimSpeedAnalysis(sample_time, sitl_frame, print_frame_count)
+% ardupilotSimSpeedAnalysis is called from the Simulink block Receive from
+% ArduPilot SITL (JSON)
+
     coder.extrinsic('tic');
     coder.extrinsic('toc');
     

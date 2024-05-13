@@ -31,4 +31,5 @@ V_Kb_steady = 20;
 % gravity of Earth, in m/s^2
 g = 9.81;
 
+open('ardupilot_sitl_example');
 

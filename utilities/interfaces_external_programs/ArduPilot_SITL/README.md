@@ -37,8 +37,8 @@ The parameters of the spiral can be adjusted by a parameter file.
 
 1. Open the MATLAB/Simulink test trajectory simulation
    1. Open MATLAB/Simulink.
-   2. Run the parameters file [init_exampleSITL.m](/utilities/interfaces_external_programs/ArduPilot_SITL/init_exampleSITL.m).
-   3. Open the Simulink file [example_SITL.slx](/utilities/interfaces_external_programs/ArduPilot_SITL/example_SITL.slx).
+   2. Run the parameters file [ardupilot_sitl_example_init.m](/utilities/interfaces_external_programs/ArduPilot_SITL/ardupilot_sitl_example_init.m).
+   3. Open the Simulink file [ardupilot_sitl_example.slx](/utilities/interfaces_external_programs/ArduPilot_SITL/ardupilot_sitl_example.slx).
    4. Run the Simulink model. The green switch should activate "apply zeros"
         in order to simulate a vehicle standing on the ground.
 
@@ -57,7 +57,7 @@ The parameters of the spiral can be adjusted by a parameter file.
         and establish a connection with the SITL.
 
 4. Activate the test trajectory simulation
-   1. In the running Simulink model [example_SITL.slx](/utilities/interfaces_external_programs/ArduPilot_SITL/example_SITL.slx) double-click the green switch
+   1. In the running Simulink model [ardupilot_sitl_example.slx](/utilities/interfaces_external_programs/ArduPilot_SITL/ardupilot_sitl_example.slx) double-click the green switch
         to activate "apply spiral".
    2. If you want to start a new test trajectory simulation, you have to stop the
         current simulation and repeat the whole procedure.
@@ -110,9 +110,9 @@ The following section describes the custom Debug Message to SIMULINK.
 
 This interface does not work with the original ArduPilot code because the automatic port detection does not work.
 That is why this interface must be used with the [modified ArduPilot code](../ArduPilot_custom_controller).
-The Simulink blocks `Receive from ArduPilot SITL (JSON)` and `Send to ArduPilot SITL (JSON)` can be found in `ardupilot_sitl_lib.slx`.
+The Simulink blocks `Receive from ArduPilot SITL (JSON)` and `Send to ArduPilot SITL (JSON)` can be found in [ardupilot_sitl_lib.slx](/utilities/interfaces_external_programs/ArduPilot_SITL/ardupilot_sitl_lib.slx).
 
-This is how you start the patched ArduPilot SITL with the custom Simulink interface in terminal:
+This is how you start the patched ArduPilot SITL with the JSON interface in terminal:
 ```
 sim_vehicle.py -v ArduPlane --model=JSON
 ```
@@ -122,8 +122,10 @@ Therefore, put the appropriate JSON string in the Mask parameter "Optional signa
 For example, if you want to send the airspeed and the first rangefinder distance: `'"airspeed":%f,"rng_1":%f'`
 The additional block input "opt_signals" will appear.
 For this example you have to connect a signal of length 2 to this inport (first is airspeed, second is rangefinder).
-More info: https://github.com/ArduPilot/ardupilot/tree/master/libraries/SITL/examples/JSON
-
+More info: https://github.com/ArduPilot/ardupilot/tree/master/libraries/SITL/examples/JSON  
+Notes: 
+- If you want to use rangefinders in ArduPilot SITL, you have to set the ArduPilot parameters `RNGFNDx_TYPE=100`.
+- If you want to use airspeed in ArduPilot SITL, you have to set the ArduPilot parameters `ARSPD_TYPE=2`, `ARSPD_PIN=1`, and `ARSPD_SKIP_CAL=0`.
 
 ### Custom Simulink Interface
 
