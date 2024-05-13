@@ -1,7 +1,8 @@
 # ArduPilot SITL interfaces for Simulink
 
-There are two interfaces available:
+There are three interfaces available:
 The [Adopted Gazebo Interface](#adopted-gazebo-interface) is based on the connection of Gazebo with ArduPilot SITL and uses the same UDP port as well as the same flight parameters.
+The [JSON](#json-interface) used the ArduPilot JSON interface but it only works with a modification of the ArduPilot code which is provided in LADAC.
 The [Custom Simulink Interface](#custom-simulink-interface) uses a modification of the ArduPilot code which is provided in LADAC.  
 For more information about the ArduPilot SITL interfaces take a look at the 
 [ArduPilot Documentation](https://ardupilot.org/dev/docs/sitl-with-gazebo.html), 
@@ -104,6 +105,24 @@ The following section describes the custom Debug Message to SIMULINK.
 * known issues\
       Due to the additional message expected by SIMULINK and the according Blocking time the simulation slows down significantly until mode_custom is enabled. 
         
+
+### JSON Interface
+
+This interface does not work with the original ArduPilot code because the automatic port detection does not work.
+That is why this interface must be used with the [modified ArduPilot code](../ArduPilot_custom_controller).
+The Simulink blocks `Receive from ArduPilot SITL (JSON)` and `Send to ArduPilot SITL (JSON)` can be found in `ardupilot_sitl_lib.slx`.
+
+This is how you start the patched ArduPilot SITL with the custom Simulink interface in terminal:
+```
+sim_vehicle.py -v ArduPlane --model=JSON
+```
+
+With the `Send to ArduPilot SITL (JSON)` block it is possible to send additional data like airspeed and rangefinder distances.
+Therefore, put the appropriate JSON string in the Mask parameter "Optional signal string".
+For example, if you want to send the airspeed and the first rangefinder distance: `'"airspeed":%f,"rng_1":%f'`
+The additional block input "opt_signals" will appear.
+For this example you have to connect a signal of length 2 to this inport (first is airspeed, second is rangefinder).
+More info: https://github.com/ArduPilot/ardupilot/tree/master/libraries/SITL/examples/JSON
 
 
 ### Custom Simulink Interface
