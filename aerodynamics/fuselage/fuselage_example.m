@@ -44,7 +44,7 @@ wing = wingSetState(wing,alpha,beta,V,omega,[0,0],[0,0],zeros(3,1));
 
 h = 1000;
 
-v_ind = wingFuselageInducedVel(  wing.geometry.vortex.pos+wing.geometry.origin, wing.state.aero.circulation.Gamma, mean(wing.params.c), fuselage.geometry.border_pos );
+v_ind = wingFuselageInducedVel(  wing.geometry.line_25.pos+wing.geometry.origin, wing.state.aero.circulation.Gamma, mean(wing.params.c), fuselage.geometry.border_pos );
 
 %% compute state
 
