@@ -1,15 +1,23 @@
-function ap = lindiPlaneAutoCreate( airplane, varargin )
+function [ap,ap_notune] = lindiPlaneAutoCreate( airplane, varargin )
 
 
 sflt_default = [];
+agility_atti                = 1;
+agility_pos                 = 1;
+servo_boost                 = 1;
 
 p = inputParser;
 addOptional(p,'SensFilt',sflt_default,@(x) numel(x)==2);
+addOptional(p,'AgilityAtti',agility_atti);
+addOptional(p,'AgilityPos',agility_pos);
+addOptional(p,'ServoBoost',servo_boost);
 
 parse(p,varargin{:});
 
 sflt = p.Results.SensFilt;
-
+agility_atti = p.Results.AgilityAtti;
+agility_pos = p.Results.AgilityPos;
+servo_boost = p.Results.ServoBoost;
 
 
 cntrl_effect_scaling_factor = 1;
@@ -21,7 +29,9 @@ cef.dadf = [];
 cef.dfdu = [];
 cef.s = [];
 cef.rotx = [];
-cef.pos = [];
+cef.x = [];
+cef.y = [];
+cef.z = [];
 aero_names = fieldnames(airplane.aero);
 for i = 1:length(aero_names)
     if contains(aero_names{i},'wing')
@@ -32,21 +42,30 @@ for i = 1:length(aero_names)
         if contains(aero_names{i},'Main')
             cef.cla(end+1:end+num_flaps) = wing.polar.params.C_Lalpha*ones(1,num_flaps);
             cef.dadf(end+1:end+num_flaps) = wing.flap.dalpha_deta;
-            cef.pos(:,end+1:end+num_flaps) = airplane.aero.config.wingMainPos + pos_span + pos_long - airplane.config.cg;
+            pos = airplane.aero.config.wingMainPos + pos_span + pos_long - airplane.config.cg;
+            cef.x(end+1:end+num_flaps) = pos(1,:);
+            cef.y(end+1:end+num_flaps) = pos(2,:);
+            cef.z(end+1:end+num_flaps) = pos(3,:);
             cef.rotx(end+1:end+num_flaps) = 0;
             cef.dfdu(end+1:end+num_flaps) = airplane.act.ailerons.deflectionMax;
             cef.s(end+1:end+num_flaps) = wing.geometry.S/2;
         elseif contains(aero_names{i},'Htp')
             cef.cla(end+1) = wing.polar.params.C_Lalpha;
             cef.dadf(end+1) = mean(wing.flap.dalpha_deta);
-            cef.pos(:,end+1) = airplane.aero.config.wingHtpPos + mean(pos_span,2) + mean(pos_long,2) - airplane.config.cg;
+            pos = airplane.aero.config.wingHtpPos + mean(pos_span,2) + mean(pos_long,2) - airplane.config.cg;
+            cef.x(end+1) = pos(1,:);
+            cef.y(end+1) = pos(2,:);
+            cef.z(end+1) = pos(3,:);
             cef.rotx(end+1) = 0;
             cef.dfdu(end+1) = airplane.act.elevator.deflectionMax;
             cef.s(end+1) = wing.geometry.S;
         elseif contains(aero_names{i},'Vtp')
             cef.cla(end+1) = wing.polar.params.C_Lalpha;
             cef.dadf(end+1) = mean(wing.flap.dalpha_deta);
-            cef.pos(:,end+1) =  airplane.aero.config.wingVtpPos + mean(pos_span,2) + mean(pos_long,2) - airplane.config.cg;
+            pos = airplane.aero.config.wingVtpPos + mean(pos_span,2) + mean(pos_long,2) - airplane.config.cg;
+            cef.x(end+1) = pos(1,:);
+            cef.y(end+1) = pos(2,:);
+            cef.z(end+1) = pos(3,:);
             euler_angles = dcm2Euler(airplane.aero.config.wingVtpRot);
             cef.rotx(end+1) = euler_angles(1);
             cef.dfdu(end+1) = airplane.act.rudder.deflectionMax;
@@ -54,6 +73,9 @@ for i = 1:length(aero_names)
         end
     end
 end
+num_flaps = size(cef.cla,2);
+cef.m = zeros(1,num_flaps);
+cef.xm = zeros(1,num_flaps);
 ap.cef = cef;
 
 
@@ -67,16 +89,18 @@ ap.ceb.ixy  = cntrl_effect_scaling_factor * -airplane.body.I(1,2);
 ap.ceb.ixz  = cntrl_effect_scaling_factor * -airplane.body.I(1,3);
 ap.ceb.iyz  = cntrl_effect_scaling_factor * -airplane.body.I(2,3);
 
-
+% control effectiveness scaling
+ap.ceb.scale = 1;
 
 %
-ap.dtc = 2/airplane.act.ailerons.naturalFrequency;
+ap.servo.omega = airplane.act.ailerons.naturalFrequency;
+ap.servo.boost = servo_boost;
 
 
 
 %
 if isempty(sflt)
-    ap.sflt.omega = 2 * 2/ap.dtc;
+    ap.sflt.omega = 2 * ap.servo.omega * ap.servo.boost;
     ap.sflt.d = 1;
 else
     ap.sflt.omega = sflt(1);
@@ -88,9 +112,9 @@ ap.aspd.min = sqrt( airplane.body.m*9.81 / (0.5*1.225*airplane.aero.wingMain.pol
 
 
 %%
-T_h = ap.dtc + 2/ap.sflt.omega;
-p = -1*[1,1,1] * 2/T_h / 5;
-% p = -1*[1,0.9+0.7*1i,0.9-0.7*1i] * 2/T_h / 4;
+T_h = 2/(ap.servo.omega*ap.servo.boost) + 2/ap.sflt.omega;
+p = -1*[1,1,1] * 2/T_h / 6 * agility_atti;
+p = -1*[1,0.9+0.7*1i,0.9-0.7*1i] * 2/T_h / 5.6 * agility_atti;
 k = ndiFeedbackGainPlace( p, T_h );
 
 p2 = -1*[1,1] * 2/T_h / 4;
@@ -109,25 +133,28 @@ ap.atc.k.yacc = k2(2);
 
 
 %
-ap.atc.rm.rfreq = 2/T_h / 4;
+ap.atc.rm.rfreq = 2/T_h / 4 * agility_atti;
 ap.atc.rm.rangmax = 60;
 ap.atc.rm.rratmax = 60;
 
-ap.atc.rm.pfreq = 2/T_h / 4;
+ap.atc.rm.pfreq = 2/T_h / 4 * agility_atti;
 ap.atc.rm.pangmax = 30;
 ap.atc.rm.pratmax = 60;
 
-ap.atc.rm.yfreq = 2/T_h / 4;
+ap.atc.rm.yfreq = 2/T_h / 4 * agility_atti;
 ap.atc.rm.yratmax = 60;
 ap.atc.rm.ydecaytc = 2/ap.atc.rm.yfreq;
 
+% Roll damping inversion parameters
+derivs = simpleWingGetDerivs( airplane.aero.wingMain );
+ap.atc.rolldamp.clp = derivs.P(4);
+ap.atc.rolldamp.b = airplane.aero.wingMain.geometry.b;
+ap.atc.rolldamp.S = airplane.aero.wingMain.geometry.S;
+
 %%
-T_h = 2/ap.atc.rm.rfreq;
-% The real time delay T_h is approx. 1.28 times higher than in theory.
-% If this is not considered, low damped oscillations occur.
-T_h = 1.28 * ( T_h + 2/ap.atc.rm.rfreq );
+T_h = T_h + 2/ap.atc.rm.rfreq;
 % p = -1*[1,1,1] * 2/T_h / 5;
-p = -1*[1,0.9+0.7*1i,0.9-0.7*1i] * 2/T_h / 5;
+p = -1*[1,0.9+0.7*1i,0.9-0.7*1i] * 2/T_h / 5.6 * agility_pos;
 k = ndiFeedbackGainPlace( p, T_h );
 
 ap.psc.k.pos = k(1);
@@ -161,6 +188,6 @@ ap.ca.i_max = 100;
 
 %%
 
-ap.ts = 1/400;
+ap_notune.ts = 1/400;
 
 end

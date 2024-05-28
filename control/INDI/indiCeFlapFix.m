@@ -1,4 +1,4 @@
-function [G10,G20] = indiCeFlapFix( cef, ceb, T_s )
+function [G10,G20,G30] = indiCeFlapFix( cef, ceb )
 
 I_b = [ ...
         ceb.ixx,    -ceb.ixy,	-ceb.ixz; ...
@@ -9,33 +9,29 @@ I_b = [ ...
 inv_I_b = inv(I_b);
 
 
-cef.cla;
-
-cef.dadf;
-
 clu = cef.cla .* cef.dadf .* cef.dfdu;
 
-cef.s;
 
-cef.pos;
-
-c_XYZ = [ zeros(size(cef.rotx)); sin(cef.rotx); -cos(cef.rotx) ];
-
+force_dir = [ zeros(size(cef.rotx)); sin(cef.rotx); -cos(cef.rotx) ];
+c_XYZ = zeros(size(force_dir));
 for i = 1:size(c_XYZ,1)
-    c_XYZ(i,:) = c_XYZ(i,:) .* clu .* cef.s;
+    c_XYZ(i,:) = force_dir(i,:) .* clu .* cef.s;
 end
 
+pos = [ cef.x; cef.y; cef.z ];
+
 G10 = [ ...
-        inv_I_b * cross( cef.pos, c_XYZ ); ...
+        inv_I_b * cross( pos, c_XYZ ); ...
         c_XYZ / ceb.m ...
     ];
 
-G20 = 1 / T_s * ...
-    [ ...
+G20 = [ ...
         zeros(size(G10)) ...
     ];
 
-
-G10(1,1:2) = G10(1,1:2);
+G30 = [ ...
+        inv_I_b * cross( pos, force_dir ) * diag( cef.m .* cef.dfdu .* cef.xm ); ...
+        zeros(3,size(G10,2)) ...
+    ];
 
 end
