@@ -113,8 +113,9 @@ ap.aspd.min = sqrt( airplane.body.m*9.81 / (0.5*1.225*airplane.aero.wingMain.pol
 
 %%
 T_h = 2/(ap.servo.omega*ap.servo.boost) + 2/ap.sflt.omega;
-p = -1*[1,1,1] * 2/T_h / 6 * agility_atti;
-p = -1*[1,0.9+0.7*1i,0.9-0.7*1i] * 2/T_h / 5.6 * agility_atti;
+% p = -1*[1,1,1] * 2/T_h / 6 * agility_atti;
+% p = -1*[1,0.9+0.7*1i,0.9-0.7*1i] * 2/T_h / 5.6 * agility_atti;
+p = roots([1,6,15,15]) * 2/T_h / 12 * agility_atti;
 k = ndiFeedbackGainPlace( p, T_h );
 
 p2 = -1*[1,1] * 2/T_h / 4;
@@ -154,7 +155,8 @@ ap.atc.rolldamp.S = airplane.aero.wingMain.geometry.S;
 %%
 T_h = T_h + 2/ap.atc.rm.rfreq;
 % p = -1*[1,1,1] * 2/T_h / 5;
-p = -1*[1,0.9+0.7*1i,0.9-0.7*1i] * 2/T_h / 5.6 * agility_pos;
+% p = -1*[1,0.9+0.7*1i,0.9-0.7*1i] * 2/T_h / 5.6 * agility_pos;
+p = roots([1,6,15,15]) * 2/T_h / 12 * agility_pos;
 k = ndiFeedbackGainPlace( p, T_h );
 
 ap.psc.k.pos = k(1);
