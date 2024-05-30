@@ -164,6 +164,10 @@ ap.psc.k.acc = k(3);
 
 % flight path smoothing (pre-filtering) time constant
 ap.psc.rm.T = 3 * 2/ap.atc.rm.rfreq;
+% waypoint acceptance radius, in m
+ap.psc.rm.wprad = 60;
+% maximum position error (switch to approach if above)
+ap.psc.rm.eposmax = 20;
 
 %%
 num_u = length(ap.cef.cla);
