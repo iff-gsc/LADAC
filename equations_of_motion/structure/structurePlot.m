@@ -29,6 +29,7 @@ mass_size = 1;
 line_width = 1;
 structure_color = 'b';
 node_size = 1;
+tol = 0;
 for i = 1:length(varargin)
     if strcmp(varargin{i},'MassColor')
         mass_color = varargin{i+1};
@@ -40,11 +41,13 @@ for i = 1:length(varargin)
         structure_color = varargin{i+1};
     elseif strcmp(varargin{i},'NodeSize')
         node_size = varargin{i+1};
+    elseif strcmp(varargin{i},'Tolerance')
+        tol = varargin{i+1};
     end
 end
 
 n_nodes = length( structure.xyz(1,:) );
-M_int = structureGetNodesConnections( structure );
+M_int = structureGetNodesConnections( structure, tol );
 xyz_cg = structure.xyz + structureGetNodeCg(structure,1:size(structure.xyz,2));
 
 for i = 1:n_nodes
