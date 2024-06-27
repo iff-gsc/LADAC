@@ -1,5 +1,45 @@
 function [ap,ap_notune] = lindiPlaneAutoCreate( airplane, varargin )
+% lindiPlaneAutoCreate automatic computation of LindiPlane autopilot
+% parameters
+% 
+% Syntax:
+%   ap = lindiPlaneAutoCreate( copter )
+%   ap = lindiPlaneAutoCreate( copter, Name, Value )
+% 
+% Inputs:
+%   airplane        Airplane parameters struct, see conventionalAirplaneLoadParams
+%   Name            Name of Name-Value arguments:
+%                       - 'SensFilt': define sensor low-pass filter
+%                           Value: [omega,d], where omega is the cutoff
+%                           frequency (rad/s) and d is the damping ratio
+%                           (0...1), default: omega = twice the servo
+%                           cutoff frequency, d = 1
+%                       - 'AgilityAtti': define agility of attitude
+%                           controller with values between 0.5 ... 2
+%                           (0.5: 50% agility, 1: 100% agility, 2: 200%
+%                           agility), default: 1
+%                       - 'AgilityPos': define agility of position
+%                           controller with values between 0.5 ... 2
+%                           (0.5: 50% agility, 1: 100% agility, 2: 200%
+%                           agility), default: 1
+%                       - 'ServoBoost': define servo booster strength
+%                           with values between 0.5 ... 2 (0.5: 50% servo
+%                           speed, 1: 100% servo speed, 2: 200% servo
+%                           speed), default: 1
+%   Value           Value of Name-Value arguments (see input Name)
+% 
+% Outputs:
+%   ap              LindiPlane autopilot parameters struct as defined by
+%                   this function (all parameters are tunable)
+%   ap_notune       Non-tunable LindiPlane autopilot parameters struct as
+%                   defined by this function
 
+% Disclaimer:
+%   SPDX-License-Identifier: GPL-3.0-only
+% 
+%   Copyright (C) 2024 Yannic Beyer
+%   Copyright (C) 2024 TU Braunschweig, Institute of Flight Guidance
+% *************************************************************************
 
 sflt_default = [];
 agility_atti                = 1;

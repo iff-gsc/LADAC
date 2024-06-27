@@ -1,10 +1,10 @@
 function airplane = conventionalAirplaneLoadParams( filename )
 % the variable loaded from filename must be equal to
-% params_conventional_airplane_aero_simple_default
+% airplane_params_default
 % 
 % Example:
 %   airplane = conventionalAirplaneLoadParams( ...
-%       'params_conventional_airplane_default' );
+%       'airplane_params_default' );
 % 
 
 % Disclamer:
