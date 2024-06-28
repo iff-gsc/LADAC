@@ -1,6 +1,6 @@
 function [b,a] = drydenTf( sigma, L, V, axis ) %#codegen
-% drydenTf_u computes the coefficients of the transfer function of the
-%   Dryden wind turbulence spectrum in u direction.
+% drydenTf computes the coefficients of the transfer function of the
+%   Dryden wind turbulence spectrum.
 % 
 % Inputs:
 %   sigma       root-mean-square wind turbulence intensity, in m/s

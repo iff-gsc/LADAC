@@ -74,7 +74,7 @@ for i = 1:length(varargin)
             else
                 error('Invalid option for parameter is_infl_recomputed.')
             end
-        case 'controlsdef'
+        case 'ControlsFilename'
             if ischar(varargin{i+1})
                 controls_filename = varargin{i+1};
             else
@@ -202,22 +202,7 @@ wing.config.is_infl_recomputed = is_infl_recomputed;
 wing.interim_results = wingSetInterimResults( wing, Ma );
 
 %% set custom actuator
-custom_path = which('wingCustomActuator','-all');
-if length(custom_path) > 1
-    custom_act_split = strsplit(wing.params.actuator_2_type(1,:),'-');
-    custom_act_name = custom_act_split{end};
-    for i = 1:length(custom_path)
-        folder_names_split = strsplit(custom_path{i},{'/','\'});
-        custom_folder_name = folder_names_split{end-1};
-        if ~strcmp(custom_folder_name,custom_act_name)
-            rmpath(fileparts(custom_path{i}));
-        end
-    end
-end
-custom_path = which('wingCustomActuator','-all');
-if length(custom_path) > 1
-    error('Custom actuator was not specified correctly.');
-end
+wingSetCustomActuatorPath(wing);
 wing = wingCustomActuatorSetup(wing);
 
 end
