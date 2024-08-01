@@ -38,12 +38,12 @@ elseif states_when_enabling == 2
 end
 
 block_list = find_system(gcb,'LookUnderMasks','on','FollowLinks','on',...
-    'Name','Enable');
+    'SearchDepth',1,'Name','Enable');
 if is_enable_checked
     if isempty(block_list)
         add_block('built-in/EnablePort',[gcb,'/Enable']);
         block_list = find_system(gcb,'LookUnderMasks','on','FollowLinks','on',...
-            'Name','Enable');
+            'SearchDepth',1,'Name','Enable');
     end
     set_param(block_list{1},'StatesWhenEnabling',states_when_enabling_str);
 else

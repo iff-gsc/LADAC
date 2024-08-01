@@ -125,9 +125,9 @@ ap.ceb.m    = cntrl_effect_scaling_factor * airplane.body.m;
 ap.ceb.ixx  = cntrl_effect_scaling_factor * airplane.body.I(1,1);
 ap.ceb.iyy  = cntrl_effect_scaling_factor * airplane.body.I(2,2);
 ap.ceb.izz  = cntrl_effect_scaling_factor * airplane.body.I(3,3);
-ap.ceb.ixy  = cntrl_effect_scaling_factor * -airplane.body.I(1,2);
-ap.ceb.ixz  = cntrl_effect_scaling_factor * -airplane.body.I(1,3);
-ap.ceb.iyz  = cntrl_effect_scaling_factor * -airplane.body.I(2,3);
+ap.ceb.ixy  = 0 * cntrl_effect_scaling_factor * -airplane.body.I(1,2);
+ap.ceb.ixz  = 0 * cntrl_effect_scaling_factor * -airplane.body.I(1,3);
+ap.ceb.iyz  = 0 * cntrl_effect_scaling_factor * -airplane.body.I(2,3);
 
 % control effectiveness scaling
 ap.ceb.scale = 1;
@@ -175,14 +175,14 @@ ap.atc.k.yacc = k2(2);
 
 %
 ap.atc.rm.rfreq = 2/T_h / 4 * agility_atti;
-ap.atc.rm.rangmax = 60;
-ap.atc.rm.rratmax = 60;
+ap.atc.rm.rangmax = 70;
+ap.atc.rm.rratmax = 70;
 
-ap.atc.rm.pfreq = 2/T_h / 4 * agility_atti;
+ap.atc.rm.pfreq = 1/T_h / 4 * agility_atti;
 ap.atc.rm.pangmax = 30;
 ap.atc.rm.pratmax = 60;
 
-ap.atc.rm.yfreq = 2/T_h / 4 * agility_atti;
+ap.atc.rm.yfreq = 1/T_h / 4 * agility_atti;
 ap.atc.rm.yratmax = 60;
 ap.atc.rm.ydecaytc = 2/ap.atc.rm.yfreq;
 
@@ -191,6 +191,12 @@ derivs = simpleWingGetDerivs( airplane.aero.wingMain );
 ap.atc.rolldamp.clp = derivs.P(4);
 ap.atc.rolldamp.b = airplane.aero.wingMain.geometry.b;
 ap.atc.rolldamp.S = airplane.aero.wingMain.geometry.S;
+
+% Pitch damping inversion parameters
+ap.atc.ptchdamp.cla = cef.cla(end-1);
+ap.atc.ptchdamp.x = abs(cef.x(end-1));
+ap.atc.ptchdamp.sh = cef.s(end-1);
+ap.atc.ptchdamp.sw = ap.atc.rolldamp.S;
 
 %%
 T_h = T_h + 2/ap.atc.rm.rfreq;

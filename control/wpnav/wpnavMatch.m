@@ -81,7 +81,7 @@ while true
     
     % circle segment
     if stage == 0
-        idx3 = fixIdx(wp_idx-2:wp_idx,num_wp);
+        idx3 = fixIdx([wp_idx-2,wp_idx-1,wp_idx],num_wp);
         circ_seg = wpnavCircSeg(waypoints(:,idx3),wp_radius);
         [p_match(:),t(:),d(:)] = wpnavMatchCircSeg(circ_seg,p);
 
@@ -99,20 +99,20 @@ while true
         if is_initial_line
             p1 = waypoints(:,1);
         else
-            idx3 = fixIdx(wp_idx-2:wp_idx,num_wp);
+            idx3 = fixIdx([wp_idx-2,wp_idx-1,wp_idx],num_wp);
             circ_seg_1 = wpnavCircSeg(waypoints(:,idx3),wp_radius);
             p1 = circ_seg_1.end;
         end
         if is_last_line
             if is_cycle
-                idx2 = fixIdx(wp_idx-1:wp_idx,num_wp);
+                idx2 = fixIdx([wp_idx-1,wp_idx],num_wp);
                 circ_seg_2 = wpnavCircSeg([waypoints(:,idx2),waypoints(:,1)],wp_radius);
                 p2 = circ_seg_2.start;
             else
                 p2 = waypoints(:,end);
             end
         else
-            idx3 = fixIdx(wp_idx-1:wp_idx+1,num_wp);
+            idx3 = fixIdx([wp_idx-1,wp_idx,wp_idx+1],num_wp);
             circ_seg_2 = wpnavCircSeg(waypoints(:,idx3),wp_radius);
             p2 = circ_seg_2.start;
         end
