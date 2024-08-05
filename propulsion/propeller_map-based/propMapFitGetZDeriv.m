@@ -78,7 +78,7 @@ switch output_name
         switch deriv_name
             case 'RPM'
                 Z_du = Z_du.*(RPM*2*pi/60) ...
-                    + propMapGetZ(prop_fit,RPM_lim,V,'torque') .* (2*pi/60);
+                    + propMapFitGetZ(prop_fit,RPM_lim,V,'torque') .* (2*pi/60);
             case 'V'
                 Z_du = Z_du.*(RPM*2*pi/60);
         end

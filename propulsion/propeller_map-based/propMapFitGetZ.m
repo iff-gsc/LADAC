@@ -49,8 +49,14 @@ Z = c.p00 + c.p10.*RPM_lim + c.p01.*V_lim + c.p20.*RPM_lim.^2 ...
     + c.p41.*RPM_lim.^4.*V_lim + c.p32.*RPM_lim.^3.*V_lim.^2 ...
     + c.p23.*RPM_lim.^2.*V_lim.^3 + c.p14.*RPM_lim.*V_lim.^4 + c.p05.*V_lim.^5;
 
-Z_dRPM = propMapFitGetZDeriv( prop_fit, RPM_lim, V_lim, output_name, 'RPM', true );
-Z_dV = propMapFitGetZDeriv( prop_fit, RPM_lim, V_lim, output_name, 'V', true );
+switch output_name
+    case 'power'
+        output_name_tmp = 'torque';
+    otherwise
+        output_name_tmp = output_name;
+end
+Z_dRPM = propMapFitGetZDeriv( prop_fit, RPM_lim, V_lim, output_name_tmp, 'RPM', true );
+Z_dV = propMapFitGetZDeriv( prop_fit, RPM_lim, V_lim, output_name_tmp, 'V', true );
 
 % apply linear extrapolation
 Z = Z + Z_dRPM.*(RPM-RPM_lim) + Z_dV.*(V-V_lim);
