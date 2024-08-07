@@ -20,7 +20,7 @@ function v_rot = axisAngle( v, axis, angle ) %#codegen
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-v_rot       = zeros( size(v) );
+v_rot       = zeros( size(v), class(v) );
 axis_length = vecnorm( axis, 2, 1 );
 for i = 1:3
     axis(i,:) = divideFinite( axis(i,:), axis_length );
