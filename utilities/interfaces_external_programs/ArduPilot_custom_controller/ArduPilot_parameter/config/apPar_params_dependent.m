@@ -26,7 +26,7 @@ param.name.max_len = 16;     % See also:        ArduPilot/libraries/AP_Param/AP_
 
 param.group.max_nesting = 3;     % See also:    ArduPilot/libraries/AP_Param/AP_Param.h:
                                     %               - Keywords: _group_bits, _group_level_shift
-param.group.max_elements = 2^6;  % See also:    ToDo:
+param.group.max_elements = 2^6-1;  % See also:    ToDo:
                                     %               ToDo: Consider remaining nesting capacity due to implementation...
 
 
