@@ -26,6 +26,8 @@ function [ap,ap_notune] = lindiPlaneAutoCreate( airplane, varargin )
 %                           with values between 0.5 ... 2 (0.5: 50% servo
 %                           speed, 1: 100% servo speed, 2: 200% servo
 %                           speed), default: 1
+%                       - 'MlaUse': define wheter maneuver load alleviation
+%                           should be used (0: off, 1: on), default: 0
 %   Value           Value of Name-Value arguments (see input Name)
 % 
 % Outputs:
@@ -41,16 +43,19 @@ function [ap,ap_notune] = lindiPlaneAutoCreate( airplane, varargin )
 %   Copyright (C) 2024 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
+%% Input parsing
 sflt_default = [];
 agility_atti                = 1;
 agility_pos                 = 1;
 servo_boost                 = 1;
+mla_use                     = 0;
 
 p = inputParser;
 addOptional(p,'SensFilt',sflt_default,@(x) numel(x)==2);
 addOptional(p,'AgilityAtti',agility_atti);
 addOptional(p,'AgilityPos',agility_pos);
 addOptional(p,'ServoBoost',servo_boost);
+addOptional(p,'MlaUse',mla_use);
 
 parse(p,varargin{:});
 
@@ -58,12 +63,13 @@ sflt = p.Results.SensFilt;
 agility_atti = p.Results.AgilityAtti;
 agility_pos = p.Results.AgilityPos;
 servo_boost = p.Results.ServoBoost;
+mla_use = p.Results.MlaUse;
 
 
 cntrl_effect_scaling_factor = 1;
 
 
-% flap control effectiveness parameters
+%% Flap control effectiveness
 cef.cla = [];
 cef.dadf = [];
 cef.dfdu = [];
@@ -120,7 +126,7 @@ ap.cef = cef;
 
 
 
-% body control effectiveness parameters
+%% Body control effectiveness
 ap.ceb.m    = cntrl_effect_scaling_factor * airplane.body.m;
 ap.ceb.ixx  = cntrl_effect_scaling_factor * airplane.body.I(1,1);
 ap.ceb.iyy  = cntrl_effect_scaling_factor * airplane.body.I(2,2);
@@ -132,13 +138,13 @@ ap.ceb.iyz  = 0 * cntrl_effect_scaling_factor * -airplane.body.I(2,3);
 % control effectiveness scaling
 ap.ceb.scale = 1;
 
-%
+
+%% Servos
 ap.servo.omega = airplane.act.ailerons.naturalFrequency;
 ap.servo.boost = servo_boost;
 
 
-
-%
+%% Sensor filter
 if isempty(sflt)
     ap.sflt.omega = 2 * ap.servo.omega * ap.servo.boost;
     ap.sflt.d = 1;
@@ -147,11 +153,13 @@ else
     ap.sflt.d = sflt(2);
 end
 
+
+%% Airspeed
 ap.aspd.flttc = 0.1;
 ap.aspd.min = sqrt( airplane.body.m*9.81 / (0.5*1.225*airplane.aero.wingMain.polar.params.C_Lmax*airplane.aero.wingMain.geometry.S) );
 
 
-%%
+%% Attitude control
 T_h = 2/(ap.servo.omega*ap.servo.boost) + 2/ap.sflt.omega;
 % p = -1*[1,1,1] * 2/T_h / 6 * agility_atti;
 % p = -1*[1,0.9+0.7*1i,0.9-0.7*1i] * 2/T_h / 5.6 * agility_atti;
@@ -186,19 +194,20 @@ ap.atc.rm.yfreq = 1/T_h / 4 * agility_atti;
 ap.atc.rm.yratmax = 60;
 ap.atc.rm.ydecaytc = 2/ap.atc.rm.yfreq;
 
+
+%% State dynamics
 % Roll damping inversion parameters
 derivs = simpleWingGetDerivs( airplane.aero.wingMain );
-ap.atc.rolldamp.clp = derivs.P(4);
-ap.atc.rolldamp.b = airplane.aero.wingMain.geometry.b;
-ap.atc.rolldamp.S = airplane.aero.wingMain.geometry.S;
-
+ap.eig.clp = derivs.P(4);
+ap.eig.b = airplane.aero.wingMain.geometry.b;
+ap.eig.s = airplane.aero.wingMain.geometry.S;
 % Pitch damping inversion parameters
-ap.atc.ptchdamp.cla = cef.cla(end-1);
-ap.atc.ptchdamp.x = abs(cef.x(end-1));
-ap.atc.ptchdamp.sh = cef.s(end-1);
-ap.atc.ptchdamp.sw = ap.atc.rolldamp.S;
+ap.eig.cla_h = cef.cla(end-1);
+ap.eig.x_h = abs(cef.x(end-1));
+ap.eig.s_h = cef.s(end-1);
 
-%%
+
+%% Position control
 T_h = T_h + 2/ap.atc.rm.rfreq;
 % p = -1*[1,1,1] * 2/T_h / 5;
 % p = -1*[1,0.9+0.7*1i,0.9-0.7*1i] * 2/T_h / 5.6 * agility_pos;
@@ -217,7 +226,7 @@ ap.psc.rm.wprad = 60;
 % maximum position error (switch to approach if above)
 ap.psc.rm.eposmax = 20;
 
-%%
+%% Control allocation
 num_u = length(ap.cef.cla);
 % minimum control input kx1 vector
 ap.ca.u_min = -ones(num_u,1);
@@ -227,7 +236,7 @@ ap.ca.u_max = ones(num_u,1);
 ap.ca.u_d = zeros(num_u,1);
 
 % weighting mx1 vector of pseudo-control
-ap.ca.W_v = [10,10,100]';
+ap.ca.W_v = [ 10; 1; 0.1 ];
 % weighting kx1 vector of the control input vector
 ap.ca.W_u = ones(num_u,1);
 % weighting of pseudo-control vs. control input (scalar)
@@ -235,10 +244,19 @@ ap.ca.gamma = 1000;
 % initial working set mx1 vector
 ap.ca.W = zeros(num_u,1);
 % maximum number of iterations (scalar)
-ap.ca.i_max = 100;
+ap.ca.i_max = 15;
 
 
-%%
+%% Maneuver load alleviation
+ap.mla.use = mla_use;
+ap.mla.eta_np = airplane.aero.wingMain.xyz_wing_np(2,:)/(0.5*airplane.aero.wingMain.geometry.b);
+ap.mla.ca.W_v = [ 1; 1; 10 ];
+ap.mla.ca.W_u = ap.ca.W_u;
+ap.mla.ca.gamma = ap.ca.gamma;
+ap.mla.ca.i_max = ap.ca.i_max;
+
+
+%% Sample time
 
 ap_notune.ts = 1/400;
 
