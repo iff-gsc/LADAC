@@ -14,7 +14,9 @@ function prop_fit = propMapFitCreate( prop_name, corr_fac, is_plot )
 %                           names:
 %                           name_list = propMapGetNameList();
 %   corr_fac                thrust and torque correction factor, e.g. due
-%                           to mounting
+%                           to mounting. Either a scalar factor or an array
+%                           [thrust_factor, torque_factor] with different
+%                           factors for thrust and torque can be provided.
 %   is_plot                 (optional) show curve fit result or not (bool),
 %                           default is false.
 % 
@@ -41,19 +43,27 @@ if nargin < 3
     is_plot = false;
 end
 
+if numel(corr_fac) == 1
+    thrust_fac = corr_fac;
+    torque_fac = corr_fac;
+elseif numel(corr_fac) == 2
+    thrust_fac = corr_fac(1);
+    torque_fac = corr_fac(2);
+end
+
 % get scattered propeller map from cell array
 prop_map_scatter = propMapScatterCreate( prop_name );
 
 % fit thrust
 [fitresult, ~] = propMapCurveFit( prop_map_scatter.RPM, ...
-                    prop_map_scatter.V, prop_map_scatter.thrust*corr_fac, ...
+                    prop_map_scatter.V, prop_map_scatter.thrust*thrust_fac, ...
                     'thrust', is_plot );
 coeffs = fitresult2coeffs( fitresult );
 prop_fit.coeffs_thrust = coeffs;
 
 % fit torque
 [fitresult, ~] = propMapCurveFit( prop_map_scatter.RPM, ...
-                    prop_map_scatter.V, prop_map_scatter.torque*corr_fac, ...
+                    prop_map_scatter.V, prop_map_scatter.torque*torque_fac, ...
                     'torque', is_plot );
 coeffs = fitresult2coeffs( fitresult );
 prop_fit.coeffs_torque = coeffs;
