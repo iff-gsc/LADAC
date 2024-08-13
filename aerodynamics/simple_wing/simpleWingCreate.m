@@ -84,7 +84,7 @@ while true
     wing = simpleWingSetDragCurve( wing );
 
     % position of the neutral point in the wing frame, m
-    eta_np = sqrt(2*derivs.P(4)/derivs.alpha(3));
+    eta_np = derivs2.eta_NP;
     x_np = derivs2.x_NP;
     wing.xyz_wing_np = [x_np*[1,1];eta_np*wing.geometry.b/2*[-1,1];0,0];
 
@@ -95,7 +95,8 @@ while true
 
 
     % compute control point location for local airspeed vector computation
-    spanwise_location = eta_np;
+    eta_p = sqrt(2*derivs.P(4)/derivs.alpha(3));
+    spanwise_location = eta_p*eta_p/eta_np;
     x_c = derivs.Q(3)/-derivs.alpha(3);
 
     wing.C_m_dOmega_0 = derivs.Q(5) - -derivs.Q(3)*(x_np/wing.geometry.c);

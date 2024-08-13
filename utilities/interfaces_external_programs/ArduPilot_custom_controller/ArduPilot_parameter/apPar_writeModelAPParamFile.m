@@ -58,51 +58,94 @@ sizes_total   = sum(sizes);
 
 
 %% Split into subgroups
+
+split_method = 1;
+
 % ToDo: This logic could get overhaul!
-if sizes_total > ap_pars.group.max_elements
-    is_par_split_success = false;
-    
-    for idx_nst = 1:nesting_depth
-        
-        [grps, idxs_bool, idxs, is_group] = apPar_getGroups(flds_cpp_path, idx_nst);
-        
-        % Check total number of parameters and split them into subgroups if required
-        frst_layer_idxs_bool = idxs_bool(~is_group);
-        scnd_layer_idxs_bool = idxs_bool(is_group);
-        
-        frst_layer_grp_size = sum(cellfun(@(a) sum(sizes(a)), frst_layer_idxs_bool)) + length(scnd_layer_idxs_bool);
-        if isempty(frst_layer_grp_size)
-            frst_layer_grp_size = length(scnd_layer_idxs_bool);
+
+% Splitting method 1: Create a parameter group for each sub-struct.
+% This method does not work if the number of parameters within a sub-struct
+% exceeds the allowed maximum number of parameters within a group. In that
+% case splitting method 2 will be used.
+if split_method == 1
+    if sizes_total > ap_pars.group.max_elements
+        is_par_split_success = false;
+
+        for idx_nst = 1:nesting_depth
+
+            [grps, idxs_bool, idxs, is_group] = apPar_getGroups(flds_cpp_path, idx_nst);
+
+            % Check total number of parameters and split them into subgroups if required
+            frst_layer_idxs_bool = idxs_bool(~is_group);
+            scnd_layer_idxs_bool = idxs_bool(is_group);
+
+            frst_layer_grp_size = sum(cellfun(@(a) sum(sizes(a)), frst_layer_idxs_bool)) + length(scnd_layer_idxs_bool);
+            if isempty(frst_layer_grp_size)
+                frst_layer_grp_size = length(scnd_layer_idxs_bool);
+            end
+            scnd_layer_grp_size = cellfun(@(a) sum(sizes(a)), scnd_layer_idxs_bool);
+
+            if frst_layer_grp_size <= ap_pars.group.max_elements && all(scnd_layer_grp_size <= ap_pars.group.max_elements)
+                is_par_split_success = true;
+                break;
+            end
         end
-        scnd_layer_grp_size = cellfun(@(a) sum(sizes(a)), scnd_layer_idxs_bool);
-        
-        if frst_layer_grp_size <= ap_pars.group.max_elements && all(scnd_layer_grp_size <= ap_pars.group.max_elements)
-            is_par_split_success = true;
-            break;
+
+        scnd_layer_grps = grps(is_group);
+        frst_layer_idxs = idxs(~is_group);
+        scnd_layer_idxs = idxs(is_group);
+
+        if ~is_par_split_success
+            split_method = 2;
         end
+    else
+        scnd_layer_grps = cell.empty;
+        scnd_layer_idxs = cell.empty;
+
+        frst_layer_idxs = num2cell([1:numel(flds_ap_path)].');
+        is_group        = false(size(flds_ap_path));
     end
-    
-    scnd_layer_grps = grps(is_group);
-    frst_layer_idxs = idxs(~is_group);
-    scnd_layer_idxs = idxs(is_group);
-    
-    if ~is_par_split_success
-        error('Automatic parameter splitting did not succeed. Too many parameters per group! Please implement a more advanced method.')
+end
+
+
+% Split method 2: Put all parameters in a group and start the next group as
+% soon as the maximum allowed number of parameters is reached.
+if split_method == 2
+    fnames = fieldnames(tune_vars_proc);
+    if numel(fnames) > 1
+        error('Automatic parameter splitting did not succeed. Splitting method 2 currently only supports a single tunable parameter struct. The code must be extended.');
     end
-else
-    scnd_layer_grps = cell.empty;
-    scnd_layer_idxs = cell.empty;
-    
-    frst_layer_idxs = num2cell([1:numel(flds_ap_path)].');
-    is_group        = false(size(flds_ap_path));
+    frst_layer_idxs = {};
+    scnd_layer_idxs = {};
+    num_elements = 0;
+    szs = tune_vars_proc.(fnames{1}).sizes_l;
+    idxs =  [];
+    for idx=1:numel(szs)    
+        if (num_elements + szs(idx)) > ap_pars.group.max_elements
+            scnd_layer_idxs = [scnd_layer_idxs; {idxs}];
+            idxs = [];
+            num_elements = 0;
+        end
+        num_elements = num_elements + szs(idx);
+        idxs = [idxs, idx];    
+    end
+    scnd_layer_idxs = [scnd_layer_idxs; {idxs}];
+    is_group        = true(length(scnd_layer_idxs),1);
 end
 
 
 
 %% Generate var_info names
 var_info_prfx  = 'var_info_';
-var_info_names = cellfun(@(a) [var_info_prfx a], strrep(scnd_layer_grps, '.', '_'), 'UniformOutput', false);
-
+if split_method == 1
+    var_info_names = cellfun(@(a) [var_info_prfx a], strrep(scnd_layer_grps, '.', '_'), 'UniformOutput', false);
+else
+    var_info_names = {};
+    for idx=1:numel(scnd_layer_idxs)
+        var_info_name = ['var_info_' num2str(idx)];
+        var_info_names =  [var_info_names; {var_info_name}];
+    end
+end
 
 
 %% Generate AP parameter file
@@ -115,7 +158,7 @@ fprintf(fid, '#include %s\n', includes{:});
 
 
 % Second layer groups
-for idx_g = 1:length(scnd_layer_grps)
+for idx_g = 1:length(scnd_layer_idxs)
     
     fprintf(fid, '\n\nconst AP_Param::GroupInfo %s::%s[] = {\n', class_name, var_info_names{idx_g});
     

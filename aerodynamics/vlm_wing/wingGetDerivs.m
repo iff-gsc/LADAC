@@ -103,6 +103,7 @@ Coeff_0 = coeffb2a(Coeff_0,alpha_0,beta_0);
 alpha_du    = alpha_0 + du;
 wing_du     = wingSetState( wing, alpha_du, beta_0, V_0, Omega_0, ...
                 actuators_pos_0, actuators_rate_0, cog );
+eta_NP        = yNp(wing_0,wing_du);
 Coeff       = [wing_du.state.aero.coeff_glob.C_XYZ_b;wing_du.state.aero.coeff_glob.C_lmn_b];
 Coeff       = coeffb2a(Coeff,alpha_du,beta_0);
 Coeff_dalpha = (Coeff-Coeff_0) / du;
@@ -189,6 +190,7 @@ derivs = table( alpha, beta, P, Q, R, eta, ...
     'RowNames', {'C_X','C_Y','C_Z','C_l','C_m','C_n'} );
 
 more.x_NP = x_NP;
+more.eta_NP = eta_NP;
 more.Coeff_0 = Coeff_0;
 
 
@@ -197,6 +199,15 @@ more.Coeff_0 = Coeff_0;
         Coeff_a = zeros(6,1);
         Coeff_a(1:3) = M_ba'*Coeff_b(1:3);
         Coeff_a(4:6) = M_ba'*Coeff_b(4:6);
+    end
+
+    function y_np = yNp(wing_0,wing_du)
+        Delta_lift_dist = wing_du.state.aero.force_loc.R_i_b(3,1:end/2) ...
+            - wing_0.state.aero.force_loc.R_i_b(3,1:end/2);
+        Delta_lift = wing_du.state.aero.force_glob.R_b(3) ...
+            - wing_0.state.aero.force_glob.R_b(3);
+        y_np = - Delta_lift_dist * wing_du.geometry.ctrl_pt.pos(2,1:end/2)' ...
+            / ( 0.5 * Delta_lift * 0.5 *wing_du.params.b );
     end
 
 end
