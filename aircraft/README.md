@@ -15,3 +15,5 @@ Contains airplane configurations and subsystems.
 Contains eVTOL configurations and subsystems.
 - [**Multicopters**](multicopters)  
 Contains multicopters configurations and subsystems.
+- [**Suspended Payload**](suspended_payload)  
+Contains suspended payload models that can be attached to an aircraft.
