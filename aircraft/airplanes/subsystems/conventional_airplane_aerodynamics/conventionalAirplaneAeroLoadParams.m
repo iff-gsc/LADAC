@@ -7,7 +7,7 @@ function aero = conventionalAirplaneAeroLoadParams( filename )
 %       'params_conventional_airplane_aero_simple_default' );
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

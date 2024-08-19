@@ -33,7 +33,7 @@ function n_g_des = ndiCopterAcc2LeanVector( a_g, g )
 % See also:
 %   indiCopterAcc2LeanVector, quatReduced, dcm2LeanVector
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

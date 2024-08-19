@@ -21,7 +21,7 @@ function [signal_names_1D,signal_names,num_signals] = ...
 % See also:
 %   ardupilotInitLogMuxer, ardupilotInitLogMuxerCore
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2022 Yannic Beyer

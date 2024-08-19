@@ -14,7 +14,7 @@ function [ C_m_camber_np_w ] = simpleWingGetCmCamber( wing, x_np_wing, alpha_M, 
 %                   to the neutral point in wing frame
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

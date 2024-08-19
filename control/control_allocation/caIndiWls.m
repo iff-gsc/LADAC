@@ -44,7 +44,7 @@ function [ Delta_u, W, iter ] = caIndiWls( ca, ...
 % See also:
 %   wls_alloc
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

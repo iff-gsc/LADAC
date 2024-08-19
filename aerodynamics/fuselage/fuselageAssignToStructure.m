@@ -25,7 +25,7 @@ function assignment_vector = fuselageAssignToStructure( geometry, structure )
 %   fuselageSetAeroelasticity, fuselageInit, fuselageCreate
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

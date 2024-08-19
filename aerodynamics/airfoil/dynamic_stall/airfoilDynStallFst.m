@@ -17,7 +17,7 @@ function f_st = airfoilDynStallFst( c_L_st, c_L_alpha, Delta_alpha ) %#codegen
 % See also: airfoilDynStallFst, airfoilDynStallClFs
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

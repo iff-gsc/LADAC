@@ -24,7 +24,7 @@ function wing = wingSetCirculationUnsteady( wing ) %#codegen
 %       Prandtl's classic lifting-line theory. Jounal of Aircraft, 37(4),
 %       662-670.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

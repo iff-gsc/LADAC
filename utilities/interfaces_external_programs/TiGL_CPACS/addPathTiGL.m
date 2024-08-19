@@ -17,7 +17,7 @@ function addPathTiGL(TiGL_version)
 %   addPathTiGL('3.0.0')
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

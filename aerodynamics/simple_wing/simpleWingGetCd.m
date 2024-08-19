@@ -65,7 +65,7 @@ function C_D = simpleWingGetCd( wing, alpha_M, beta_M, eta ) %#codegen
 % 
 % See also: aeroAnglesMod, simpleWingGetCl
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -26,7 +26,7 @@ function new_struct = loadLoggedData(filename, old_struct, sub_struct_name)
 %         time
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

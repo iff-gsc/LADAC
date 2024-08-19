@@ -14,7 +14,7 @@ function [ L_u, L_v, L_w ] = turbulenceScaleLength( h ) %#codegen
 %       Technologies Conference and Exhibit. AIAA 2003-5529. Austin, Texas.
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

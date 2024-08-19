@@ -32,7 +32,7 @@ function [section_idx, error, t] = trajGetMatch(traj, position, active_section)
 % See also: trajGetMatch, trajCreateFromWaypoints
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

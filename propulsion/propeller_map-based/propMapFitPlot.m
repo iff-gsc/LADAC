@@ -17,7 +17,7 @@ function [] = propMapFitPlot( prop_map_fit, varargin )
 %   PROPMAPFITCREATE, PROPMAPFITGETZ, PROPMAPFITGETZDERIV
 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

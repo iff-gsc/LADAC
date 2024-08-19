@@ -29,7 +29,7 @@ function [v_b,v_t] = wingGetDimlessIndVel( V_inf_local, geometry, wake, Ma, is_u
 %       662-670.
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

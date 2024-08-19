@@ -15,7 +15,7 @@ function fuselagePlotEigenmode(fuselage,structure,num_eigenmode,varargin)
 %   fuselageInit, fuselageCreate, fuselageCreateWithCpacs
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

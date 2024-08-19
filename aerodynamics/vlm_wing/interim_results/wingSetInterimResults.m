@@ -1,7 +1,7 @@
 function interim_results = wingSetInterimResults( wing, Ma_inf )
 % Description of wingSetInterimResults
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

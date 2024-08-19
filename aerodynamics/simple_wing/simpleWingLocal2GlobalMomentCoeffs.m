@@ -21,7 +21,7 @@ function C_lmn_i_b = simpleWingLocal2GlobalMomentCoeffs( wing, C_lmn_i_w, ...
 %                   frame
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

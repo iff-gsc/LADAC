@@ -17,7 +17,7 @@ function wing = wingSetActuators( wing, actuators_pos, actuators_rate )
 %                           of flap and its actuator state 
 %                           (array) 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

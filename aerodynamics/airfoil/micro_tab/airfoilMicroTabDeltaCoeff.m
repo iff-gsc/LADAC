@@ -24,7 +24,7 @@ function [Delta_c_L,Delta_c_D,Delta_c_m] = airfoilMicroTabDeltaCoeff( ...
 %       https://arc.aiaa.org/doi/pdf/10.2514/1.C036426?casa_token=ev6VDwEIkCIAAAAA:4g1h23YzMzEHPzJskme5LC45Gs0FkqwqlveAhscZVpJXFK0Do3Mh9TEMuuIvwbp9SPNOZkFzlA
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

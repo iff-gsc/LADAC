@@ -17,7 +17,7 @@ function c_D = unstAirfoilAeroCdNoFlutter( c_D_st, c_L_unst, ...
 % See also:
 %   unstAirfoilAeroCd
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2022 Yannic Beyer

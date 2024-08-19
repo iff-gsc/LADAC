@@ -4,7 +4,7 @@ function pertubStruct = createStructFromBusObj( busObject, defaultValue ) %#code
 %   is defined by the second function input. The created struct can be used
 %   to initialize values of a bus in Simulink.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2021 Alexander Kuzolap

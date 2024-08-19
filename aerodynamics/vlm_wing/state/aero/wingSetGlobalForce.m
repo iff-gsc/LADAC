@@ -11,7 +11,7 @@ function wing = wingSetGlobalForce( wing, pos_ref_c )
 % See also: wingSetGlobalCoeff, wingSetLocalForce, wingSetLocalCoeff
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

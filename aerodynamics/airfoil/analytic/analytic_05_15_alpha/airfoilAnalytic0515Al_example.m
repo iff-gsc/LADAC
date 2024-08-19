@@ -3,7 +3,7 @@
 % After that, an analytic approximation of the different fits for multiple
 % Mach numbers is performed using a shallow neural network (with NeuN).
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

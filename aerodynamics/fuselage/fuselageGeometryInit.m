@@ -11,7 +11,7 @@ function geometry = fuselageGeometryInit( n_segments )
 % Outputs:
 %   geometry        geometry struct as defined by this function
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

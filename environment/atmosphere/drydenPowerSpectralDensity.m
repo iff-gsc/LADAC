@@ -20,7 +20,7 @@ function S_Omega = drydenPowerSpectralDensity( sigma, L, Omega, axis )
 %       With Application to Flight Analysis. NASA Contractor Report 3309.
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

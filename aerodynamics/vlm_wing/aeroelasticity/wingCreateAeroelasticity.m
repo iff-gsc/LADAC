@@ -13,7 +13,7 @@ function aeroelasticity = wingCreateAeroelasticity( n_panels, n_structure_eig )
 %   wingCreate, wingSetAeroelasticity
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

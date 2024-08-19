@@ -4,7 +4,7 @@ function [] = caIndiWlsHlcBlockInit(is_Delta_W_v_checked,...
 %   If block check box is enabled, create new block inport or outport.
 %   If block check box is disabled, delete new block inport or outport.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2022 Yannic Beyer

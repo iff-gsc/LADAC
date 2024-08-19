@@ -22,7 +22,7 @@ function M_kg = dcmKgFromAngles(gamma,chi)
 % See also: dcmBkFromAngles
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

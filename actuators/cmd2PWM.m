@@ -13,7 +13,7 @@ function u_PWM = cmd2PWM(u_01,is_reversed)
 %   u_PWM           Vector of commands in the range of 1000~2000.
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

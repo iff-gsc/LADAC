@@ -46,7 +46,7 @@ function [coeffs, num_of_splines, degree] = ...
 %
 % See also: trajInit, traj_from_waypoints_example
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

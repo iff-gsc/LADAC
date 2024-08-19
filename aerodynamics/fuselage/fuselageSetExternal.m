@@ -16,7 +16,7 @@ function fuselage = fuselageSetExternal( fuselage, V_Wb, V_Wb_dt, atmosphere )
 %   fuselageInit, fuselageExternalInit, fuselageCreate, fuselageSetState
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

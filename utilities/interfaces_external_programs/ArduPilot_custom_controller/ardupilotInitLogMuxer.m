@@ -21,7 +21,7 @@ function [] = ardupilotInitLogMuxer( block_path, batch_name, num_signals )
 % See also:
 %   ardupilotCreateLogBus, ardupilotCreateLogSignalNames
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2022 Yannic Beyer

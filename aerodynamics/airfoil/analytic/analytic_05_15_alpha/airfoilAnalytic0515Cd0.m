@@ -1,6 +1,6 @@
 function [c_D_0,alpha_0] = airfoilAnalytic0515Cd0(fcd)
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

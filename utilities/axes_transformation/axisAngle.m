@@ -13,7 +13,7 @@ function v_rot = axisAngle( v, axis, angle ) %#codegen
 %   [1] https://en.wikipedia.org/wiki/Axis-angle_representation
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

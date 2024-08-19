@@ -1,7 +1,7 @@
 function [prm] = wingGetParamsFromCPACS( tiglHandle, wing_idx, controls_filename )
 % Description of wingGetParamsFromCPACS
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

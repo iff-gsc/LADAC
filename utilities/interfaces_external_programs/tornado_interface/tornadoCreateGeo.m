@@ -32,7 +32,7 @@ function geo = tornadoCreateGeo( params_file, xyz_cg_c, xyz_ref_c, ...
 % See also:
 %   tornadoCreateState
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2022 Yannic Beyer

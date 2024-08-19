@@ -33,7 +33,7 @@ function [section_idx, error_sqr, t] = trajGetMatchOrder5(traj, position, active
 % See also: trajGetMatch, trajCreateFromWaypoints
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 %
 %   Copyright (C) 2020-2022 Fabian Guecker

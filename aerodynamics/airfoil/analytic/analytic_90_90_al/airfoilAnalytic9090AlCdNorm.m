@@ -11,7 +11,7 @@ function c_D = airfoilAnalytic9090AlCdNorm(beta,x,alpha_q,c_d_q)
 %   c_D             drag coefficient vector
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

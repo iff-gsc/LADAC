@@ -12,7 +12,7 @@
 %   https://www.faa.gov/documentLibrary/media/Advisory_Circular/AC_25_341-1.pdf
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

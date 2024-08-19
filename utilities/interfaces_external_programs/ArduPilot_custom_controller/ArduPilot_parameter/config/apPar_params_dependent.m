@@ -5,7 +5,7 @@
 %   (apPar_params_default).
 %   The external sources are mentioned in the comments for each parameter.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2024 Jonas Withelm

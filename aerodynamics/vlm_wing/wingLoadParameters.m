@@ -12,7 +12,7 @@ function prm = wingLoadParameters( parameter_file )
 %   prm = wingLoadParameters('wing_params_default');
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

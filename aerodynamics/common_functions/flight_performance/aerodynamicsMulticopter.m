@@ -39,7 +39,7 @@ function [ Thrust, Theta_1, V_A, alpha ] = aerodynamicsMulticopter( ...
 % See also: propellerOp,  motorOp
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -17,7 +17,7 @@ function M = structureGetNodesConnections( structure, varargin )
 %                   node i and node j are connected with each other
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

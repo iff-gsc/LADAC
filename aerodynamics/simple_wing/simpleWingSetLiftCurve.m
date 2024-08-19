@@ -6,7 +6,7 @@ function wing = simpleWingSetLiftCurve( wing )
 % The outputs of this function is the angle of attack vector X and the 
 % lift coefficient vector Y  
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

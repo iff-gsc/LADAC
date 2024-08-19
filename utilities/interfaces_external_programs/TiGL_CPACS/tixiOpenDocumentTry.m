@@ -3,7 +3,7 @@ function tixiHandle = tixiOpenDocumentTry( CPACS_file_path )
 %   tiglOpenDocument but throws a helpful error message if a
 %   specicial error occurs.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

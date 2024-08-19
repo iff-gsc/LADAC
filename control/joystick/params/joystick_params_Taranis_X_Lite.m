@@ -4,7 +4,7 @@
 % the transmitter! Generate your own joystick configuration if it
 % does not work for you. For more details look at the joystick README.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 %
 %   Copyright (C) 2020-2022 Yannic Beyer

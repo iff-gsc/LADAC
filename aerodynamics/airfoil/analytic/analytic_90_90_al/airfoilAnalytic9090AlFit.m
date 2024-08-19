@@ -1,6 +1,6 @@
 function [fcl,fcd] = airfoilAnalytic9090AlFit(alpha_deg,c_l,c_d,varargin)
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -33,7 +33,7 @@ function q_out = quatLogDivide(q, qr, shortest_path)
 %   quatMultiply, quatInv, quatNorm
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

@@ -17,7 +17,7 @@ function wing = wingSetLocalInflow( wing, pos_ref_c )
 %   [1] Leishman, J. G., & Nguyen, K. Q. (1990). State-space representation
 %       of unsteady airfoil behavior. AIAA journal, 28(5), 836-844.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

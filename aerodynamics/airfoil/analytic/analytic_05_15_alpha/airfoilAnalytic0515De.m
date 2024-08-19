@@ -18,7 +18,7 @@ function Delta_coeff = airfoilAnalytic0515De(fdcx,alDe)
 %                   of the clean airfoil (1xN array)
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

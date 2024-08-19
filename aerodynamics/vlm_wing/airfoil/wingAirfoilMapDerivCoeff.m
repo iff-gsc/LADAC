@@ -28,7 +28,7 @@ function [coeff_dArg,airfoil_map] = wingAirfoilMapDerivCoeff( airfoil_map, segme
 % See also: wingAirfoilMapInterpCoeff, wingAirfoilMapSetSim
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

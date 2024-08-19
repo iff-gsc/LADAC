@@ -20,7 +20,7 @@ function omega_gb_b = omegaFromEuler( eulerAngles_dt, ...
 % See also: omegaFromEuler2
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

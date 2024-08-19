@@ -24,7 +24,7 @@ function [eta_dt2,q_elastic] = structureGetAcc( structure_red, q, eta, eta_dt ) 
 % See also:
 %   structureGetReduced
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

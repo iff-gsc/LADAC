@@ -27,7 +27,7 @@ function [q_bg_dt2,q_bg_dt] = quatDerivative( q_bg, omega_Kb, omega_Kb_dt )
 % See also: dcm2Quat, DCM2_q_bg_cont
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

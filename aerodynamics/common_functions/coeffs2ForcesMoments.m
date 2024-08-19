@@ -26,7 +26,7 @@ function [ R_Aa, Q_Aa ] = coeffs2ForcesMoments( C_lmn_i_a, C_XYZ_i_a, ...
 %       Flugzeuges - Teil 2, Springer.
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

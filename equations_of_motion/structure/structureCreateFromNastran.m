@@ -21,7 +21,7 @@ function structure = structureCreateFromNastran( pch_filename, GRID_path, axis_r
 % See also:
 %   structurePlot, structurePlotEigenmode, structureGetReduced
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -4,7 +4,7 @@ function wing = simpleWingSetFlapEffectiveness( wing )
 %   [1] Schlichting, H. & Truckenbrodt, E. (2001): Aerodynamik des
 %       Flugzeuges - Teil 2, Springer.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

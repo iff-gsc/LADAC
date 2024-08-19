@@ -43,7 +43,7 @@ function  [v_induced] = biot_savart (x_p, x_1, x_2, nu, t)
 %
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

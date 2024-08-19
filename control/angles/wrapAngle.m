@@ -8,7 +8,7 @@ function angle_0_2pi = wrapAngle(angle) %#codegen
 %   angle_0_2pi     angle in the rage of 0 to 2*pi, in rad
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

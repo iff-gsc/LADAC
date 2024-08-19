@@ -51,7 +51,7 @@ function [Zw_h, Ztheta_h, Zw_ff, Ztheta_ff, Zw_analytical, ...
 %                     forward flight. (scalar), in N / deg
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

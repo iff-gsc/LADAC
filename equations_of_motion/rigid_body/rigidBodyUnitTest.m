@@ -3,7 +3,7 @@
 % Example call:
 %   rt = table(runtests('rigidBodyUnitTest'))
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % *************************************************************************
 

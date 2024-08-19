@@ -18,7 +18,7 @@ function AIC = biotSavart( v_inf_local, r_vortex, r_cntrl )
 %                   array), in 1/m
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

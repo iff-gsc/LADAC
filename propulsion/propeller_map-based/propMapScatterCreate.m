@@ -20,7 +20,7 @@ function prop_map_scatter = propMapScatterCreate(prop_name)
 % See also:
 %   PROPMAPSCATTERPLOT, PROPMAPFITCREATE, PROPMAPGETNAMELIST
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -27,7 +27,7 @@ function traj = trajFromWaypoints(traj, waypoints, degree, cycle)
 % See also: trajInit, traj_from_waypoints_example
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

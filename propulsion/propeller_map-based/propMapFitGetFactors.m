@@ -9,7 +9,7 @@ function [k,d] = propMapFitGetFactors( prop_map_fit )
 %   k   Propeller thrust constant, N/rad^2
 %   d   Propeller torque constant, N.m/rad^2
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2022 Yannic Beyer

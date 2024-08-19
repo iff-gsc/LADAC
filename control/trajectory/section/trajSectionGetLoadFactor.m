@@ -18,7 +18,7 @@ function [n] = trajSectionGetLoadFactor(acc_vec)
 % See also: trajSectionGetAcc
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

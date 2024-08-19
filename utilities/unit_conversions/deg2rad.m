@@ -1,7 +1,7 @@
 function angle_rad = deg2rad( angle_deg ) %#codegen
 % rad2deg converts an angle in degree into rad.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

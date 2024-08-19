@@ -16,7 +16,7 @@ function c_L = airfoilAnalyticSimpleCl( airfoil, alpha, varargin )
 %   c_L = airfoilAnalyticSimpleCl( airfoil, alpha, Ma )
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

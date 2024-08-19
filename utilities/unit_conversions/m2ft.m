@@ -1,7 +1,7 @@
 function length_ft = m2ft( length_m ) %#codegen
 % m2ft converts a length in feet into meter.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

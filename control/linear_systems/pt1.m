@@ -17,7 +17,7 @@ function [ y_dt ] = pt1( u,y,K,T ) %#codegen
 %   y_dt            time-derivative of the output of the transfer function
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -38,7 +38,7 @@ function [ Omega, tau ] = propellerOp( v, Thrust, RPM_map, V_map, ...
 % See also: propellerMap
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

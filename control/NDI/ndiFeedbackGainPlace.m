@@ -69,7 +69,7 @@ function [K,A,B] = ndiFeedbackGainPlace( p, T_h, varargin )
 %       Universitaet Muenchen).
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

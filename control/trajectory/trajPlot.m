@@ -30,7 +30,7 @@ function [pos, T, B, N] = trajPlot(traj, velo, g)
 % See also: trajCreateFromWaypoints, trajSection_CubicSpline, trajInit
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

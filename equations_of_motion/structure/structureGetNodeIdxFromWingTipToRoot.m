@@ -27,7 +27,7 @@ function idx = structureGetNodeIdxFromWingTipToRoot( structure, side )
 % See also:
 %   structureGetBendingMomentTrafoAt, structureCreateFromNastran 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2021-2022 Yannic Beyer

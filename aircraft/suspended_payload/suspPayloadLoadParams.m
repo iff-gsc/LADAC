@@ -3,7 +3,7 @@ function [susp_payload, IC_susp_payload] = suspPayloadLoadParams(filename, copte
 % calculates the initial conditions of the suspended payload depending on
 % the copters initial conditions.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2023 Jonas Withelm

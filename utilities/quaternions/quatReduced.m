@@ -23,7 +23,7 @@ function [q_red,yaw] = quatReduced(q_bg)
 %       Technology, 28(2), 376-387.
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

@@ -23,7 +23,7 @@ function [acc] = trajSectionGetAcc(traj_section, vel, g, varargin)
 %   trajectoryCreateFromWaypoints
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

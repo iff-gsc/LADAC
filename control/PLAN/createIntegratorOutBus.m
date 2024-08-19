@@ -35,7 +35,7 @@ function BusBlkHandle = createIntegratorOutBus( simulinkMdl, ...
 %
 % See also: getBusObjFromSelection,  createBusObjMFile,  linerator
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2021 Alexander Kuzolap

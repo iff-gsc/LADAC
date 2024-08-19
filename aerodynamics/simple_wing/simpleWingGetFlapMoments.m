@@ -12,7 +12,7 @@ function [ C_lmn_flap_np_w ] = simpleWingGetFlapMoments( wing, C_L_eta, xyz_np_w
 %                   points in wing frame
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2024 Yannic Beyer

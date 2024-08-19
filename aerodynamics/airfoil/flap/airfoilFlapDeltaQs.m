@@ -21,7 +21,7 @@ function delta_qs = airfoilFlapDeltaQs(F_10,F_11,V,c,delta,delta_dt)
 %       indicial concepts. Journal of Aircraft, 31(2), 288-297.
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

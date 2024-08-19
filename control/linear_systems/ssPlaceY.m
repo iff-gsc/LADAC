@@ -42,7 +42,7 @@ function K_y = ssPlaceY(A,B,C,p,w)
 %       Regelung. Springer-Verlag Berlin Heidelberg.
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2023 Yannic Beyer

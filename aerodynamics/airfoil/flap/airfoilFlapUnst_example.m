@@ -8,7 +8,7 @@
 %       indicial concepts. Journal of Aircraft, 31(2), 288-297.
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

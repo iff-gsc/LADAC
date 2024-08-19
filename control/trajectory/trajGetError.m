@@ -32,7 +32,7 @@ function [error, idx] = trajGetError(traj, t, pos_array, sec_idx)
 % See also: trajInit, trajGetMatch, trajCreateFromWaypoints
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

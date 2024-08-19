@@ -1,6 +1,6 @@
 function [x,X,z,z2] = wingStateGetUnstAeroTrimOp( wing_state, wing_airfoil, wing_config )
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

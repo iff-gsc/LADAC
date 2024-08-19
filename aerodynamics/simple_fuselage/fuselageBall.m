@@ -1,6 +1,6 @@
 function [ F_sub, M_sub, P_sub ] = fuselageBall( V_sub, durchmesser, rho)
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

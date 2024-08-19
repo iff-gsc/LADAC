@@ -12,7 +12,7 @@ function cg_node = structureGetNodeCg( structure, idx, varargin )
 %                   in structure frame w.r.t. node position of the size 3xn
 %                   for length(idx) = n
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

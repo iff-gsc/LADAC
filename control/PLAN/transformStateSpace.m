@@ -1,6 +1,6 @@
 function [ A_t, B_t, C_t, D_t ] = transformStateSpace( A, B, C, D, T ) 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2021 Alexander Kuzolap

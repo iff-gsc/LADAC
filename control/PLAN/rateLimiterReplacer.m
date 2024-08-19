@@ -21,7 +21,7 @@ function rateLimiterReplacer( simulinkMdl, gainStrEntry, setColor )
 %
 % See also: RateLimiterReplacer,  createSaturation
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2021 Alexander Kuzolap

@@ -1,7 +1,7 @@
 function c_L = airfoilAnalytic9090AlCl(beta,alpha)
 % analytic function for the lift coefficient for angle of attack / alpha 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

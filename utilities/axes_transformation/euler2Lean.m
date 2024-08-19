@@ -1,6 +1,6 @@
 function [phi,delta] = euler2Lean(roll_cmd,pitch_cmd)
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

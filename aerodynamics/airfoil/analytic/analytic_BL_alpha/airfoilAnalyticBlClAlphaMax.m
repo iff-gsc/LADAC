@@ -19,7 +19,7 @@ function [c_N_alpha,alpha_0] = airfoilAnalyticBlClAlphaMax(fcl)
 %   alpha0      zero lift angle of attack (1xN array), in deg
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -31,7 +31,7 @@ function [geometry] = wingSetGeometryCoord(params, n_panel, spacing )
 %                           vortexes
 %                           (struct)
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

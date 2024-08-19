@@ -1,6 +1,6 @@
 function wing = wingCreateWithCPACS( tiglHandle, wing_idx, n_panel, n_panel_x, varargin )
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

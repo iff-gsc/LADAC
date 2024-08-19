@@ -18,7 +18,7 @@ function fMa = airfoilAnalytic0515Ma( weights, Ma )
 % See also: airfoilAnalytic0515NeunFit, airfoilAnalytic0515AlCl
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

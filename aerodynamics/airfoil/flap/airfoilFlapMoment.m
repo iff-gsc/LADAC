@@ -16,7 +16,7 @@ function c_m_flap = airfoilFlapMoment(c_L_flap,lambda_k) %#codegen
 %       Flugzeuges - Teil 1, Springer.
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -12,7 +12,7 @@ function [ C_lmn_i_w ] = forceCoeffs2MomentCoeffs( xyz_cp_w, C_XYZ_w, c, b ) %#c
 %   C_lmn_i_w   moments coefficients 3xn matrix in wing frame, in m
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

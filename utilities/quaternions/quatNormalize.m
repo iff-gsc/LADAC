@@ -20,7 +20,7 @@ function q_out = quatNormalize( q )
 %   quatMultiply, quatInv
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

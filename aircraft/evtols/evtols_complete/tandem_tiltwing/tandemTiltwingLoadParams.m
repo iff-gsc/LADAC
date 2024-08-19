@@ -7,7 +7,7 @@ function tiltwing = tandemTiltwingLoadParams( filename )
 %       'tandem_tiltwing_params_default' );
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -43,7 +43,7 @@ function [A,B,C7,D7] = unstAirfoilAeroSplit( V, Ma, c, C_L_alpha, x_ac ) %#codeg
 % See also: unstProfileAero
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -25,7 +25,7 @@ function [ xyz_np_w ] = simpleWingGetNeutralPoint( wing, alpha_M, beta_M ) %#cod
 %   simpleWingLoadParams, aeroAnglesMod
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

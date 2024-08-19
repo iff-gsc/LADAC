@@ -32,7 +32,7 @@ function prop_map_grid = propMapGridCreate( prop_name )
 % See also:
 %   PROPMAPGRIDPLOT, PROPMAPFITCREATE, PROPMAPSCATTERCREATE
  
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

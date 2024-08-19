@@ -3,7 +3,7 @@ function [lat, lon, alt] = ned2Lla(lat_ref, lon_ref, alt_ref, position_NED)
 % to do: prevent that lat and lon became > 90 deg or 180 deg
 % source: https://www.mathworks.com/help/aeroblks/flatearthtolla.html
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -24,8 +24,8 @@ function is_valid = trajValidateWaypoints(waypoints, num_wp, cycle)
 % See also: trajInit
 %
 
-% Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+% Disclaimer:
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker
 %   Copyright (C) 2022 TU Braunschweig, Institute of Flight Guidance

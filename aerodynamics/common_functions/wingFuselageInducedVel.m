@@ -25,7 +25,7 @@ function v_ind = wingFuselageInducedVel( wing_vortex_pos, Gamma, wing_chord, fus
 %       Auflage. Springer-Verlag Berlin Heidelberg.
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

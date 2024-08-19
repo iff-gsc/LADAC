@@ -18,7 +18,7 @@ function fuselage = fuselageSetUnstAeroState( fuselage, alpha_unst, beta_unst ) 
 %   fuselageInit, fuselageSetAeroState
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

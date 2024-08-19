@@ -13,7 +13,7 @@ function [state] = wingCreateState( num_actuators, n_panel, geometry )
 % See also: wingCreate, wingSetGeometry
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

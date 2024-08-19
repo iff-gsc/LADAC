@@ -4,7 +4,7 @@ function micro_tab = airfoilMicroTabLoadParams( filename )
 % Example:
 %   airfoil = airfoilMicroTabLoadParams( 'airfoilMicroTab_params_F15_90' )
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

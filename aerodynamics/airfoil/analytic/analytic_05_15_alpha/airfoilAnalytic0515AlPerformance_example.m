@@ -1,7 +1,7 @@
 % This script tests the performance (computation time) of different methods
 % to compute the lift coefficient for different Mach numbers.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

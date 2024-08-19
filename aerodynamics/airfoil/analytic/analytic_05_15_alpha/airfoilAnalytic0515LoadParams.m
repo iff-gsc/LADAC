@@ -5,7 +5,7 @@ function airfoil = airfoilAnalytic0515LoadParams( filename )
 % Example:
 %   airfoil = airfoilAnalytic0515LoadParams( 'airfoilAnalytic0515_params_F15' )
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -21,7 +21,7 @@ function [phi,delta] = leanVector2LeanAngles(n_g)
 % See also:
 %   quatReduced, euler2Dcm, quat2Dcm, leanAngles2LeanVector
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

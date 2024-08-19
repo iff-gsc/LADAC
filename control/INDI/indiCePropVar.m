@@ -27,7 +27,7 @@ function [G1,G2] = indiCePropVar( cep, G10, G20, u ) %#codegen
 %       With up to Three Successive Rotor Failures. In 6th CEAS Conference
 %       on Guidance, Navigation and Control (EuroGNC) 2022.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

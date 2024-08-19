@@ -13,7 +13,7 @@ function [ xyz_matrix, struct_ ] = wingGetPositionMatrix( struct_, varargin )
 %   xyz_matrix = wingGetPositionMatrix( wing.geometry.vortex )
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -26,7 +26,7 @@ function [ A_red, B_red, C_red, D_red, condA_elim ] = modredEmb( ...
 % See also: modred
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2021 Alexander Kuzolap

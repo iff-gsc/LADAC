@@ -43,7 +43,7 @@ function fuselage = fuselageSetState( fuselage, alpha, beta, V, omega, xyz_cg, v
 % See also:
 %   fuselageInit, fuselageCreate, fuselageSetAeroState
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

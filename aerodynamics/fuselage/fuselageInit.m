@@ -17,7 +17,7 @@ function fuselage = fuselageInit( n_sections, n_segments, n_structure_states )
 % See also:
 %   fuselageGeometryInit, fuselageStateInit
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

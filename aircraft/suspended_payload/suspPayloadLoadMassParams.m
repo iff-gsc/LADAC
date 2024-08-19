@@ -2,7 +2,7 @@ function susp_payload = suspPayloadLoadMassParams( filename, susp_payload )
 % SUSPPAYLOADLOADMASSPARAMS loads a suspended payloads body parameters
 % (.body, .config) and appends them to susp_payload
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2023 Jonas Withelm

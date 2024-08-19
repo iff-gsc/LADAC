@@ -22,7 +22,7 @@ function dw = downwashUnstFromVlmWings( wing_main, wing_htp, V )
 % See also:
 %   downwashUnstAnalytic, downwashUnstSchedule
 % 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

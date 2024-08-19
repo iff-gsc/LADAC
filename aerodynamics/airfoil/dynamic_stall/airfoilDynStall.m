@@ -42,7 +42,7 @@ function [ X_dt, c_L, c_m, c_D, f_s, c_N_alpha_max, tau_v_dt, is_leading_edge_sh
 % See also: unstAirfoilAeroFast, airfoilAnalytic0515LoadParams
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

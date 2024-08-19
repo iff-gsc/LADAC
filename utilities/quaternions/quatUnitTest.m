@@ -17,7 +17,7 @@
 %   [2] https://de.mathworks.com/help/matlab/matlab_prog/write-function-based-unit-tests-.html
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

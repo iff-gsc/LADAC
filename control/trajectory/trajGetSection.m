@@ -15,7 +15,7 @@ function traj_section = trajGetSection( traj, varargin )
 % See also: trajInit, trajSectionSet
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

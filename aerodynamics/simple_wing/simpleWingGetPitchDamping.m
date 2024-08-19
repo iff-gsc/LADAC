@@ -15,7 +15,7 @@ function C_m_damp = simpleWingGetPitchDamping( wing, q_Aw, V_A ) %#codegen
 %       Flugzeuges - Teil 2, Springer.
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

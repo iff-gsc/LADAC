@@ -19,7 +19,7 @@ function [ V_sub, omega_sub ] = velocityAndRateTransform(V_Kb, omega_Kb, R_sub_b
 %   omega_sub           resulting angular velocity in the subsystem [rad/s]
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

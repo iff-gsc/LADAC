@@ -18,7 +18,7 @@ function c_m_c = airfoilFlapPitch(flap_depth,delta,Ma,delta_dt,V,c) %#codegen
 %       flapped airfoil in subsonic flow by indicial concepts. Journal of
 %       Aircraft, 33(5), 855-868.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2023 Yannic Beyer

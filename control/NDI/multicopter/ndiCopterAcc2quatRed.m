@@ -25,7 +25,7 @@ function q_red = ndiCopterAcc2quatRed( a_g, g )
 % See also:
 %   indiCopterAcc2LeanVector, quatReduced
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

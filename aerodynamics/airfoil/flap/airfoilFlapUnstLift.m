@@ -23,7 +23,7 @@ function [c_L_c,z_dt] = airfoilFlapUnstLift(V,Ma,c,delta_qs,z) %#codegen
 %       indicial concepts. Journal of Aircraft, 31(2), 288-297.
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -15,7 +15,7 @@ function M_ab_dt = dcmDerivFromOmega( M_ab, omega_ab_b ) %#codegen
 %       https://arxiv.org/pdf/1609.06088.pdf
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

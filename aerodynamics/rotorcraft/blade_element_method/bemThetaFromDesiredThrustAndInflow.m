@@ -1,7 +1,7 @@
 function [Theta_deg, C_T, lambda_i] = bemThetaFromDesiredThrustAndInflow(T, N, V_kb, rho, R, c, Nb, C_l_alpha)
 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

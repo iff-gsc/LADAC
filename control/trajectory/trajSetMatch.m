@@ -24,7 +24,7 @@ function traj = trajSetMatch(traj, position, active_section)
 % See also: trajGetMatch, trajInit
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

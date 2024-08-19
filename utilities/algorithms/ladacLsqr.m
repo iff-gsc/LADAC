@@ -44,7 +44,7 @@ function [x] = ladacLsqr( A, b, itnlim)
 %   [3] M. A. Saunders (1995).  Solution of sparse rectangular systems using
 %       LSQR and CRAIG, BIT 35, 588-604.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 %
 %   Copyright (C) 2020-2022 Fabian Guecker

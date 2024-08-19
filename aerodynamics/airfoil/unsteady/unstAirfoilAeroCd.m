@@ -25,7 +25,7 @@ function c_D = unstAirfoilAeroCd( c_D_st, c_L_unst, ...
 %   [2] https://backend.orbit.dtu.dk/ws/portalfiles/portal/7711084/ris_r_1354.pdf
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

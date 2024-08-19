@@ -1,7 +1,7 @@
 function [T, Q, Zw, ZTheta] = bemResponseAndControlDerivativesNumPertub(N, Theta, V_kb, C_l_alpha, C_d_0, C_d_1, C_d_2, B, R, chord, Nb, rho)
 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

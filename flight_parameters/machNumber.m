@@ -9,7 +9,7 @@ function Ma = machNumber( V, a ) %#codegen
 %   Ma          Mach number, in 1
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

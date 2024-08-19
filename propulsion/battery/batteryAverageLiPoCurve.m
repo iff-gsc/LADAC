@@ -33,7 +33,7 @@ function [ DoD_max, DoD_exp, DoD_nom, V_full, V_exp, V_nom, C_rate, ...
 % See also: batteryDischargeParams, batteryVoltage
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2016-2022 Yannic Beyer

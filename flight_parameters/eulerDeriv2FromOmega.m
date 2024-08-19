@@ -26,7 +26,7 @@ function eulerAngles_dt2 = eulerDeriv2FromOmega( omega_gb_b_dt, ...
 % See also: eulerDerivFromOmega
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

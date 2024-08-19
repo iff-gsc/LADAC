@@ -53,7 +53,7 @@ function wing = wingCreate( params_file, n_panel, varargin )
 %   wingPlotGeometry, wingSetState
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

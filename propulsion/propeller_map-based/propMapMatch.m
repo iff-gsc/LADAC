@@ -28,7 +28,7 @@ function [prop_name_match,ind,scaling] = propMapMatch(prop_name)
 % See also:
 %   propMapScatterCreate, propMapFitCreate, propMapGridCreate
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2023 Yannic Beyer

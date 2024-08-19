@@ -20,7 +20,7 @@ function q_out = quatConj( q )
 %   quatMultiply, quatInv, quatNorm
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

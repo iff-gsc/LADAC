@@ -14,7 +14,7 @@ function c_D = airfoilAnalytic0515AlCdNorm(fcd,x,alpha_q,c_d_q)
 %   c_D             normalized drag coefficient
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

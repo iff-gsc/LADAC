@@ -18,7 +18,7 @@ function [] = blockInitToggleEnable(is_enable_checked,varargin)
 %                               block should be "held" (1) or "reset" (2),
 %                               default: 1 (double or int)
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2023 Yannic Beyer

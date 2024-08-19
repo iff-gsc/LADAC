@@ -7,7 +7,7 @@ function tailsitter = tailsitterLoadParams( filename )
 %       'tailsitter_params_default' );
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

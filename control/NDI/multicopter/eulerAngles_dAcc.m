@@ -20,7 +20,7 @@ function [Phi_dAcc,Theta_dAcc] = eulerAngles_dAcc(xy_gPsi_ddt_cmd,acc_vertical_m
 %   Theta_dAcc              commanded pitch angle, in rad
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -25,7 +25,7 @@ function Z = propMapFitGetZ( prop_fit, RPM, V, output_name )
 % See also:
 %   PROPMAPFITCREATE, PROPMAPFITPLOT, PROPMAPFITGETZDERIV
  
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

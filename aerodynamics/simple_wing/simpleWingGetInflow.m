@@ -35,7 +35,7 @@ function [ V_A_P, q_P, alpha_M_P, beta_M_P, q_Aw, M_wb ] = ...
 %                   control point
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -29,7 +29,7 @@ function [A,B,C,D] = unstAirfoilAero( V, Ma, c, C_L_alpha, x_ac ) %#codegen
 %       836-844 (https://arc.aiaa.org/doi/pdf/10.2514/3.25127).
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -17,7 +17,7 @@ function [] = propMapScatterPlot(prop_map_scat,varargin)
 % See also:
 %   PROPMAPFITCREATE, PROPMAPFITGETZ, PROPMAPFITGETZDERIV
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

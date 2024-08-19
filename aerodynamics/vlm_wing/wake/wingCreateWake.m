@@ -1,7 +1,7 @@
 function wake = wingCreateWake( params, geometry, n_trail )
 
-% Disclamer:
-%   SPDX-License-Identifier: GPL-2.0-only
+% Disclaimer:
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
 % *************************************************************************
 

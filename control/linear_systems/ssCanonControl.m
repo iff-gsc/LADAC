@@ -27,7 +27,7 @@ function [T_n,A_n,b_n] = ssCanonControl( A, b )
 %       Springer, Berlin, Heidelberg.
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

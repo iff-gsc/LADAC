@@ -11,7 +11,7 @@
 % Outputs:
 %   u_01            Vector of commands in the range of 0~1.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

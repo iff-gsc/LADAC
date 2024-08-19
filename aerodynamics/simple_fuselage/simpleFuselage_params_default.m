@@ -1,6 +1,6 @@
 % ** this are the default parameters for the simple fuselage model **
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

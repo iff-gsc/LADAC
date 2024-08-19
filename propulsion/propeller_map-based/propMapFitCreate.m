@@ -27,7 +27,7 @@ function prop_fit = propMapFitCreate( prop_name, corr_fac, is_plot )
 % See also:
 %   PROPMAPFITPLOT, PROPMAPFITGETZ, PROPMAPFITGETZDERIV
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

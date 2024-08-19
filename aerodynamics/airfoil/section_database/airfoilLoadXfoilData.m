@@ -21,7 +21,7 @@ function data = airfoilLoadXfoilData( filename )
 %   plot( NACA_63_412.alpha, NACA_63_412.c_L, 'x' )
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

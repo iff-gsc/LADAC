@@ -26,7 +26,7 @@ function [c_L_max,alpha_max] = airfoilAnalytic0515ClMax(fcl,varargin)
 %               coefficient (1xN array), in deg
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

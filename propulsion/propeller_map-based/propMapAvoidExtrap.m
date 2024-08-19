@@ -21,7 +21,7 @@ function [ RPM, V ] = propMapAvoidExtrap( prop_fit, RPM, V )
 % See also:
 %   PROPMAPFITCREATE, PROPMAPFITPLOT, PROPMAPFITGETZ, PROPMAPFITGETZDERIV
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

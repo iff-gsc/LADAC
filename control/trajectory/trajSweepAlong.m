@@ -31,7 +31,7 @@ function [section_id, t] = trajSweepAlong(traj, section_id_start, t_start, dist)
 % See also: trajInit, trajGetMatch, trajCreateFromWaypoints
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

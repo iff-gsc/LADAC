@@ -23,7 +23,7 @@ function q_out = quatMultiply(q, p)
 %   quatDivide, quatInv, quatNorm
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

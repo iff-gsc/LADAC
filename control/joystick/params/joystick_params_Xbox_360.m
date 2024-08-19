@@ -1,6 +1,6 @@
 % *** configuration script for the Xbox_360 joystick ***
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 %
 %   Copyright (C) 2020-2022 Yannic Beyer

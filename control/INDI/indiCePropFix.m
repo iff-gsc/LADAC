@@ -29,7 +29,7 @@ function [G10,G20] = indiCePropFix( cep, ceb, T_s ) %#codegen
 %       micro air vehicles. Journal of Guidance, Control, and Dynamics,
 %       39(3), 450-461.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -26,7 +26,7 @@ function [lambda_i] = inducedVelocityMomentumTheory(Vx, Vz) %#codegen
 % See also: InducedVelocity
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

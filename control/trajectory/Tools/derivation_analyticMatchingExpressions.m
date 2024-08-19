@@ -1,7 +1,7 @@
 % Script for generation of analytic expressions used in trajGetMatch and
 % and trajGetMatchEnhanced functions.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

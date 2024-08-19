@@ -43,7 +43,7 @@ function [b, num_of_splines] = polyInterpolationb(points, degree, cycle)
 % See also: polyInterpolationb, polyInterpolationAx,
 %           polyInterpolationIterative
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

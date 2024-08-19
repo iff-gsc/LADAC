@@ -16,7 +16,7 @@ function [b,a] = drydenTf( sigma, L, V, axis ) %#codegen
 %   turbulenceIntensityRMS, turbulenceScaleLength, tf2ssOcf
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

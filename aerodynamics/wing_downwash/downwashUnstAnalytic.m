@@ -25,7 +25,7 @@ function w_dw = downwashUnstAnalytic( V, l, l_1, z, t, t_0 )
 %       dissertation, Cranfield University).
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

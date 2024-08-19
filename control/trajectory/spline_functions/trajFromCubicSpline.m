@@ -1,6 +1,6 @@
 function traj  = trajFromCubicSpline(traj, waypoints, num_of_waypoints, varargin)
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

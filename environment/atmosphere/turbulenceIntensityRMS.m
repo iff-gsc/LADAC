@@ -19,7 +19,7 @@ function [ sigma_u, sigma_v, sigma_w ] = turbulenceIntensityRMS( h, s_exp, V_win
 %       Technologies Conference and Exhibit. AIAA 2003-5529. Austin, Texas.
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

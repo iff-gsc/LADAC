@@ -11,7 +11,7 @@ function airfoil_map = wingAirfoilMapLoadSection( section )
 %                       maps (structs)
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

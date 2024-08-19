@@ -51,7 +51,7 @@ function [fcl,fcd,fcm] = airfoilAnalytic0515AlFit(alpha_deg,Ma,c_L,c_D,c_m,varar
 % 
 % See also: lsqcurvefit, airfoilAnalytic0515AlCl, airfoilAnalytic0515AlCd
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

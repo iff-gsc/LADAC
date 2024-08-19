@@ -14,7 +14,7 @@ function I_node = structureGetNodeInertia( structure, idx )
 %                   3x3xn for length(idx) = n
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -78,7 +78,7 @@ function wing = wingSetState(wing, alpha, beta, V, omega, actuators_pos, actuato
 % 
 % See also: wingCreate, wingSetAeroState
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

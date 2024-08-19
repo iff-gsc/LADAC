@@ -1,6 +1,6 @@
 % ** copter autopilot dragonfly parameters (default) **
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2022 Yannic Beyer

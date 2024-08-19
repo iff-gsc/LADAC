@@ -16,7 +16,7 @@ function c_D = airfoilAnalytic0515AlCd(fcd,alpha)
 % Literature:
 %   [1] https://arc.aiaa.org/doi/pdfplus/10.2514/1.C034910
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

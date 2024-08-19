@@ -60,7 +60,7 @@ function [eta_eff] = simpleWingGetEffFlapAng(wing, eta) %#codegen
 % 
 % See also: simpleWingGetCl, simpleWingGetCd
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2021 Jonas Withelm

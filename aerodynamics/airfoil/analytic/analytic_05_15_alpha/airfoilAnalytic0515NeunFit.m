@@ -30,7 +30,7 @@ function [weights,mse] = airfoilAnalytic0515NeunFit( net_settings, inputs, targe
 %   mse                 the achieved MSE (scalar)
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

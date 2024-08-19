@@ -1,7 +1,7 @@
 % This test loads airfoil data, performs an analytic fit and visualizes the
 % results.
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

@@ -1,6 +1,6 @@
 function [ F_sub, M_sub ] = NACA0015_airfoil(V_sub, span, coord, rho)
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

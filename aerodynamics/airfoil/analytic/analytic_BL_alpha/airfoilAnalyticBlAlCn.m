@@ -14,7 +14,7 @@ function c_N = airfoilAnalyticBlAlCn(fcn,x)
 %   [1] https://arc.aiaa.org/doi/pdf/10.2514/6.1989-1319
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

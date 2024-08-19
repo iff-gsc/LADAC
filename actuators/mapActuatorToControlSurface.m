@@ -1,7 +1,7 @@
 function [ControlSurfacePosition] = mapActuatorToControlSurface ...
 (ActuatorPosition, inverse_calc, ActuatorRefPos, ControlSurfaceRefPos)
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

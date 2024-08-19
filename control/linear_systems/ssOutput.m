@@ -15,7 +15,7 @@ function [ y, x_dt ] = ssOutput( A, B, C, D, x, u ) %#codegen
 %   x_dt    time-derivative of x
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

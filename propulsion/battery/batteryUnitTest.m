@@ -3,7 +3,7 @@
 % Example call:
 %   rt = table(runtests('batteryUnitTest'))
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % *************************************************************************
 

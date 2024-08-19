@@ -1,7 +1,7 @@
 % Compute 3D polars for the Arkbird wing for multiple airspeeds (Reynolds
 % numbers)
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

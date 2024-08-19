@@ -23,7 +23,7 @@ function [phi,delta] = dcm2Lean( M_bg )
 %   quatReduced, euler2Dcm, quat2Dcm
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

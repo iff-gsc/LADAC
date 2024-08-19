@@ -21,7 +21,7 @@ function [] = cntrlBlockInit(is_enable_checked,states_when_enabling)
 % See also:
 %   blockInitToggleEnable
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2023 Yannic Beyer

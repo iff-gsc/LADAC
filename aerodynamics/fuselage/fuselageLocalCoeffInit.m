@@ -15,7 +15,7 @@ function coeff_loc = fuselageLocalCoeffInit( n_segments )
 % See also:
 %   fuselageInit, fuselageStateInit
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

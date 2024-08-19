@@ -17,7 +17,7 @@ function prop_map_boarders = propMapGetBoarders( prop_map_scatter )
 % See also:
 %   PROPMAPSCATTERCREATE, PROPMAPSCATTERPLOT, PROPMAPAVOIDEXTRAP
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

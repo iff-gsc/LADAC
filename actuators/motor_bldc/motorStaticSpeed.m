@@ -28,7 +28,7 @@ function omega = motorStaticSpeed( K_T, R, V_bat, d, u )
 % See also:
 %   MOTORSTATICSPEED2U
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2022 Yannic Beyer

@@ -24,7 +24,7 @@ function [euler_angles, acc_res] = ...
 %                 (scalar), in m/s^2
 %
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

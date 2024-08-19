@@ -15,7 +15,7 @@
 %   https://www.law.cornell.edu/cfr/text/14/25.341#a_6
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

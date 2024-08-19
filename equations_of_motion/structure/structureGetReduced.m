@@ -26,7 +26,7 @@ function [ structure_red, omega_red, V, D ] = structureGetReduced( structure, N 
 %       Vibration, 332(19), 4403-4422.
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

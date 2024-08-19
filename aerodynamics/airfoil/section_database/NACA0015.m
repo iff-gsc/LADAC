@@ -8,7 +8,7 @@ function NACA0015 = NACA0015(varargin)
 %       Turbines. SAND80-2114. Sandia National Laboratories.
 %       https://www.osti.gov/servlets/purl/6548367
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Fabian Guecker

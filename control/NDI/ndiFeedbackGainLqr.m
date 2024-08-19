@@ -66,7 +66,7 @@ function [K,A,B] = ndiFeedbackGainLqr( e_x_max, Delta_ny_max, T_h, varargin )
 %       Universitaet Muenchen).
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

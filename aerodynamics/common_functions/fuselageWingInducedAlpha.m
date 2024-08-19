@@ -25,7 +25,7 @@ function Delta_alpha_rel = fuselageWingInducedAlpha( R, y )
 %       Auflage. Springer-Verlag Berlin Heidelberg.
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

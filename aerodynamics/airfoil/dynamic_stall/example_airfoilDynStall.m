@@ -2,7 +2,7 @@
 % Therefore, the angle of attack is varied with the following function:
 %   alpha(t) = alpha_0 + Delta_alpha * sin(omega*t)
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

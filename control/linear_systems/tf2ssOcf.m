@@ -19,7 +19,7 @@ function [ A, B, C, D ] = tf2ssOcf( b, a ) %#codegen
 %   D       feedtrhough (1 x 1) matrix
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

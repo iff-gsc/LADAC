@@ -40,7 +40,7 @@ function [y,y_uint8]  = ardupilotJson(time,Omega_Kb,accel_b,s_g,q_bg,V_Kg,var_st
 % See also:
 %   ardupilotJsonBlockInit
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2024 Yannic Beyer

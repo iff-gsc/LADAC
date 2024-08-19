@@ -19,7 +19,7 @@ function c_L_fs = airfoilDynStallClFs( c_L_st, c_L_alpha, alpha0, alpha, f_st ) 
 % See also: airfoilDynStallFst, airfoilDynStall
 % 
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2020-2022 Yannic Beyer

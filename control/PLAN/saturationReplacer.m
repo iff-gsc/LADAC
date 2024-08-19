@@ -15,7 +15,7 @@ function saturationReplacer( simulinkMdl )
 %
 % See also: saturate,  createSaturation,  rateLimiterReplacer,  getObjects
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2021 Alexander Kuzolap

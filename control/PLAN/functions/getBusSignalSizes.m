@@ -2,7 +2,7 @@ function busSignalSizes = getBusSignalSizes( bus )
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
-% Disclamer:
+% Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
 %   Copyright (C) 2021 Alexander Kuzolap
