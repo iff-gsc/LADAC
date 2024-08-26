@@ -108,6 +108,14 @@ for k = first_checked_section:last_checked_section
         Schur_mat(7,7); Schur_mat(8,8); Schur_mat(9,9);
         0; 1];
     
+    %clc;
+   % disp(k)
+   % disp(T')
+   % [u,v] = eig(A);
+    
+
+    
+  %  [dominant_eigenvalue, dominant_eigenvector] = all_eigenvalues_power_method(A, 1e-6, 100)
     %% Calculate the squared error for every candidate between 0 and  1
     
     t_values = zeros(1,6,superiorfloat(position));

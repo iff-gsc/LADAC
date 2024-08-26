@@ -40,6 +40,7 @@ function [pos, T, B, N] = evaluationGetMatchFunctions(traj, velo, g)
 % evaluate positions
 resolution = 30;
 pos = zeros(3,traj.num_sections_set*resolution);
+pos_id_t = zeros(2,traj.num_sections_set*resolution);
 waypoints = zeros(3,traj.num_sections_set+1);
 traj_section = trajGetSection(traj,1);
 waypoints(:,1) = trajSectionGetPos(traj_section,0);
@@ -52,6 +53,7 @@ for k=1:traj.num_sections_set
     for j = 1:resolution
         idx = (k-1)*resolution+j;
         pos(:,idx) = trajSectionGetPos(traj_section,t(j));
+        pos_id_t(:,idx) = [k; t(j)];
     end
     waypoints(:,k+1) = trajSectionGetPos(traj_section,1);
     
@@ -79,7 +81,8 @@ B = zeros(size(pos));
 N = zeros(size(pos));
 
 tic
-
+hold on
+%for i = 1:size(pos,2)
 for i = 1:size(pos,2)
     % current vehicle position
     pos_ac = pos(:,i);
@@ -89,12 +92,16 @@ for i = 1:size(pos,2)
     % matching
     %[active_section, ~, t] = trajGetMatch(traj, pos_ac, active_section);
     %[active_section, ~, t] = trajGetMatchEnhanced(traj, pos_ac, active_section);
-
+    %[active_section, ~, t] = trajGetMatchLaguerre(traj, pos_ac, active_section);
+    %[active_section, ~, t] = trajGetMatchDotProd(traj, pos_ac, active_section);
+    %[active_section, ~, t] = trajGetMatchDotProdGlobalOpt(traj, pos_ac, active_section);
+    [active_section, ~, t] = trajGetMatchNewton(traj, pos_ac, active_section);
+    
+        
     R_turn = 10;
     T_vec = [1; 0; 0];
     
-    [active_section, ~, t] = trajGetMatchCustom(traj, pos_ac, active_section, R_turn, T_vec);
-    
+    %[active_section, ~, t] = trajGetMatchCustom(traj, pos_ac, active_section, R_turn, T_vec);
     
     traj_sec_m = trajGetSection(traj, active_section);
     pos_m = trajSectionGetPos(traj_sec_m, t);
@@ -102,17 +109,21 @@ for i = 1:size(pos,2)
     
      if(error_m > 1e-3)
          disp( [num2str(i),' Error: ', num2str(error_m),' m (', num2str(active_section), ' /  ', num2str(t), ')'] )
+         disp(pos_id_t(:,i))
+         
+         plot3(pos_ac(1),pos_ac(2),-pos_ac(3),'kx','MarkerSize',12)
+         plot3(pos_m(1),pos_m(2),-pos_m(3),'rx','MarkerSize',12)
+         plot3([pos_ac(1);pos_m(1)],[pos_ac(2);pos_m(2)],-[pos_ac(3);pos_m(3)],'r-','linewidth',1.5)  
      end
     
     % compute matched position
     traj_section = trajGetSection(traj,active_section);
     
     [T(:,i),B(:,i),N(:,i)] = trajSectionGetFrenetSerretWithGravity(traj_section, velo, g, t);
-    
-   % end
-    
+     
+    %disp(i)
 end
-
+ hold off
 time = toc;
 disp([num2str(time/size(pos,2)*1000), ' ms pro Sample'])
 
