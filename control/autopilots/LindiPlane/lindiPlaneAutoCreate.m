@@ -119,9 +119,6 @@ for i = 1:length(aero_names)
         end
     end
 end
-num_flaps = size(cef.cla,2);
-cef.m = zeros(1,num_flaps);
-cef.xm = zeros(1,num_flaps);
 ap.cef = cef;
 
 
