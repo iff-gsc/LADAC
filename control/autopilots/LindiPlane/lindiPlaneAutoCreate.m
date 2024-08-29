@@ -70,9 +70,7 @@ cntrl_effect_scaling_factor = 1;
 
 
 %% Flap control effectiveness
-cef.cla = [];
-cef.dadf = [];
-cef.dfdu = [];
+cef.clu = [];
 cef.s = [];
 cef.rotx = [];
 cef.x = [];
@@ -86,35 +84,38 @@ for i = 1:length(aero_names)
         pos_long = [wing.flap.x_cp0_wing;zeros(2,num_flaps)];
         pos_span = [zeros(1,num_flaps);wing.flap.y_cp_wing;zeros(1,num_flaps)];
         if contains(aero_names{i},'Main')
-            cef.cla(end+1:end+num_flaps) = wing.polar.params.C_Lalpha*ones(1,num_flaps);
-            cef.dadf(end+1:end+num_flaps) = wing.flap.dalpha_deta;
+            cla = wing.polar.params.C_Lalpha*ones(1,num_flaps);
+            dadf = wing.flap.dalpha_deta/2;
+            dfdu = airplane.act.ailerons.deflectionMax;
+            cef.clu(end+1:end+num_flaps) = cla .* dadf .* dfdu;
             pos = airplane.aero.config.wingMainPos + pos_span + pos_long - airplane.config.cg;
             cef.x(end+1:end+num_flaps) = pos(1,:);
             cef.y(end+1:end+num_flaps) = pos(2,:);
             cef.z(end+1:end+num_flaps) = pos(3,:);
             cef.rotx(end+1:end+num_flaps) = 0;
-            cef.dfdu(end+1:end+num_flaps) = airplane.act.ailerons.deflectionMax;
-            cef.s(end+1:end+num_flaps) = wing.geometry.S/2;
+            cef.s(end+1:end+num_flaps) = wing.geometry.S;
         elseif contains(aero_names{i},'Htp')
-            cef.cla(end+1) = wing.polar.params.C_Lalpha;
-            cef.dadf(end+1) = mean(wing.flap.dalpha_deta);
+            cla_h = wing.polar.params.C_Lalpha;
+            dadf = mean(wing.flap.dalpha_deta);
+            dfdu = airplane.act.elevator.deflectionMax;
+            cef.clu(end+1) = cla_h .* dadf .* dfdu;
             pos = airplane.aero.config.wingHtpPos + mean(pos_span,2) + mean(pos_long,2) - airplane.config.cg;
             cef.x(end+1) = pos(1,:);
             cef.y(end+1) = pos(2,:);
             cef.z(end+1) = pos(3,:);
             cef.rotx(end+1) = 0;
-            cef.dfdu(end+1) = airplane.act.elevator.deflectionMax;
             cef.s(end+1) = wing.geometry.S;
         elseif contains(aero_names{i},'Vtp')
-            cef.cla(end+1) = wing.polar.params.C_Lalpha;
-            cef.dadf(end+1) = mean(wing.flap.dalpha_deta);
+            cla = wing.polar.params.C_Lalpha;
+            dadf = mean(wing.flap.dalpha_deta);
+            dfdu = airplane.act.rudder.deflectionMax;
+            cef.clu(end+1) = cla .* dadf .* dfdu;
             pos = airplane.aero.config.wingVtpPos + mean(pos_span,2) + mean(pos_long,2) - airplane.config.cg;
             cef.x(end+1) = pos(1,:);
             cef.y(end+1) = pos(2,:);
             cef.z(end+1) = pos(3,:);
             euler_angles = dcm2Euler(airplane.aero.config.wingVtpRot);
             cef.rotx(end+1) = euler_angles(1);
-            cef.dfdu(end+1) = airplane.act.rudder.deflectionMax;
             cef.s(end+1) = wing.geometry.S;
         end
     end
@@ -199,7 +200,7 @@ ap.eig.clp = derivs.P(4);
 ap.eig.b = airplane.aero.wingMain.geometry.b;
 ap.eig.s = airplane.aero.wingMain.geometry.S;
 % Pitch damping inversion parameters
-ap.eig.cla_h = cef.cla(end-1);
+ap.eig.cla_h = cla_h;
 ap.eig.x_h = abs(cef.x(end-1));
 ap.eig.s_h = cef.s(end-1);
 
@@ -224,7 +225,7 @@ ap.psc.rm.wprad = 60;
 ap.psc.rm.eposmax = 20;
 
 %% Control allocation
-num_u = length(ap.cef.cla);
+num_u = length(ap.cef.clu);
 % minimum control input kx1 vector
 ap.ca.u_min = -ones(num_u,1);
 % maximum control input kx1 vector

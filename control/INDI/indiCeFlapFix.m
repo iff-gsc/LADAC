@@ -8,14 +8,10 @@ I_b = [ ...
 
 inv_I_b = inv(I_b);
 
-
-clu = cef.cla .* cef.dadf .* cef.dfdu;
-
-
 force_dir = [ zeros(size(cef.rotx)); sin(cef.rotx); -cos(cef.rotx) ];
-c_XYZ = zeros(size(force_dir),class(clu));
+c_XYZ = zeros(size(force_dir),class(cef.clu));
 for i = 1:size(c_XYZ,1)
-    c_XYZ(i,:) = force_dir(i,:) .* clu .* cef.s;
+    c_XYZ(i,:) = force_dir(i,:) .* cef.clu .* cef.s;
 end
 
 pos = [ cef.x; cef.y; cef.z ];
