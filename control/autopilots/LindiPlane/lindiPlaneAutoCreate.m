@@ -150,6 +150,9 @@ else
     ap.sflt.omega = sflt(1);
     ap.sflt.d = sflt(2);
 end
+% select if a single (1) or a duplicate (2) low-pass filter should be used
+% for the gyros
+ap.sflt.numGyrFlt = 2;
 
 
 %% Airspeed
