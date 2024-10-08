@@ -237,7 +237,7 @@ ap.ca.u_max = ones(num_u,1);
 ap.ca.u_d = zeros(num_u,1);
 
 % weighting mx1 vector of pseudo-control
-ap.ca.W_v = [ 10; 1; 0.1 ];
+ap.ca.W_v = [ 1; 1; 1 ; 1 ];
 % weighting kx1 vector of the control input vector
 ap.ca.W_u = ones(num_u,1);
 % weighting of pseudo-control vs. control input (scalar)
@@ -246,6 +246,15 @@ ap.ca.gamma = 1000;
 ap.ca.W = zeros(num_u,1);
 % maximum number of iterations (scalar)
 ap.ca.i_max = 15;
+
+
+%% Direct lift control
+% 0: disabled, 1: compensate elevator force, 2: acc feedback control
+ap.dlc.opt = 1;
+% collective aileron decay, in m/s^2 / 1
+ap.dlc.flapdecay = 4;
+% cutoff pitch angle error, in deg
+ap.dlc.maxptch = 20;
 
 
 %% Maneuver load alleviation
