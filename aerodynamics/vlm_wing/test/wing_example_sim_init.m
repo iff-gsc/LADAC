@@ -9,7 +9,7 @@
 
 clear all
 
-wing = wingCreate('wing_params_Arkbird_simple',30);
+wing = wingCreate('wing_params_default',30);
 
 struct2bus(wing.state,'wing_state_bus');
 

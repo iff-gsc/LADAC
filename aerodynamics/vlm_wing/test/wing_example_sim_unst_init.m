@@ -9,7 +9,7 @@
 
 clear all
 
-wing = wingCreate(wing_parametric( 10, 0.5, 0.1, 0.01 ),30,'is_unsteady',true);
+wing = wingCreate('wing_params_default',30,'is_unsteady',true);
 
 struct2bus(wing.state,'wing_state_bus');
 
