@@ -20,7 +20,7 @@ airplane.config.hitPoints = [ [0;0;0],[-1.5;0;0],[-0.5;-1;0],[-0.5;1;0] ];
 
 % aerodynamics parameters
 airplane.aero = conventionalAirplaneAeroLoadParams( ...
-    'params_conventional_airplane_aero_simple_default' );
+    'conventionalAirplaneAero_params_default' );
 
 % propeller parameters
 airplane.prop = propMapLoadParams( 'propeller_map_based_params_default' );

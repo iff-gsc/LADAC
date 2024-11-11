@@ -1,10 +1,10 @@
 function aero = conventionalAirplaneAeroLoadParams( filename )
 % the variable loaded from filename must be equal to
-% params_conventional_airplane_aero_simple_default
+% conventionalAirplaneAero_params_default
 % 
 % Example:
 %   aero = conventionalAirplaneAeroLoadParams( ...
-%       'params_conventional_airplane_aero_simple_default' );
+%       'conventionalAirplaneAero_params_default' );
 % 
 
 % Disclaimer:
@@ -16,5 +16,10 @@ function aero = conventionalAirplaneAeroLoadParams( filename )
 
 % load parameters from file 
 run(filename);
+
+if ~isfield(aero,'downwash')
+    aero.downwash.alpha_htp_dalpha = 0;
+    aero.downwash.alpha_htp_deta = zeros(size(aero.wingMain.flap.dalpha_deta));
+end
 
 end

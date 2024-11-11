@@ -8,16 +8,24 @@
 % *************************************************************************
 
 %% fuselage parameters
-aero.fuse = fuselageLoadParams( 'params_aero_fuselage_default' );
+% fuselage volume, m^3 
+fuse.V = 0.0025;
+aero.fuse = fuselageLoadParams( 'simpleFuselage_params_default', fuse.V );
 
 %% main wing parameters
-aero.wingMain = simpleWingLoadParams( 'params_aero_simple_wing_default' );
+aero.wingMain = simpleWingLoadParams( 'simpleWing_params_default' );
 
 %%  horizontal tailplane parameters
-aero.wingHtp = simpleWingLoadParams( 'params_aero_simple_wing_default' );
+aero.wingHtp = simpleWingLoadParams( 'simpleWing_params_default' );
 
 %% vertical tailplane parameters
-aero.wingVtp = simpleWingLoadParams( 'params_aero_simple_wing_default' );
+aero.wingVtp = simpleWingLoadParams( 'simpleWing_params_default' );
+
+%% downwash
+wing_main = wingCreate( 'simpleWing_params_default', 40 );
+wing_htp = wingCreate( 'simpleWing_params_default', 20 );
+
+aero.downwash = wingGetDownwashDerivs( wing_main, wing_htp );
 
 %% configuration parameters
 % incidence angle of main wing, rad
