@@ -106,10 +106,10 @@ for i = 1:length(aero_names)
             cef.rotx(end+1) = 0;
             cef.s(end+1) = wing.geometry.S;
         elseif contains(aero_names{i},'Vtp')
-            cla = wing.polar.params.C_Lalpha;
+            cla_v = wing.polar.params.C_Lalpha;
             dadf = mean(wing.flap.dalpha_deta);
             dfdu = airplane.act.rudder.deflectionMax;
-            cef.clu(end+1) = cla .* dadf .* dfdu;
+            cef.clu(end+1) = cla_v .* dadf .* dfdu;
             pos = airplane.aero.config.wingVtpPos + mean(pos_span,2) + mean(pos_long,2) - airplane.config.cg;
             cef.x(end+1) = pos(1,:);
             cef.y(end+1) = pos(2,:);
@@ -199,13 +199,40 @@ ap.atc.rm.ydecaytc = 2/ap.atc.rm.yfreq;
 %% State dynamics
 % Roll damping inversion parameters
 derivs = simpleWingGetDerivs( airplane.aero.wingMain );
+% Roll damping derivative
 ap.eig.clp = derivs.P(4);
+% Wing span, in m
 ap.eig.b = airplane.aero.wingMain.geometry.b;
+% Wing area, in m^2
 ap.eig.s = airplane.aero.wingMain.geometry.S;
+
 % Pitch damping inversion parameters
+% Horizontal tailplane lift curve slope
 ap.eig.cla_h = cla_h;
+% Horizontal tailplane neutral point x-position, in m
 ap.eig.x_h = abs(cef.x(end-1));
+% Horizontal tailplane area, in m^2
 ap.eig.s_h = cef.s(end-1);
+
+% Pitch stiffness and downwash inversion parameters
+% Main wing lift curve slope
+ap.eig.cla = cla(1);
+% Derivative of horizontal tailplane angle of attack w.r.t. main wing angle
+% of attack @alpha_htp/@alpha
+ap.eig.dahda = airplane.aero.downwash.alpha_htp_dalpha;
+% Derivative of horizontal tailplane angle of attack w.r.t. main wing flap
+% commands, in rad
+ap.eig.dahdu = airplane.aero.downwash.alpha_htp_deta.*airplane.act.ailerons.deflectionMax;
+% Center of gravity x-position, in m
+ap.eig.xcg = airplane.config.cg(1);
+x_np_main = airplane.aero.config.wingMainPos(1) + airplane.aero.wingMain.xyz_wing_np(1);
+x_np_htp = airplane.aero.config.wingHtpPos(1) + airplane.aero.wingHtp.xyz_wing_np(1);
+% Airplane neutral point x-position, in m
+ap.eig.xnp = ( (1+ap.eig.dahda)*ap.eig.cla_h*ap.eig.s_h*x_np_htp + ap.eig.cla*ap.eig.s*x_np_main ) ...
+    / ( (1+ap.eig.dahda)*ap.eig.cla_h*ap.eig.s_h + ap.eig.cla*ap.eig.s );
+% Airplane neutral point x-position neglecting downwash, in m
+ap.eig.xnp0 = ( ap.eig.cla_h*ap.eig.s_h*x_np_htp + ap.eig.cla*ap.eig.s*x_np_main ) ...
+    / ( ap.eig.cla_h*ap.eig.s_h + ap.eig.cla*ap.eig.s );
 
 
 %% Position control
@@ -261,7 +288,7 @@ ap.dlc.maxptch = 20;
 %% Maneuver load alleviation
 ap.mla.use = mla_use;
 ap.mla.eta_np = airplane.aero.wingMain.xyz_wing_np(2,:)/(0.5*airplane.aero.wingMain.geometry.b);
-ap.mla.ca.W_v = [ 1; 1; 10 ];
+ap.mla.ca.W_v = [ 1; 1; 10; 10 ];
 ap.mla.ca.W_u = ap.ca.W_u;
 ap.mla.ca.gamma = ap.ca.gamma;
 ap.mla.ca.i_max = ap.ca.i_max;
