@@ -240,12 +240,13 @@ ap.ca.u_d = zeros(num_u,1);
 ap.ca.W_v = [ 1; 1; 1 ; 1 ];
 % weighting kx1 vector of the control input vector
 ap.ca.W_u = ones(num_u,1);
+ap.ca.W_u(end-1) = 0.1;
 % weighting of pseudo-control vs. control input (scalar)
 ap.ca.gamma = 1000;
 % initial working set mx1 vector
 ap.ca.W = zeros(num_u,1);
 % maximum number of iterations (scalar)
-ap.ca.i_max = 15;
+ap.ca.i_max = 1;
 
 
 %% Direct lift control
