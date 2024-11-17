@@ -71,7 +71,8 @@ wing.flap.eff_scaling = 1;
 wing.flap.is_eff_scaling = 0;
 
 
-
+% zero-lift pitching moment coefficient
+wing.c_m0 = 0;
 % Pitching moment coefficient derivative with respect to the dimensionless
 % pitching rate ( Omega_y = q/(c*V), in 1 [1, p. 93] ).
 % This derivative can be estimated from [1, p. 93], where it is defined as

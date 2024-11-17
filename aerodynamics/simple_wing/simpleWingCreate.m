@@ -108,7 +108,13 @@ while true
         ];
 
     % compute center of pressure for lift due to camber
-    wing.x_cp0_camber_wing = - wing.xyz_wing_np(2,2)*sin(wing.geometry.phi) - wing.geometry.c/4;
+    if isfield(wing,'c_m0')
+        xi_cp_camber = divideFinite(-wing.c_m0,wing.polar.params.C_L0);
+    else
+        xi_cp_camber = 0.25;
+    end
+    wing.x_cp0_camber_wing = - wing.xyz_wing_np(2,2)*sin(wing.geometry.phi) ...
+        - xi_cp_camber*wing.geometry.c;
     
     wing.flap.dalpha_deta = 2 * derivs.eta(3,:)/derivs.alpha(3);
     wing.flap.y_cp_wing = 2 * derivs.eta(4,:)./derivs.eta(3,:) * wing.geometry.b/2;
