@@ -48,7 +48,7 @@ x_0 = vlm_wing.geometry.line_25.pos(1,floor(end/2)+1);
 x_end = vlm_wing.geometry.line_25.pos(1,end);
 y_0 = vlm_wing.geometry.line_25.pos(2,floor(end/2)+1);
 y_end = vlm_wing.geometry.line_25.pos(2,end);
-wing.geometry.phi = atan((x_end-x_0)/(y_end-y_0));
+wing.geometry.phi = atan((x_0-x_end)/(y_end-y_0));
 % dihedral angle, rad
 z_0 = vlm_wing.geometry.line_25.pos(3,floor(end/2)+1);
 z_end = vlm_wing.geometry.line_25.pos(3,end);
@@ -113,8 +113,7 @@ while true
     else
         xi_cp_camber = 0.25;
     end
-    wing.x_cp0_camber_wing = - wing.xyz_wing_np(2,2)*sin(wing.geometry.phi) ...
-        - xi_cp_camber*wing.geometry.c;
+    wing.x_cp0_camber_wing = -xi_cp_camber*wing.geometry.c;
     
     wing.flap.dalpha_deta = 2 * derivs.eta(3,:)/derivs.alpha(3);
     wing.flap.y_cp_wing = 2 * derivs.eta(4,:)./derivs.eta(3,:) * wing.geometry.b/2;
