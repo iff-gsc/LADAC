@@ -20,6 +20,7 @@ function fuselage = fuselageCreateWithCpacs( tigl_handle, fuse_UID, ...
 %                   structure (default: rigid fuselage).
 %   'unsteady'      Configurates that the aerodynamics are treated as
 %                   unsteady (default: steady aerodynamics).
+%   'Scale'         Geometric scaling factor (default: 1)
 %   structure     	a structure struct (see structureCreateFromNastran)
 %                  	that must have nodes at similar positions at the
 %                  	configured fuselage (else the coupling will not work).
@@ -47,6 +48,7 @@ function fuselage = fuselageCreateWithCpacs( tigl_handle, fuse_UID, ...
 is_flexible = false;
 is_unsteady = false;
 n_structure_states = 1;
+scale = 1;
 
 % set user parameters
 for i = 1:length(varargin)
@@ -64,6 +66,8 @@ for i = 1:length(varargin)
             end
         case 'unsteady'
             is_unsteady = true;
+        case 'Scale'
+            scale = varargin{i+1};
     end
 end
 
@@ -76,6 +80,14 @@ fuselage.params.C_L_alpha = 0.2;
 fuselage.params.is_straight = true;
 
 fuselage = fuselageSetGeometryFromCpacs( fuselage, tigl_handle, fuse_UID, axis_reversed );
+
+fuselage.geometry.cntrl_pos = fuselage.geometry.cntrl_pos * scale;
+fuselage.geometry.border_pos = fuselage.geometry.border_pos * scale;
+fuselage.geometry.width = fuselage.geometry.width * scale;
+fuselage.geometry.width_visc = fuselage.geometry.width_visc * scale;
+fuselage.params.total_length = fuselage.params.total_length * scale;
+fuselage.params.width = fuselage.params.width * scale;
+fuselage.params.center_line_height = fuselage.params.center_line_height * scale;
 
 fuselage.state.geometry = fuselage.geometry;
 

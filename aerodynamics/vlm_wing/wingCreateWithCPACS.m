@@ -26,6 +26,7 @@ elseif wing_idx == 2
 elseif wing_idx == 3
     controls_filename = 'wingControls_params_vtpDefault';
 end
+scale = 1;
 
 % set user parameters
 for i = 1:length(varargin)
@@ -74,7 +75,7 @@ for i = 1:length(varargin)
             else
                 error('Invalid option for parameter is_infl_recomputed.')
             end
-        case 'ControlsFilename'
+        case 'controlsdef'
             if ischar(varargin{i+1})
                 controls_filename = varargin{i+1};
             else
@@ -89,6 +90,8 @@ for i = 1:length(varargin)
             alt = varargin{i+1};
         case 'AdjustJigTwist'
             Delta_jig_twist_data(:) = varargin{i+1};
+        case 'Scale'
+            scale = varargin{i+1};
     end
 end
 
@@ -97,6 +100,14 @@ end
 
 % load wing parameters
 prm = wingGetParamsFromCPACS( tiglHandle, wing_idx, controls_filename );
+
+prm.b = prm.b * scale;
+prm.c = prm.c * scale;
+prm.S = prm.S * scale^2;
+prm.x = prm.x * scale;
+prm.z = prm.z * scale;
+prm.xyz_25 = prm.xyz_25 * scale;
+prm.xyz_75 = prm.xyz_75 * scale;
 
 % set further wing parameters
 wing.params = wingSetParams(prm);
@@ -202,7 +213,22 @@ wing.config.is_infl_recomputed = is_infl_recomputed;
 wing.interim_results = wingSetInterimResults( wing, Ma );
 
 %% set custom actuator
-wingSetCustomActuatorPath(wing);
+custom_path = which('wingCustomActuator','-all');
+if length(custom_path) > 1
+    custom_act_split = strsplit(wing.params.actuator_2_type(1,:),'-');
+    custom_act_name = custom_act_split{end};
+    for i = 1:length(custom_path)
+        folder_names_split = strsplit(custom_path{i},{'/','\'});
+        custom_folder_name = folder_names_split{end-1};
+        if ~strcmp(custom_folder_name,custom_act_name)
+            rmpath(fileparts(custom_path{i}));
+        end
+    end
+end
+custom_path = which('wingCustomActuator','-all');
+if length(custom_path) > 1
+    error('Custom actuator was not specified correctly.');
+end
 wing = wingCustomActuatorSetup(wing);
 
 end

@@ -5,7 +5,7 @@ function I_node = structureGetNodeInertia( structure, idx )
 % 
 % Inputs:
 %   structure       A structure struct as specified by
-%                   getStructureFromNastran
+%                   structureCreateFromNastran
 %   idx             Index of the node (1 to length(structure.xyz(1,:))),
 %                   can be a scalar or a vector of integers
 % 
