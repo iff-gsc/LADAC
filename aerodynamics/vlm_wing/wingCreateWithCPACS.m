@@ -9,6 +9,7 @@ function wing = wingCreateWithCPACS( tiglHandle, wing_idx, n_panel, n_panel_x, v
 
 % default parameters
 is_unsteady = 0;
+is_wagner   = 0;
 is_flexible = 0;
 is_stall    = 1;
 is_le_shock = 0;
@@ -46,6 +47,12 @@ for i = 1:length(varargin)
             else
                 error('Invalid option for parameter is_unsteady.')
             end
+        case 'wagner'
+            if islogical(varargin{i+1})
+                is_wagner = varargin{i+1};
+            else
+                error('Invalid option for parameter wagner.')
+            end
         case 'flexible'
             if isstruct(varargin{i+1})
                 structure = varargin{i+1};
@@ -75,7 +82,7 @@ for i = 1:length(varargin)
             else
                 error('Invalid option for parameter is_infl_recomputed.')
             end
-        case 'controlsdef'
+        case 'ControlsFilename'
             if ischar(varargin{i+1})
                 controls_filename = varargin{i+1};
             else
@@ -196,6 +203,7 @@ end
 %% configuration
 
 wing.config.is_unsteady = double(is_unsteady);
+wing.config.is_wagner   = double(is_wagner);
 wing.config.is_flexible = double(is_flexible);
 wing.config.method      = method;
 wing.config.is_stall    = double(is_stall);
