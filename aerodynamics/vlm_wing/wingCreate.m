@@ -10,6 +10,7 @@ function wing = wingCreate( params_file, n_panel, varargin )
 %                   that can be passed optionally:
 %                       'spacing'           Next variable is spacing.
 %                       'is_unsteady'       Next variable is is_unsteady.
+%                       'is_wagner'         Next variable is is_wagner.
 %                       'flexible'          Next variable is structure.
 %                       'is_infl_recomputed'Next variable is
 %                                           is_infl_recomputed.
@@ -21,18 +22,21 @@ function wing = wingCreate( params_file, n_panel, varargin )
 %                                           panel span is equal for all
 %                                           panels (default).
 %                           'constant'      All panel spans are equal.
-%   is_unsteady    	bolean that defines if unsteady computation (true) or
+%   is_unsteady    	boolean that defines if unsteady computation (true) or
 %                   steady computation (false) is required.
 %                   Default is false.
+%   is_wagner       boolean that defines if the approximated Wagner
+%                   function is used for unsteady airfoil aerodynamics
+%                   (suitable for low Mach numbers)
 %   structure     	a structure struct (see structureCreateFromNastran)
 %                  	that must have nodes at similar positions at the
 %                  	configured wing (else the coupling will not work).
 %                  	This will enable flexible/aeroelastic computations.
 %                  	By default the wing is rigid.
-%   is_infl_recomputed  bolean that defines if the influence coefficients
+%   is_infl_recomputed  boolean that defines if the influence coefficients
 %                  	are recomputed (true) or only adjusted for different
 %                   sideslip angles (false). Default is false.
-%   is_elliptical  	bolean that defines if the wing geometry is
+%   is_elliptical  	boolean that defines if the wing geometry is
 %                  	elliptical (true) or not (false). Default is false.
 % 
 % Outputs:
@@ -62,6 +66,7 @@ function wing = wingCreate( params_file, n_panel, varargin )
 
 % default parameters
 is_unsteady = 0;
+is_wagner   = 0;
 is_flexible = 0;
 is_stall    = 1;
 is_le_shock = 0;
@@ -87,6 +92,12 @@ for i = 1:length(varargin)
                 is_unsteady = varargin{i+1};
             else
                 error('Invalid option for parameter is_unsteady.')
+            end
+        case 'is_wagner'
+            if islogical(varargin{i+1})
+                is_wagner = varargin{i+1};
+            else
+                error('Invalid option for parameter is_wagner.')
             end
         case 'flexible'
             if isstruct(varargin{i+1})
@@ -191,6 +202,7 @@ end
 %% configuration
 
 wing.config.is_unsteady = double(is_unsteady);
+wing.config.is_wagner   = double(is_wagner);
 wing.config.is_flexible = double(is_flexible);
 wing.config.is_stall    = double(is_stall);
 wing.config.is_le_shock = double(is_le_shock);
