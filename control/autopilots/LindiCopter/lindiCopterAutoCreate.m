@@ -418,4 +418,10 @@ ap.psc.k.pos = k(1);
 ap.psc.k.vel = k(2);
 ap.psc.k.acc = k(3);
 
+%% ------------------------ Waypoint Navigation ------------------------ %%
+
+ap.wpnav.T = 3 * 2/ap.atc.rm.leanfreq;
+ap.wpnav.wprad = 10;
+ap.wpnav.eposmax = 10;
+
 end

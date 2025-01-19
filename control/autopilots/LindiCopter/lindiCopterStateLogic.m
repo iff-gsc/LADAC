@@ -1,4 +1,4 @@
-function state = lindiCopterStateLogic(mode_number,is_traj_valid)
+function state = lindiCopterStateLogic(mode_number)
 % lindiCopterStateLogic define logical signals depending on flight mode
 
 % init
@@ -24,11 +24,7 @@ switch mode_number
         state.isAutoTuneEnabled = false;
     case 1 % guided
         state.isPscEnabled      = true;
-        if ~is_traj_valid
-            state.isPosRmEnabled = true;
-        else
-            state.isPosRmEnabled = false;
-        end
+        state.isPosRmEnabled    = false;
         state.isVertPscEnabled	= false;
         state.isGdnceEnabled	= true;
         state.isAttiCmdEnabled  = false;
