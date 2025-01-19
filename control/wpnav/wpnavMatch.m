@@ -69,7 +69,7 @@ end
 while true
     
     if wp_idx == 2
-        is_initial_line = true;
+        is_initial_line = false;%true;
     else
         is_initial_line = false;
     end
@@ -122,7 +122,7 @@ while true
             wp_idx(:) = wp_idx + 1;
         else
             [p_match(:),t(:),d(:)] = wpnavMatchLine(p1,p2,p);
-            if t > 1 && norm(p-p2,2) < wp_radius
+            if t > 1 %&& norm(p-p2,2) < wp_radius
                 stage(:) = 0;
                 wp_idx(:) = wp_idx + 1;
             else
