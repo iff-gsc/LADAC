@@ -17,3 +17,5 @@ param.deflectionMax = deg2rad(25);
 param.deflectionMin = deg2rad(-25);
 % maximum deflection rate, rad/2
 param.deflectionRateMax = deg2rad(60/0.18);
+% transport delay, s
+param.delay = 0;
