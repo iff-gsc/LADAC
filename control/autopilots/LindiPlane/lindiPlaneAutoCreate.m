@@ -138,14 +138,16 @@ ap.ceb.scale = 1;
 
 
 %% Servos
-ap.servo.omega = airplane.act.ailerons.naturalFrequency;
-ap.servo.boost = servo_boost;
+ap.servo.omega  = airplane.act.ailerons.naturalFrequency;
+ap.servo.d      = airplane.act.ailerons.dampingRatio;
+ap.servo.delay  = airplane.act.ailerons.delay;
+ap.servo.boost  = servo_boost;
 
 
 %% Sensor filter
 if isempty(sflt)
     ap.sflt.omega = 2 * ap.servo.omega * ap.servo.boost;
-    ap.sflt.d = 1;
+    ap.sflt.d = 0.71;
 else
     ap.sflt.omega = sflt(1);
     ap.sflt.d = sflt(2);
