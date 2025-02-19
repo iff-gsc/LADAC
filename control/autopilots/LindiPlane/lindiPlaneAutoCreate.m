@@ -163,7 +163,7 @@ ap.aspd.min = sqrt( airplane.body.m*9.81 / (0.5*1.225*airplane.aero.wingMain.pol
 
 
 %% Attitude control
-T_h = 2/(ap.servo.omega*ap.servo.boost) + 2/ap.sflt.omega;
+T_h = 2/(ap.servo.omega*ap.servo.boost) + ap.servo.delay + 2/ap.sflt.omega;
 % p = -1*[1,1,1] * 2/T_h / 6 * agility_atti;
 % p = -1*[1,0.9+0.7*1i,0.9-0.7*1i] * 2/T_h / 5.6 * agility_atti;
 p = roots([1,6,15,15]) * 2/T_h / 12 * agility_atti;
