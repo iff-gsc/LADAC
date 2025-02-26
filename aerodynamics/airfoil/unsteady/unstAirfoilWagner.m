@@ -17,7 +17,7 @@ function [c_L,c_m,alpha_E,x_dt] = unstAirfoilWagner( ...
 %   c_m         Circulatory pitching moment coefficient (1xn vector)
 %   alpha_E     Effective angle of attack (1xn vector) corresponding to 
 %               c_L_c, rad
-%   x_dt        Time-derivative of the state x (8xn matrix)
+%   x_dt        Time-derivative of the state x (2xn matrix)
 % 
 % Literature:
 %   [1] Leishman, J. G., and Nguyen, K. Q. (1990). State-space 
@@ -32,7 +32,7 @@ function [c_L,c_m,alpha_E,x_dt] = unstAirfoilWagner( ...
 %   Yannic Beyer
 % 
 % See also:
-%   unstProfileAero
+%   unstAirfoilAero
 
 % Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only

@@ -43,7 +43,7 @@ c_L_c = zeros(1,3,num_samples);
 delta_last = 0;
 
 % compute geometric flap parameters
-[F_10,F_11] = airfoilFlapEffectiveness(c_rel);
+F = airfoilFlapEffectiveness(c_rel);
 
 ones_crel = ones(size(c_rel));
 
@@ -57,7 +57,7 @@ for i = 1:num_samples
     delta_last = delta;
     
     % quasisteady equivalent angle of attack due to flap deflection
-    delta_qs = airfoilFlapDeltaQs(F_10,F_11,V,c,delta,delta_dt);
+    delta_qs = airfoilFlapDeltaQs(F.F_10,F.F_11,V,c,delta,delta_dt);
     
     % compute unsteady lift (only circulatory part) and time derivative of
     % the state variable z

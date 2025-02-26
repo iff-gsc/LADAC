@@ -1,4 +1,4 @@
-function wing = simpleWingCreate( filename_wing, filename_airfoil )
+function wing = simpleWingCreate( filename_wing, filename_airfoil, varargin )
 % simpleWingCreate create simple wing struct with help of VLM
 % 
 % Syntax:
@@ -11,6 +11,11 @@ function wing = simpleWingCreate( filename_wing, filename_airfoil )
 %                       (string), see simple_wing_params_default.m (the
 %                       geometrical parameters will be ignored and will be
 %                       taken from the filename_wing)
+%   Name                Name of Name-Value Arguments:
+%                           - 'Unsteady': define if unsteady aerodynamics
+%                               should be considered
+%                               (0: no, 1: yes), default: 0
+%   Value               Value of Name-Value Arguments (see input Name)
 % 
 % Outputs:
 %   wing                Simple wing struct, as defined by this function or
@@ -26,6 +31,13 @@ function wing = simpleWingCreate( filename_wing, filename_airfoil )
 %   Copyright (C) 2024 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
+is_unsteady = 0;
+for i = 1:length(varargin)
+    if strcmp(varargin{i},'Unsteady')
+        is_unsteady(:) = varargin{i+1};
+    end
+end
+
 vlm_wing = wingCreate( filename_wing, 40 );
 
 [derivs,derivs2] = wingGetDerivs(vlm_wing,'CG',[-1/4*vlm_wing.params.c(1);0;0]);
@@ -33,6 +45,7 @@ vlm_wing = wingCreate( filename_wing, 40 );
 % load parameters from file
 run(filename_airfoil);
 
+wing.is_unsteady = is_unsteady;
 
 
 % span, m
@@ -118,6 +131,7 @@ while true
     wing.flap.dalpha_deta = 2 * derivs.eta(3,:)/derivs.alpha(3);
     wing.flap.y_cp_wing = 2 * derivs.eta(4,:)./derivs.eta(3,:) * wing.geometry.b/2;
     wing.flap.x_cp0_wing = derivs.eta(5,:)./-derivs.eta(3,:) * wing.geometry.c;
+    wing.flap.lambda_K = max(0,mean(vlm_wing.params.flap_depth(vlm_wing.params.flap_depth~=0)));
     
     
     derivs_simple = simpleWingGetDerivs(wing);

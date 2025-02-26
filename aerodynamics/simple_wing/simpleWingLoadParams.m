@@ -22,6 +22,11 @@ if ~isfield(wing.flap,'eff_scaling')
     wing.flap.is_eff_scaling = 0;
 end
 
+% add potentially missing parameter if unsteady aerodynamics should be used
+if ~isfield(wing,'is_unsteady')
+    wing.is_unsteady = 0;
+end
+
 % compute wing reference surface
 wing.geometry.S = wing.geometry.c * wing.geometry.b;
 
