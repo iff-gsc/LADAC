@@ -26,8 +26,11 @@ function [ap,ap_notune] = lindiPlaneAutoCreate( airplane, varargin )
 %                           with values between 0.5 ... 2 (0.5: 50% servo
 %                           speed, 1: 100% servo speed, 2: 200% servo
 %                           speed), default: 1
-%                       - 'MlaUse': define wheter maneuver load alleviation
+%                       - 'MlaUse': define whether maneuver load alleviation
 %                           should be used (0: off, 1: on), default: 0
+%                       - 'Uaero': define whether unsteady aerodynamics
+%                           should be considered (0: off, 1: on), default:
+%                           0
 %   Value           Value of Name-Value arguments (see input Name)
 % 
 % Outputs:
@@ -49,6 +52,7 @@ agility_atti                = 1;
 agility_pos                 = 1;
 servo_boost                 = 1;
 mla_use                     = 0;
+uaero_use                   = 0;
 
 p = inputParser;
 addOptional(p,'SensFilt',sflt_default,@(x) numel(x)==2);
@@ -56,6 +60,7 @@ addOptional(p,'AgilityAtti',agility_atti);
 addOptional(p,'AgilityPos',agility_pos);
 addOptional(p,'ServoBoost',servo_boost);
 addOptional(p,'MlaUse',mla_use);
+addOptional(p,'Uaero',uaero_use);
 
 parse(p,varargin{:});
 
@@ -76,6 +81,8 @@ cef.rotx = [];
 cef.x = [];
 cef.y = [];
 cef.z = [];
+fdepth = [];
+c = [];
 aero_names = fieldnames(airplane.aero);
 for i = 1:length(aero_names)
     if contains(aero_names{i},'wing')
@@ -94,6 +101,8 @@ for i = 1:length(aero_names)
             cef.z(end+1:end+num_flaps) = pos(3,:);
             cef.rotx(end+1:end+num_flaps) = 0;
             cef.s(end+1:end+num_flaps) = wing.geometry.S;
+            c(end+1:end+num_flaps) = wing.geometry.S/wing.geometry.b;
+            fdepth(end+1:end+num_flaps) = wing.flap.lambda_K;
         elseif contains(aero_names{i},'Htp')
             cla_h = wing.polar.params.C_Lalpha;
             dadf = mean(wing.flap.dalpha_deta);
@@ -105,6 +114,8 @@ for i = 1:length(aero_names)
             cef.z(end+1) = pos(3,:);
             cef.rotx(end+1) = 0;
             cef.s(end+1) = wing.geometry.S;
+            c(end+1) = wing.geometry.S/wing.geometry.b;
+            fdepth(end+1) = wing.flap.lambda_K;
         elseif contains(aero_names{i},'Vtp')
             cla_v = wing.polar.params.C_Lalpha;
             dadf = mean(wing.flap.dalpha_deta);
@@ -117,6 +128,8 @@ for i = 1:length(aero_names)
             euler_angles = dcm2Euler(airplane.aero.config.wingVtpRot);
             cef.rotx(end+1) = euler_angles(1);
             cef.s(end+1) = wing.geometry.S;
+            c(end+1) = wing.geometry.S/wing.geometry.b;
+            fdepth(end+1) = wing.flap.lambda_K;
         end
     end
 end
@@ -160,6 +173,13 @@ ap.sflt.numGyrFlt = 2;
 %% Airspeed
 ap.aspd.flttc = 0.1;
 ap.aspd.min = sqrt( airplane.body.m*9.81 / (0.5*1.225*airplane.aero.wingMain.polar.params.C_Lmax*airplane.aero.wingMain.geometry.S) );
+
+
+%% Unsteady aerodynamics
+ap.uaero.use = uaero_use;
+ap.uaero.c = c;
+ap.uaero.fdepth = fdepth;
+ap.uaero.Vref = 2 * ap.aspd.min;
 
 
 %% Attitude control
@@ -279,12 +299,19 @@ ap.ca.i_max = 1;
 
 
 %% Direct lift control
-% 0: disabled, 1: compensate elevator force, 2: acc feedback control
+% 0: disabled, 1: compensate elevator force, 2: acc feedback control, 3:
+% acc feedback control with filter ap.dlc.flt
 ap.dlc.opt = 1;
 % collective aileron decay, in m/s^2 / 1
 ap.dlc.flapdecay = 4;
 % cutoff pitch angle error, in deg
 ap.dlc.maxptch = 20;
+% acceleration filter cutoff frequency, in rad/s
+ap.dlc.flt.omega = ap.sflt.omega;
+% acceleration filter damping ratio
+ap.dlc.flt.d = ap.sflt.d;
+% servo boost
+ap.dlc.srv.boost = ap.servo.boost;
 
 
 %% Maneuver load alleviation
