@@ -21,7 +21,8 @@ param.xyz = [ ...
 % The beam element properties are specified in the local coordinates. The
 % local coordinates for each beam element are as follows: x_local in the
 % direction of the beam, y_local perpendicular to x_local and z_global,
-% z_local perpendicular to x_local and y_local
+% z_local perpendicular to x_local and y_local. If x_local and z_global are
+% parallel, y_local is in the direction of y_global.
 % Node mass, kg
 m = 0.027;
 % Node inertia w.r.t. node center of gravity, kg*m^2

@@ -22,7 +22,7 @@ function structure = structureCreate( filename )
 %   figure
 %   structurePlot( structure )
 %   figure
-%   structurePlotEigenmode( structure, 'Scaling', 0.2 )
+%   structurePlotEigenmode( structure, 1, 'Scaling', 0.2 )
 % 
 % See also:
 %   structurePlot, structurePlotEigenmode, structureGetReduced
