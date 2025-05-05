@@ -46,6 +46,10 @@ function [V_Kb_dt,Omega_Kb_dt,eta_from_7_dt2] = ...
 %                   frame (3x1 array), in m/^2
 %   eta_from_7_dt2  second time derivative of input eta_from_7
 % 
+% See also:
+%   structureCreate, structureGetReduced, structureGetAcc,
+%   rigidBodyKinetics
+% 
 % Literature:
 %   [1] Waszak, M. R. & Schmidt, D. K. (1988). Flight dynamics of
 %       aeroelastic vehicles. Journal of Aircraft, 25(6), 563-571.
@@ -54,10 +58,12 @@ function [V_Kb_dt,Omega_Kb_dt,eta_from_7_dt2] = ...
 %   [3] Schmidt, D. K. (2015). Discussion:"The Lure of the Mean Axes"
 %       (Meirovitch, L., and Tuzcu, I., ASME J. Appl. Mech., 74 (3), pp. 
 %       497-504). Journal of Applied Mechanics, 82(12).
+
+% Disclaimer:
+%   SPDX-License-Identifier: GPL-3.0-only
 % 
-% Authors:
-%   Yannic Beyer
-% 
+%   Copyright (C) 2019-2023 Yannic Beyer
+%   Copyright (C) 2019-2023 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
 % node force vector due to gravity
