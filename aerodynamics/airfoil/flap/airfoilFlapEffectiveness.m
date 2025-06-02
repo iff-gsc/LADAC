@@ -32,7 +32,7 @@ e = 1-2*E;
 
 e2 = powerFast(e,2);
 sqrt_1_e2 = sqrtReal(1-e2);
-acos_e = acos(e);
+acos_e = acosReal(e);
 
 % [1], eq. (3)
 F.e = e;
