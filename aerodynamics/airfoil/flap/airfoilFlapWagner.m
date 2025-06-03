@@ -36,9 +36,9 @@ function [c_L_flap,alpha_deta,x_dt] = airfoilFlapWagner( V, c, C_L_alpha, E, x, 
 
 [c_L,~,~,x_dt]  = unstAirfoilWagner( V, c, C_L_alpha, 0.25, x, eta );
 
-c_L_qs_alpha    = C_L_alpha*eta;
-c_L_nc_alpha    = 0.5*c_L_qs_alpha;
+c_L_nc_alpha    = 0.5*C_L_alpha * eta;
 c_L_nc          = E.*c_L_nc_alpha;
+c_L_c           = (2-E).*(c_L-c_L_nc_alpha);
 
 e           = 1-2*E;
 e2          = powerFast(e,2);
@@ -47,8 +47,6 @@ acos_e      = acosReal(e);
 F_10        = sqrt_1_e2 + acos_e;
 alpha_deta  = F_10/pi;
 
-c_L_c       = (alpha_deta-E*0.5)/0.5 .* (c_L-c_L_nc_alpha);
-
-c_L_flap    = c_L_c + c_L_nc;
+c_L_flap 	= alpha_deta * (c_L_c + c_L_nc);
 
 end
