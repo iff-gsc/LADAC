@@ -47,6 +47,6 @@ acos_e      = acosReal(e);
 F_10        = sqrt_1_e2 + acos_e;
 alpha_deta  = F_10/pi;
 
-c_L_flap 	= alpha_deta * (c_L_c + c_L_nc);
+c_L_flap 	= alpha_deta .* (c_L_c + c_L_nc);
 
 end
