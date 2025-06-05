@@ -28,9 +28,23 @@ function [ap,ap_notune] = lindiPlaneAutoCreate( airplane, varargin )
 %                           speed), default: 1
 %                       - 'MlaUse': define whether maneuver load alleviation
 %                           should be used (0: off, 1: on), default: 0
-%                       - 'Uaero': define whether unsteady aerodynamics
-%                           should be considered (0: off, 1: on), default:
-%                           0
+%                       - 'Uaero': define how unsteady aerodynamics
+%                           should be considered (1x1 to 1x4 array)
+%                           - 1st element: Should unsteady flap 
+%                               aerodynamics be considered as part of the
+%                               actuator dynamics? (0: no, 1: yes),
+%                               default: 0
+%                           - 2nd element: Should the slow part of the
+%                               transfer function be boosted/eliminated?
+%                               (0: no, 1: boosted to Vref (4th element),
+%                               2: eliminated), default: 0
+%                           - 3rd element: Should the fast part of the
+%                               transfer function be boosted/eliminated?
+%                               (0: no, 1: boosted to Vref (4th element),
+%                               2: eliminated), default: 0
+%                           - 4th element: Reference airspeed Vref to which
+%                               the unsteady flap aerodynamics should be
+%                               boosted (empty: computed internally), m/s
 %   Value           Value of Name-Value arguments (see input Name)
 % 
 % Outputs:
@@ -52,7 +66,7 @@ agility_atti                = 1;
 agility_pos                 = 1;
 servo_boost                 = 1;
 mla_use                     = 0;
-uaero_use                   = 0;
+uaero_config                = zeros(1,4);
 
 p = inputParser;
 addOptional(p,'SensFilt',sflt_default,@(x) numel(x)==2);
@@ -60,7 +74,7 @@ addOptional(p,'AgilityAtti',agility_atti);
 addOptional(p,'AgilityPos',agility_pos);
 addOptional(p,'ServoBoost',servo_boost);
 addOptional(p,'MlaUse',mla_use);
-addOptional(p,'Uaero',uaero_use);
+addOptional(p,'Uaero',uaero_config);
 
 parse(p,varargin{:});
 
@@ -69,6 +83,7 @@ agility_atti = p.Results.AgilityAtti;
 agility_pos = p.Results.AgilityPos;
 servo_boost = p.Results.ServoBoost;
 mla_use = p.Results.MlaUse;
+uaero_config = p.Results.Uaero;
 
 
 cntrl_effect_scaling_factor = 1;
@@ -176,14 +191,30 @@ ap.aspd.min = sqrt( airplane.body.m*9.81 / (0.5*1.225*airplane.aero.wingMain.pol
 
 
 %% Unsteady aerodynamics
-ap.uaero.use = uaero_use;
+if length(uaero_config) < 4
+    uaero_config = [uaero_config,zeros(1,4-length(uaero_config))];
+end
+ap.uaero.use = uaero_config(1);
+ap.uaero.opt1 = uaero_config(2);
+ap.uaero.opt2 = uaero_config(3);
 ap.uaero.c = c;
 ap.uaero.fdepth = fdepth;
-ap.uaero.Vref = 2 * ap.aspd.min;
-
+if uaero_config(4) < 1
+    ap.uaero.Vref = 2 * ap.aspd.min;
+else
+    ap.uaero.Vref = uaero_config(4);
+end
+ap.uaero.cref = mean(c);
+ap.uaero.fdref = mean(fdepth);
+% rough approximation of time delay due to unsteady flap aerodynamics
+if ap.uaero.use == 1 && ap.uaero.opt1 < 2
+    T_uaero = ap.uaero.cref/(2*ap.uaero.Vref*0.3);
+else
+    T_uaero = 0;
+end
 
 %% Attitude control
-T_h = 2/(ap.servo.omega*ap.servo.boost) + ap.servo.delay + 2/ap.sflt.omega;
+T_h = 2/(ap.servo.omega*ap.servo.boost) + ap.servo.delay + 2/ap.sflt.omega + T_uaero;
 % p = -1*[1,1,1] * 2/T_h / 6 * agility_atti;
 % p = -1*[1,0.9+0.7*1i,0.9-0.7*1i] * 2/T_h / 5.6 * agility_atti;
 p = roots([1,6,15,15]) * 2/T_h / 12 * agility_atti;
