@@ -45,6 +45,9 @@ function [ap,ap_notune] = lindiPlaneAutoCreate( airplane, varargin )
 %                           - 4th element: Reference airspeed Vref to which
 %                               the unsteady flap aerodynamics should be
 %                               boosted (empty: computed internally), m/s
+%                       - 'UaeroDlc': define how unsteady aerodynamics
+%                           should be considered for DLC (1x1 to 1x4 array)
+%                           (see 'Uaero')
 %   Value           Value of Name-Value arguments (see input Name)
 % 
 % Outputs:
@@ -67,6 +70,7 @@ agility_pos                 = 1;
 servo_boost                 = 1;
 mla_use                     = 0;
 uaero_config                = zeros(1,4);
+uaero_config_dlc            = zeros(1,4);
 
 p = inputParser;
 addOptional(p,'SensFilt',sflt_default,@(x) numel(x)==2);
@@ -75,6 +79,7 @@ addOptional(p,'AgilityPos',agility_pos);
 addOptional(p,'ServoBoost',servo_boost);
 addOptional(p,'MlaUse',mla_use);
 addOptional(p,'Uaero',uaero_config);
+addOptional(p,'UaeroDlc',uaero_config_dlc);
 
 parse(p,varargin{:});
 
@@ -84,6 +89,7 @@ agility_pos = p.Results.AgilityPos;
 servo_boost = p.Results.ServoBoost;
 mla_use = p.Results.MlaUse;
 uaero_config = p.Results.Uaero;
+uaero_config_dlc = p.Results.UaeroDlc;
 
 
 cntrl_effect_scaling_factor = 1;
@@ -194,16 +200,15 @@ ap.aspd.min = sqrt( airplane.body.m*9.81 / (0.5*1.225*airplane.aero.wingMain.pol
 if length(uaero_config) < 4
     uaero_config = [uaero_config,zeros(1,4-length(uaero_config))];
 end
+if uaero_config(4) < 1
+    uaero_config(4) = 2 * ap.aspd.min;
+end
 ap.uaero.use = uaero_config(1);
 ap.uaero.opt1 = uaero_config(2);
 ap.uaero.opt2 = uaero_config(3);
 ap.uaero.c = c;
 ap.uaero.fdepth = fdepth;
-if uaero_config(4) < 1
-    ap.uaero.Vref = 2 * ap.aspd.min;
-else
-    ap.uaero.Vref = uaero_config(4);
-end
+ap.uaero.Vref = uaero_config(4);
 ap.uaero.cref = mean(c);
 ap.uaero.fdref = mean(fdepth);
 % rough approximation of time delay due to unsteady flap aerodynamics
@@ -343,6 +348,17 @@ ap.dlc.flt.omega = ap.sflt.omega;
 ap.dlc.flt.d = ap.sflt.d;
 % servo boost
 ap.dlc.srv.boost = ap.servo.boost;
+% unsteady flap aerodynamics
+if length(uaero_config_dlc) < 4 || isequal(uaero_config_dlc,zeros(1,4))
+    uaero_config_dlc = uaero_config;
+end
+if uaero_config_dlc(4) < 1
+    uaero_config_dlc(4) = 2 * ap.aspd.min;
+end
+ap.dlc.ua.use = uaero_config_dlc(1);
+ap.dlc.ua.opt1 = uaero_config_dlc(2);
+ap.dlc.ua.opt2 = uaero_config_dlc(3);
+ap.dlc.ua.Vref = uaero_config_dlc(4);
 
 
 %% Maneuver load alleviation
