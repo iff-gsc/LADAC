@@ -80,8 +80,10 @@ Y = [Y{:}];
 
 % assure that the x axis vector is monotonically increasing (for lookup
 % table)
-Y(diff(X) < 0.5*Da) = [];
-X(diff(X) < 0.5*Da) = [];
+Y(diff(X) == 0) = [];
+X(diff(X) == 0) = [];
+Y = interp1(X,Y,-90:90,'linear','extrap');
+X = -90:90;
 
 wing.polar.alpha = deg2rad(X);
 wing.polar.C_D = Y;
