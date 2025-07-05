@@ -174,6 +174,13 @@ torque_delta_max = d * omega_delta_max^2;
 torque_delta_min = d * omega_delta_min^2;
 
 
+%% Roll/Pitch Direction
+
+% 0: Current copter perspective (normal mode)
+% 1: Initial copter perspective (simple mode)
+% 2: Copter position relative to home perspective (super simple mode)
+ap.rllptch = 1;
+
 
 %% ----------------------- Control Effectiveness ----------------------- %%
 M = zeros(3,num_motors);

@@ -17,7 +17,7 @@ The autopilot Simulink block is called __LindiCopter Autopilot__ and is located 
 The autopilot parameters can be computed automatically using the function [lindiCopterAutoCreate](lindiCopterAutoCreate.m) based on a quadcopter parameters struct (see [copter_params_default](../../../aircraft/multicopters/complete/quadcopter/copter_params_default.m)):
 ```
 copter = copterLoadParams(copter_params_default');
-lindiCopter_params = lindiCopterAutoCreate(copter);
+lindi = lindiCopterAutoCreate(copter);
 ```
 For tuning have a look at the optional input arguments of the [lindiCopterAutoCreate](lindiCopterAutoCreate.m) function.
 
@@ -30,7 +30,7 @@ cmd_roll_-1_1 | Roll stick command (-1 ... 1)
 cmd_pitch_-1_1 | Pitch stick command (-1 ... 1)
 cmd_yaw_-1_1 | Yaw stick command (-1 ... 1)
 cmd_throttle_-1_1 | Throttle stick command (-1 ... 1)
-is_cmd_in_NED | Define whether the commanded velocities are in FRD or NED frame (currently not supported)
+yaw_init | Initial yaw angle, rad
 waypoints | Waypoints (4xN array), first three rows is position in NED frame (in meters), fourth row is velocity in m/s, N is number of waypoints
 num_waypoints | Number of waypoint (should match with input `waypoints`)
 trigger_wp_update | This input triggers an internal update of the waypoints, the splines will be recomputed
@@ -38,7 +38,7 @@ M_bg | Rotation matrix (3x3) from geodetic frame g (NED) to body-fixed frame b (
 omega_Kb | Angular velocity (3x1) of body w.r.t. earth represented in body-fixed frame b, in rad/s
 s_Kg | Position (3x1) in geodetic frame g, in m
 s_Kg_dt | Time-derivative of position s_Kg (3x1), m/s
-s_Kg_dt2 | Second time-derivative of position s_Kg (31), in m/s/s
+s_Kg_dt2 | Second time-derivative of position s_Kg (3x1), in m/s/s
 external_reset | Reset controller states (currently not supported)
 
 **Outputs:**  
@@ -55,7 +55,10 @@ As a starting point there is an example in [LADAC-Examples](https://github.com/i
 You can prepare the C++ Code Generation by running [init_Arducopter_MinnieLindiCopter](https://github.com/iff-gsc/LADAC-Examples/blob/main/Copter/Minnie/ArduPilot_implementation/init_Arducopter_MinnieLindiCopter.m).
 
 **Flight Mode Info**  
-- Loiter: Note that the Loiter flight mode currently runs in NED frame.
+- Loiter/Stabilize: The roll and pitch stick commands have different behavior depending on the parameter `lindi.rllptch`.  
+  0: Current copter perspective (normal mode)  
+  1: Initial copter perspective (simple mode)  
+  2: Copter position relative to home perspective (super simple mode)  
 - Guided: Note that the Guided flight mode has currently a limit of 6 waypoints. Moreover, the autopilot currently may not enter the Guided flight mode in flight test (but it will work in Simulink and ArduCopter SITL). We are working on a bug fix.
 - AutoTune: This mode is based on the work:  
 Smeur, E. J., Chu, Q., & De Croon, G. C. (2016). Adaptive incremental nonlinear dynamic inversion for attitude control of micro air vehicles. Journal of Guidance, Control, and Dynamics, 39(3), 450-461.  
