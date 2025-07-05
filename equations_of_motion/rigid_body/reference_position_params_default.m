@@ -8,8 +8,8 @@
 % *************************************************************************
 
 % initial latitude, in deg
-pos_ref.lat = 37.6117;
+pos_ref.lat = 52.402816;
 % initial longitude, in deg
-pos_ref.lon = -122.37822;
+pos_ref.lon = 10.228787;
 % initial altitude, in m
-pos_ref.alt = 1;
+pos_ref.alt = 72;
