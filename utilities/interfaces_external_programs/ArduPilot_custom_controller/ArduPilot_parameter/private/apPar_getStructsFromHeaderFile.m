@@ -163,7 +163,13 @@ function dismantled_content = dismantleContent(content)
 %     content = rmCppSlComments(content);
 %     content = rmEmptyLines(content);
     
-    [a,b] = regexp(content, '(struct\s{[^}]*} \w*;|\w* \w*\[?[0-9]*\]?;)');
+    [a,b] = regexp(content, '(struct\s{[^}]*} \w*;|\w* \*?\w*\[?[0-9]*\]?;)');
+    if isempty(a)
+        error(['When reading the code', newline, content, newline, ...
+            'the data type and variable name could not be recognized. ', ...
+            'The problem could possibly be solved by adjusting the expression ', ...
+            'in the previously called regexp function.']);
+    end
     
     dismantled_content = {};
     
@@ -184,7 +190,7 @@ function dismantled_content = dismantleContent(content)
         else
             t3 = strsplit(t2, ' ');
             var_type = t3{1};
-            var_name = regexp(t3{2}, '^[a-zA-Z0-9_]*', 'match', 'once');
+            var_name = regexp(t3{2}, '[a-zA-Z_][a-zA-Z0-9_]*', 'match', 'once');
             var_size = regexp(t3{2}, '(?<=\[)\d*(?=\])', 'match', 'once');
             if isempty(var_size)
                 var_size = 1;
