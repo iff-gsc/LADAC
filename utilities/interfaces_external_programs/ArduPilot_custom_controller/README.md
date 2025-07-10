@@ -108,7 +108,7 @@ To get your MATLAB/Simulink controller to run in ArduPilot you need to generate 
    Store these files in one folder and copy the content into your local ArduPilot repository.  
    **ArduCopter:**
      ```
-     cp -rf <your_source_folder>/. <path_to_ardupilot>/libraries/AC_AttitudeControl/
+     cp -rf <your_source_folder>/. <path_to_ardupilot>/libraries/AC_MatlabController/
      ```  
    **ArduPlane:**
      ```
