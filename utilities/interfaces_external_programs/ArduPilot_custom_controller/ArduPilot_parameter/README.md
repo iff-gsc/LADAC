@@ -54,7 +54,6 @@ This will generate the following additional files in the code export directory o
 
 - `MatlabControllerStructOverride.h`
 - `MatlabControllerParams.cpp`
-- `ModeCustomParams.cpp`
 - `QGC_Params.params`
 
 The C++ files must also be copied to the target directory for the custom controller in ArduPilot (see [ArduPilot custom controller](../README.md#how-to-use)). The `QGC_Params.params` file is a parameter file for QGroundControl that contains all tunable model parameters and their values.
@@ -90,7 +89,7 @@ The post-processing scripts for the generated code ([`apParProcessCodeExport()`]
 
 This approach works in most cases but is a "hacky" solution, because it replaces the fundamental data types in the data structures of the generated code. Especially with regard to array handling, this can lead to problems and uncompilable code that has to be corrected manually.
 
-The default values for the model parameters are defined in the other two files (`MatlabControllerParams.cpp` and `ModeCustomParams.cpp`).
+The default values for the model parameters are defined in the other file (`MatlabControllerParams.cpp`).
 
 
 

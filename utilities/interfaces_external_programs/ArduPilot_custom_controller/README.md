@@ -17,9 +17,9 @@ Here, the implementation of your MATLAB/Simulink controller in ArduPilot is desc
 - You must install [LADAC](https://github.com/iff-gsc/LADAC#readme) (you need the MATLAB Coder and Simulink Embedded Coder).
 - You must install the [ArduPilot SITL](https://ardupilot.org/dev/docs/SITL-setup-landingpage.html).
 - Clone the following ArduPilot **fork** and check out one of the following branches:
-  - ArduCopter 4.2.0
+  - ArduCopter 4.6.0
     ```
-    git clone -b Copter-Matlab-4.2.0-dev https://github.com/ybeyer/ardupilot
+    git clone -b Copter-Matlab-4.6.0 https://github.com/ybeyer/ardupilot
     cd ardupilot
     git submodule update --init --recursive
     ```
@@ -103,6 +103,7 @@ To get your MATLAB/Simulink controller to run in ArduPilot you need to generate 
     ```
 2. Generate C++ code from the Simulink file (click top right button "Build Model"): https://de.mathworks.com/help/dsp/ug/generate-c-code-from-simulink-model.html  
   Note that floating points should be 32-bit. This is assured in the Simulink template files because the following parameters were set: `set_param(gcs, 'DefaultUnderspecifiedDataType', 'single')` and `set_param(gcs, 'DataTypeOverride', 'Single','DataTypeOverrideAppliesTo','Floating-point')`
+  Optionally, you can post-process the generated C++ code to [define tunable parameters as ArduPilot parameters](ArduPilot_parameter).
 3. You only need four files of the generated code: `MatlabController.cpp`, `MatlabController.h`, `MatlabController_data.cpp` and `rtwtypes.h`.
    Store these files in one folder and copy the content into your local ArduPilot repository.  
    **ArduCopter:**

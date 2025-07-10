@@ -128,9 +128,8 @@ apPar_writeStructOverrideFile(code_pars, struct_overrides);
 
 
 
-%% Generate AP param files
+%% Generate AP param file
 var_infos = apPar_writeModelAPParamFile(ap_pars, code_pars, tunable_vars_proc, top_vars);
-apPar_writeInterfaceAPParamFile(ap_pars, code_pars);
 
 
 
