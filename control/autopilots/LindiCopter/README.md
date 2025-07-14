@@ -55,10 +55,10 @@ As a starting point there is an example in [LADAC-Examples](https://github.com/i
 You can prepare the C++ Code Generation by running [init_Arducopter_MinnieLindiCopter](https://github.com/iff-gsc/LADAC-Examples/blob/main/Copter/Minnie/ArduPilot_implementation/init_Arducopter_MinnieLindiCopter.m).
 
 **Flight Mode Info**  
-- Loiter/Stabilize: The roll and pitch stick commands have different behavior depending on the parameter `lindi.rllptch`.  
-  0: Current copter perspective (normal mode)  
-  1: Initial copter perspective (simple mode)  
-  2: Copter position relative to home perspective (super simple mode)  
+- Loiter/Stabilize: The roll and pitch stick commands have different behavior depending on the parameter `lindi.flydirmode`.  
+  0: Current copter perspective (like ArduCopter Normal Mode)  
+  1: Initial copter perspective (like ArduCopter Simple Mode)  
+  2: Copter position relative to home perspective (like ArduCopter Super Simple Mode)  
 - Guided: Note that the Guided flight mode has currently a limit of 6 waypoints. Moreover, the autopilot currently may not enter the Guided flight mode in flight test (but it will work in Simulink and ArduCopter SITL). We are working on a bug fix.
 - AutoTune: This mode is based on the work:  
 Smeur, E. J., Chu, Q., & De Croon, G. C. (2016). Adaptive incremental nonlinear dynamic inversion for attitude control of micro air vehicles. Journal of Guidance, Control, and Dynamics, 39(3), 450-461.  

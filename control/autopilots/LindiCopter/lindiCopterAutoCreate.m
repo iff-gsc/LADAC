@@ -174,12 +174,12 @@ torque_delta_max = d * omega_delta_max^2;
 torque_delta_min = d * omega_delta_min^2;
 
 
-%% Roll/Pitch Direction
+%% Flight Direction Mode
 
-% 0: Current copter perspective (normal mode)
-% 1: Initial copter perspective (simple mode)
-% 2: Copter position relative to home perspective (super simple mode)
-ap.rllptch = 1;
+% 0: Current copter perspective (like ArduCopter Normal Mode)
+% 1: Initial copter perspective (like ArduCopter Simple Mode)
+% 2: Copter position relative to home perspective (like ArduCopter Super Simple Mode)
+ap.flydirmode = 1;
 
 
 %% ----------------------- Control Effectiveness ----------------------- %%
