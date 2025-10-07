@@ -15,14 +15,11 @@ classdef NotchFilter < matlab.System
     properties(Access = private)
         Ad
         Bd
-        Cd
-        Dd
         T = 1/400;
         A0
         last_omega_0;
         last_omega_c;
         last_A0_dB;
-        u0              = 0;
         is_init         = true;
     end
     methods(Access = protected)
@@ -30,8 +27,6 @@ classdef NotchFilter < matlab.System
             obj.A0 = 10^(-obj.A0_dB/20);
             setAd(obj);
             setBd(obj);
-            setCd(obj);
-            obj.Dd = 1;
             obj.x = zeros(2,1);
             obj.last_omega_0 = obj.omega_0;
             obj.last_omega_c = obj.omega_c;
@@ -44,10 +39,10 @@ classdef NotchFilter < matlab.System
             end
             updateParams(obj);
             
-            y = obj.Cd*obj.x + obj.Dd*u;
+            Cd = getCd(obj);
+            Dd = 1;
+            y = Cd*obj.x + Dd*u;
             obj.x = obj.Ad*obj.x + obj.Bd*u;
-            
-            obj.is_init = false;
         end
 
         function resetImpl(obj)
@@ -58,13 +53,11 @@ classdef NotchFilter < matlab.System
         function updateParams(obj)
             if obj.A0_dB~=obj.last_A0_dB
                 setA0(obj);
-                setCd(obj);
                 obj.last_A0_dB = obj.A0_dB;
             end
             if (obj.omega_0~=obj.last_omega_0 || obj.omega_c~=obj.last_omega_c)
                 setAd(obj);
                 setBd(obj);
-                setCd(obj);
                 obj.last_omega_0 = obj.omega_0;
                 obj.last_omega_c = obj.omega_c;
             end
@@ -73,18 +66,18 @@ classdef NotchFilter < matlab.System
         function setAd(obj)
             A = [0 1;
                 -obj.omega_0^2  -obj.omega_c];
-            obj.Ad = expm(A*obj.T);
+            obj.Ad = expm2(A*obj.T);
         end
         
         function setBd(obj)
             A = [0 1;
                 -obj.omega_0^2  -obj.omega_c];
             B = [0; 1];
-            obj.Bd = A \ (obj.Ad-eye(2)) * B;
+            obj.Bd = inv2(A) * (obj.Ad-eye(2)) * B;
         end
         
-        function setCd(obj)
-            obj.Cd = [0 obj.omega_c*(obj.A0-1)];
+        function Cd = getCd(obj)
+            Cd = [0 obj.omega_c*(obj.A0-1)];
         end
         
         function setA0(obj)
@@ -95,6 +88,7 @@ classdef NotchFilter < matlab.System
             Det = (1-obj.Ad(1,1))*(1-obj.Ad(2,2))-obj.Ad(1,2)*obj.Ad(2,1);
             obj.x(1) = ((1-obj.Ad(2,2))*obj.Bd(1)+obj.Ad(1,2)*obj.Bd(2))/Det*u;
             obj.x(2) = (obj.Ad(2,1)*obj.Bd(1)+(1-obj.Ad(1,1))*obj.Bd(2))/Det*u;
+            obj.is_init = false;
         end
         
     end

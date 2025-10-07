@@ -37,8 +37,7 @@ classdef T2Filter < matlab.System
 
         function varargout = stepImpl(obj,u)
             if obj.is_init
-                resetCustom(obj,u);
-                obj.is_init = false;
+                init(obj,u);
             end
             updateParams(obj);
             
@@ -53,7 +52,7 @@ classdef T2Filter < matlab.System
                 y(:,i) = Cd*obj.x(:,i) + Dd*u(i);
                 obj.x(:,i) = obj.Ad*obj.x(:,i) + obj.Bd*u(i);
                 if any(isnan(obj.x(:,i))) || any(isinf(obj.x(:,i)))
-                    resetCustom(obj,u);
+                    init(obj,u);
                 end 
             end
             
@@ -72,13 +71,15 @@ classdef T2Filter < matlab.System
         end
         
         % resetImpl does not allow input u
-        function resetCustom(obj,u)
+        function init(obj,u)
             obj.x(1,:) = u(:);
             obj.x(2,:) = 0;
+            obj.is_init = false;
         end
         
         function resetImpl(obj)
             obj.x(:) = 0;
+            obj.is_init = true;
         end
 
         function num = getNumOutputsImpl(obj)
@@ -113,54 +114,14 @@ classdef T2Filter < matlab.System
         end
         
         function setAd(obj)
-            % the expm function is computationally expensive,
-            % so compute Ad = expm(A*T) analytically
-            omega0 = obj.omega_0;
-            D = obj.d;
-            % don't allow unstable system
-            if D < 0
-                D(:) = 0;
-            end
-            t = obj.T*ones(1,class(obj.omega_0));
-            alpha = D * omega0;
-            if D < 1
-                % underdamped
-                wd = omega0 * sqrt(max(0, 1 - D^2));
-                if abs(wd) < eps(D)
-                    wd(:) = eps(D);
-                end
-                expm_factor = exp(-alpha * t);
-                wt = wd * t;
-                sin_wt = sin(wt);
-                cos_wt = cos(wt);
-                a11 = cos_wt + alpha/wd * sin_wt;
-                a12 = 1/wd * sin_wt;
-                a21 = -omega0^2/wd * sin_wt;
-                a22 = cos_wt - alpha/wd * sin_wt;
-            elseif abs(D - 1) <= 1e-12
-                % critically damped
-                expm_factor = exp(-omega0 * t);
-                a11 = 1 + omega0 * t;
-                a12 = t;
-                a21 = -omega0^2 * t;
-                a22 = 1 - omega0 * t;
-            else
-                % overdamped
-                s = omega0 * sqrt(D^2 - 1);
-                expm_factor = exp(-alpha * t);
-                sh = sinh(s*t);
-                ch = cosh(s*t);
-                a11 = ch + alpha/s * sh;
-                a12 = 1/s * sh;
-                a21 = -omega0^2/s * sh;
-                a22 = ch - alpha/s * sh;
-            end
-            obj.Ad = expm_factor * [a11, a12; a21, a22];
+            A = [ 0, 1; -obj.omega_0^2, -2*obj.d*obj.omega_0 ];
+            obj.Ad = expm2(A*obj.T);
         end
         
         function setBd(obj)
             B = [0; obj.omega_0^2];
-            A_inv = [ -2*obj.d/obj.omega_0, -1/obj.omega_0^2; 1, 0 ];
+            A = [ 0, 1; -obj.omega_0^2, -2*obj.d*obj.omega_0 ];
+            A_inv = inv2(A);
             obj.Bd = A_inv * (obj.Ad-eye(2)) * B;
         end
         
