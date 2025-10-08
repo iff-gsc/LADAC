@@ -1,13 +1,19 @@
 classdef NotchFilter < matlab.System
     properties
         % Central rejected frequency (rad/s)
-        omega_0	= 2*pi*80;
+        omega_0_param = 2*pi*80;
         % Width of rejected frequency (rad/s)
         omega_c	= 2*pi*40;
         % Amplitude reduction at rejected frequency (dB)
         A0_dB	= 40;
         % Sample time (s)
         Ts      = 1/400;
+    end
+    properties(Nontunable)
+        % Discretization ('zoh', 'tustin')
+        discretization_method = 'tustin';
+        % Enable varying central frequency?
+        external_omega_0 = false;
     end
     properties(DiscreteState)
         x
@@ -17,23 +23,44 @@ classdef NotchFilter < matlab.System
         Bd
         T = 1/400;
         A0
+        omega_0
         last_omega_0;
         last_omega_c;
         last_A0_dB;
         is_init         = true;
     end
     methods(Access = protected)
-        function setupImpl(obj)
+        
+        function num = getNumInputsImpl(obj)
+            if obj.external_omega_0
+                num = 2;
+            else
+                num = 1;
+            end
+        end
+        
+        function setupImpl(obj,~,w0)
+            if obj.external_omega_0
+                obj.omega_0 = w0;
+            else
+                obj.omega_0 = obj.omega_0_param;
+            end
+            obj.omega_0 = max(obj.omega_0,2*obj.omega_c);
             obj.A0 = 10^(-obj.A0_dB/20);
-            setAd(obj);
-            setBd(obj);
+            setAdBd(obj);
             obj.x = zeros(2,1);
             obj.last_omega_0 = obj.omega_0;
             obj.last_omega_c = obj.omega_c;
             obj.last_A0_dB = obj.A0_dB;
         end
 
-        function y = stepImpl(obj,u)
+        function y = stepImpl(obj,u,w0)
+            if nargin == 3
+                obj.omega_0 = w0;
+            else
+                obj.omega_0 = obj.omega_0_param;
+            end
+            obj.omega_0 = max(obj.omega_0,2*obj.omega_c);
             if obj.is_init
                 init(obj,u);
             end
@@ -56,24 +83,29 @@ classdef NotchFilter < matlab.System
                 obj.last_A0_dB = obj.A0_dB;
             end
             if (obj.omega_0~=obj.last_omega_0 || obj.omega_c~=obj.last_omega_c)
-                setAd(obj);
-                setBd(obj);
+                setAdBd(obj);
                 obj.last_omega_0 = obj.omega_0;
                 obj.last_omega_c = obj.omega_c;
             end
         end
         
-        function setAd(obj)
-            A = [0 1;
-                -obj.omega_0^2  -obj.omega_c];
-            obj.Ad = expm2(A*obj.T);
-        end
-        
-        function setBd(obj)
+        function setAdBd(obj)
             A = [0 1;
                 -obj.omega_0^2  -obj.omega_c];
             B = [0; 1];
-            obj.Bd = inv2(A) * (obj.Ad-eye(2)) * B;
+            disc_method = erase(obj.discretization_method,'''');
+            switch disc_method
+                % ZOH
+                case 'zoh'
+                    obj.Ad = expm2(A*obj.T);
+                    obj.Bd = inv2(A) * (obj.Ad-eye(2)) * B;
+                % Tustin
+                case 'tustin'
+                    [obj.Ad,obj.Bd] = tustin2(A,B,obj.T);
+                otherwise
+                    [obj.Ad,obj.Bd] = tustin2(A,B,obj.T);
+                    error('Discretization method not specified correctly.')
+            end
         end
         
         function Cd = getCd(obj)
