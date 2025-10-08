@@ -55,7 +55,7 @@ tailsitter.bat = 14.8;
 tailsitter.act.elevons = loadParams('actuators_pt2_params_default');
 
 % reference position
-tailsitter.posRef = posRefLoadParams( 'reference_position_params_default' );
+tailsitter.posRef = loadParams( 'flightgearRefPos_params_default' );
 
 % ground contact parameters
 tailsitter.grnd = groundLoadParams( 'params_ground_default' );

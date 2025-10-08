@@ -46,7 +46,7 @@ airplane.cmd = struct('aileron_left',0.5,'aileron_right',0.5,'elevator',0.5,'rud
 struct2bus(airplane.cmd,'cmdBus');
 
 % reference position
-airplane.posRef = posRefLoadParams( 'reference_position_params_default' );
+airplane.posRef = loadParams( 'flightgearRefPos_params_default' );
 
 % ground contact parameters
 airplane.grnd = groundLoadParams( 'params_ground_default' );

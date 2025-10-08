@@ -95,4 +95,4 @@ tiltwing.ic.downwash = 0;
 
 %% reference position
 
-tiltwing.pos_ref = posRefLoadParams( 'reference_position_params_default' );
+tiltwing.pos_ref = loadParams( 'flightgearRefPos_params_default' );
