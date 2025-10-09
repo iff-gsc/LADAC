@@ -360,6 +360,25 @@ ap.dlc.ua.opt1 = uaero_config_dlc(2);
 ap.dlc.ua.opt2 = uaero_config_dlc(3);
 ap.dlc.ua.Vref = uaero_config_dlc(4);
 
+% Notch filters
+% Minimum motor frequency below which the notch filters are switched off
+ap.dlc.ntch.wmin = 100;
+% Enable/disable 1st notch filter at motor frequency
+ap.dlc.ntch1.use = 0;
+% Inverse quality of 1st notch filter in percent (omega_bw/omega_0*100)
+ap.dlc.ntch1.q100 = 33;
+% Amplitude reduction of 1st notch filter at notch frequency in dB
+ap.dlc.ntch1.AdB = 40;
+% Enable/disable triple notch filter for 1st notch filter
+ap.dlc.ntch1.tri = 0;
+% Enable/disable 2nd notch filter at 2x motor frequency
+ap.dlc.ntch2.use = 0;
+% Inverse quality of 2nd notch filter in percent (omega_bw/omega_0*100)
+ap.dlc.ntch2.q100 = 33;
+% Amplitude reduction of 2nd notch filter at notch frequency in dB
+ap.dlc.ntch2.AdB = 40;
+% Enable/disable triple notch filter for 2nd notch filter
+ap.dlc.ntch2.tri = 0;
 
 %% Maneuver load alleviation
 ap.mla.use = mla_use;
