@@ -3,7 +3,7 @@ classdef NotchFilter < matlab.System
         % Central rejected frequency (rad/s)
         omega_0_param = 2*pi*80;
         % Width of rejected frequency (rad/s)
-        omega_c	= 2*pi*40;
+        omega_c_param = 2*pi*40;
         % Amplitude reduction at rejected frequency (dB)
         A0_dB	= 40;
         % Sample time (s)
@@ -14,6 +14,8 @@ classdef NotchFilter < matlab.System
         discretization_method = 'tustin';
         % Enable varying central frequency?
         external_omega_0 = false;
+        % Enable varying frequency width?
+        external_omega_c = false;
     end
     properties(DiscreteState)
         x
@@ -24,6 +26,7 @@ classdef NotchFilter < matlab.System
         T = 1/400;
         A0
         omega_0
+        omega_c
         last_omega_0;
         last_omega_c;
         last_A0_dB;
@@ -32,19 +35,18 @@ classdef NotchFilter < matlab.System
     methods(Access = protected)
         
         function num = getNumInputsImpl(obj)
-            if obj.external_omega_0
+            if obj.external_omega_0 && obj.external_omega_c
+                num = 3;
+            elseif obj.external_omega_0 || obj.external_omega_c
                 num = 2;
             else
                 num = 1;
             end
         end
         
-        function setupImpl(obj,~,w0)
-            if obj.external_omega_0
-                obj.omega_0 = w0;
-            else
-                obj.omega_0 = obj.omega_0_param;
-            end
+        function setupImpl(obj)
+            obj.omega_0 = obj.omega_0_param;
+            obj.omega_c = obj.omega_c_param;
             obj.omega_0 = max(obj.omega_0,2*obj.omega_c);
             obj.A0 = 10^(-obj.A0_dB/20);
             setAdBd(obj);
@@ -54,11 +56,12 @@ classdef NotchFilter < matlab.System
             obj.last_A0_dB = obj.A0_dB;
         end
 
-        function y = stepImpl(obj,u,w0)
-            if nargin == 3
+        function y = stepImpl(obj,u,w0,wc)
+            if obj.external_omega_0
                 obj.omega_0 = w0;
-            else
-                obj.omega_0 = obj.omega_0_param;
+            end
+            if obj.external_omega_c
+                obj.omega_c = wc;
             end
             obj.omega_0 = max(obj.omega_0,2*obj.omega_c);
             if obj.is_init
@@ -120,6 +123,7 @@ classdef NotchFilter < matlab.System
             Det = (1-obj.Ad(1,1))*(1-obj.Ad(2,2))-obj.Ad(1,2)*obj.Ad(2,1);
             obj.x(1) = ((1-obj.Ad(2,2))*obj.Bd(1)+obj.Ad(1,2)*obj.Bd(2))/Det*u;
             obj.x(2) = (obj.Ad(2,1)*obj.Bd(1)+(1-obj.Ad(1,1))*obj.Bd(2))/Det*u;
+            obj.x(isnan(obj.x)) = 0;
             obj.is_init = false;
         end
         
