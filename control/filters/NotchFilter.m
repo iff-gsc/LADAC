@@ -5,11 +5,11 @@ classdef NotchFilter < matlab.System
         % Width of rejected frequency (rad/s)
         omega_c_param = 2*pi*40;
         % Amplitude reduction at rejected frequency (dB)
-        A0_dB	= 40;
-        % Sample time (s)
-        Ts      = 1/400;
+        A0_dB = 40;
     end
     properties(Nontunable)
+        % Sample time (s)
+        T = 1/400;
         % Discretization ('zoh', 'tustin')
         discretization_method = 'tustin';
         % Enable varying central frequency?
@@ -23,7 +23,6 @@ classdef NotchFilter < matlab.System
     properties(Access = private)
         Ad
         Bd
-        T = 1/400;
         A0
         omega_0
         omega_c
@@ -45,6 +44,9 @@ classdef NotchFilter < matlab.System
         end
         
         function setupImpl(obj)
+            if obj.T <= 0
+                error('Sample time must be positive.')
+            end
             obj.omega_0 = obj.omega_0_param;
             obj.omega_c = obj.omega_c_param;
             obj.omega_0 = max(obj.omega_0,2*obj.omega_c);

@@ -4,10 +4,10 @@ classdef T2Filter < matlab.System
         omega_0	= 100;
         % Damping ratio
         d = 1;
-        % Sample time (s)
-        Ts      = 1/400;
     end
     properties(Nontunable)
+        % Sample time (s)
+        T      = 1/400;
         % Enable velocity output
         is_vel = false;
         % Enable acceleration output
@@ -19,13 +19,15 @@ classdef T2Filter < matlab.System
     properties(Access = private)
         Ad
         Bd
-        T = 1/400;
         last_omega_0
         last_d
         is_init = true;
     end
     methods(Access = protected)
         function setupImpl(obj,u)
+            if obj.T <= 0
+                error('Sample time must be positive.')
+            end
             setAd(obj);
             setBd(obj);
             size_in = propagatedInputSize(obj,1);
