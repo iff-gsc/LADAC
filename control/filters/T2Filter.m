@@ -7,7 +7,7 @@ classdef T2Filter < matlab.System
     end
     properties(Nontunable)
         % Sample time (s)
-        T      = 1/400;
+        Ts      = 1/400;
         % Enable velocity output
         is_vel = false;
         % Enable acceleration output
@@ -19,14 +19,17 @@ classdef T2Filter < matlab.System
     properties(Access = private)
         Ad
         Bd
+        T
         last_omega_0
         last_d
         is_init = true;
     end
     methods(Access = protected)
         function setupImpl(obj,u)
-            if obj.T <= 0
+            if obj.Ts <= 0
                 error('Sample time must be positive.')
+            else
+                obj.T = obj.Ts*ones(1,class(obj.omega_0));
             end
             setAd(obj);
             setBd(obj);
