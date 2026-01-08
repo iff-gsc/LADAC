@@ -54,6 +54,14 @@ switch mode_number
         state.isAttiCmdEnabled  = false;
         state.isManThrEnabled	= false;
         state.isAutoTuneEnabled = true;
+    otherwise % stabilized
+        state.isPscEnabled      = false;
+        state.isPosRmEnabled	= false;
+        state.isVertPscEnabled	= false;
+        state.isGdnceEnabled	= false;
+        state.isAttiCmdEnabled  = true;
+        state.isManThrEnabled	= true;
+        state.isAutoTuneEnabled = false;
 end
 
 end
