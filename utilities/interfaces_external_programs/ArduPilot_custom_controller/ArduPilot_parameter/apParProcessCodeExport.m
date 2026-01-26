@@ -112,6 +112,7 @@ end
 % expected code export source and header file paths
 code_pars.header_file = fullfile(model_pars.build_directory, [model_pars.ert_header_file_root_name '.' header_file_ext]);
 code_pars.source_file = fullfile(model_pars.build_directory, [model_pars.ert_source_file_root_name '.' source_file_ext]);
+code_pars.data_file = fullfile(model_pars.build_directory, [model_pars.ert_data_file_root_name '.' source_file_ext]);
 
 if isempty(err_msg)
 %     header_files = dir(fullfile(model_par.build_directory, '*.h'));
@@ -212,7 +213,7 @@ code_pars.custom_header_code = model_pars.custom_header_code;
 
 %% Run code export processing
 tunable_vars_proc = apPar_processTunableVars(ap_pars, tunable_vars);
-var_infos         = apPar_generateAdditionalFiles(ap_pars, code_pars, tunable_vars_proc);
-apPar_modifyCodeExportFiles(ap_pars, code_pars, var_infos);
+[var_infos,top_vars] = apPar_generateAdditionalFiles(ap_pars, code_pars, tunable_vars_proc);
+apPar_modifyCodeExportFiles(ap_pars, code_pars, var_infos, top_vars);
 
 end

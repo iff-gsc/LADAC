@@ -1,4 +1,4 @@
-function var_infos = apPar_generateAdditionalFiles(ap_pars, code_pars, tunable_vars_proc)
+function [var_infos,top_vars] = apPar_generateAdditionalFiles(ap_pars, code_pars, tunable_vars_proc)
 % APPAR_GENERATEADDITIONALFILES
 
 % Disclaimer:
@@ -117,9 +117,8 @@ end
 
 
 %% Search for variable declarations of type top_struct in header file
-[C,~,ic] = unique(top_structs);
-var_decs = getVarDecFromFile(code_pars.header_file, C, 'once');
-top_vars = var_decs(ic);
+top_vars.type = unique(top_structs);
+top_vars.name = getVarDecFromFile(code_pars.header_file, top_vars.type, 'once');
 
 
 
@@ -129,7 +128,7 @@ apPar_writeStructOverrideFile(code_pars, struct_overrides);
 
 
 %% Generate AP param file
-var_infos = apPar_writeModelAPParamFile(ap_pars, code_pars, tunable_vars_proc, top_vars);
+var_infos = apPar_writeModelAPParamFile(ap_pars, code_pars, tunable_vars_proc, top_vars.name);
 
 
 
@@ -195,7 +194,12 @@ function var_matches = getVarDecFromFile(file, var_type, varargin)
     var_matches = cell(size(var_type));
     for idx = 1:numel(var_type)
         % This only finds a single variable declaration in one line, e.g. '  double a;'
-        var_matches{idx} = regexp(f, ['(?<=\n\s*' regexptranslate('escape', var_type{idx}) '\s*)[a-zA-Z_0-9_\[\]]+(?=;\n)'], 'match', varargin{:});
+        var_matches{idx} = regexp(f, ['(?<=\n\s*(?:static\s+)?' regexptranslate('escape', var_type{idx}) '\s*)[a-zA-Z_0-9_\[\]]+(?=;\n)'], 'match', varargin{:});
+        if isempty(var_matches{idx})
+            error(['Failed to find variable declaration of top struct of type ',...
+                var_type{idx},' in header file.',newline,...
+                'Make sure your tunable parameter is not defined as extern.']);
+        end
     end
     
 end
