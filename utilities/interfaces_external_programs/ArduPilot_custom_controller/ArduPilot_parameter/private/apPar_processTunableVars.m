@@ -9,6 +9,8 @@ function tunable_vars_proc = apPar_processTunableVars(ap_pars, tunable_vars)
 % *************************************************************************
 
 
+disp('Processing tunable parameters');
+
 tunable_vars_proc = struct();
 
 var_names = fieldnames(tunable_vars);

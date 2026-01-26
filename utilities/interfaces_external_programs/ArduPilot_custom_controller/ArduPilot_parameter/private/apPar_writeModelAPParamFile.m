@@ -19,7 +19,8 @@ class_name      = code_pars.class_name;
 ap_param_file   = code_pars.model_ap_param_file;
 header_file     = getFileFromPath(code_pars.header_file);
 
-
+[~,name,ext] = fileparts(ap_param_file);
+disp(['Creating file ',name,ext]);
 
 % Combine all tunable parameters
 flds_ap_path  = {};

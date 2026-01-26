@@ -51,7 +51,7 @@ end
 
 
 %% Display headline
-fprintf('%s\n\n', boldWithFrame(sprintf('Post-processing ''%s''s'' code export for ArduPilot tunability:', bd)));
+fprintf('%s\n', boldWithFrame(sprintf('Post-processing ''%s''s'' code export for ArduPilot tunability:', bd)));
 
 
 %% Check model
@@ -215,5 +215,7 @@ code_pars.custom_header_code = model_pars.custom_header_code;
 tunable_vars_proc = apPar_processTunableVars(ap_pars, tunable_vars);
 [var_infos,top_vars] = apPar_generateAdditionalFiles(ap_pars, code_pars, tunable_vars_proc);
 apPar_modifyCodeExportFiles(ap_pars, code_pars, var_infos, top_vars);
+
+fprintf('Finished!\n')
 
 end

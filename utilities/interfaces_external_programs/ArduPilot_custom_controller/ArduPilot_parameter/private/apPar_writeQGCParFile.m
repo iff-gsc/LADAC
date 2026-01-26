@@ -30,6 +30,8 @@ elseif ~strcmp(file_extension, file_ext)
     warning('For QGC parameter files a file extension of ''.%s'' is prefered (currently: ''.%s'')', file_extension, file_ext);
 end
 
+[~,name,ext] = fileparts(file);
+disp(['Creating file ',name,ext]);
 
 % Open file
 fid = fopen(file, 'w');

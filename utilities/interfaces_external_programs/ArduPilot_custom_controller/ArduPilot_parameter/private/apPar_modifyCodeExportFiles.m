@@ -13,6 +13,9 @@ function apPar_modifyCodeExportFiles(ap_pars, code_pars, var_infos, top_vars)
 
 %% Process source file
 
+[~,name,ext] = fileparts(code_pars.source_file);
+disp(['Modifying file ',name,ext]);
+
 % Read source file
 fid = fopen(code_pars.source_file, 'r');
 f = fread(fid, '*char')';
@@ -28,7 +31,9 @@ replacement = sprintf('#include "%s"', getFileFromPath(code_pars.model_ap_param_
 %f_mod = regexprep(f_mod, search_rgx, replacement);
 [idx_a, idx_b] = regexp(f_mod, search_rgx);
 if isempty(idx_a)
-    warning('Custom source file import identifier in ''%s'' not found! This can happen if the script has already been executed!', getFileFromPath(code_pars.source_file))
+    warning(['Custom source file import identifier in ''%s'' not found! ',...
+        'This can happen if the script has already been executed!',...
+        getFileFromPath(code_pars.source_file)])
 else
     f_mod = [f_mod(1:idx_a-1) replacement, f_mod(idx_b+1:end)];
 end
@@ -48,8 +53,10 @@ fprintf(fid, '%s', f_mod);
 fclose(fid);
 
 
-
 %% Process header file
+
+[~,name,ext] = fileparts(code_pars.header_file);
+disp(['Modifying file ',name,ext]);
 
 % Read header file
 fid = fopen(code_pars.header_file, 'r');
@@ -68,7 +75,9 @@ replacement = sprintf('#include "%s"\n%s', ...
 %f_mod = regexprep(f_mod, search_rgx, replacement);
 [idx_a, idx_b] = regexp(f_mod, search_rgx);
 if isempty(idx_a)
-    warning('Custom header file import identifier in ''%s'' not found! This can happen if the script has already been executed!', getFileFromPath(code_pars.header_file))
+    warning(['Custom header file import identifier in ''%s'' not found! ',...
+        'This can happen if the script has already been executed!',...
+        getFileFromPath(code_pars.header_file)])
 else
     f_mod = [f_mod(1:idx_a-1) replacement, f_mod(idx_b+1:end)];
 end
@@ -105,9 +114,12 @@ fprintf(fid, '%s', f_mod);
 fclose(fid);
 
 
-%% Process data file
+%% Process header file
 
 if were_params_static
+    [~,name,ext] = fileparts(code_pars.data_file);
+    disp(['Modifying file ',name,ext]);
+
     fid = fopen(code_pars.data_file, 'r');
     f = fread(fid, '*char')';
     fclose(fid);

@@ -11,6 +11,8 @@ function apPar_writeStructOverrideFile(code_pars, structs)
 
 includes = {'<AP_Param/AP_Param.h>'};   % ToDo: central config?
 
+[~,name,ext] = fileparts(code_pars.struct_override_file);
+disp(['Creating file ',name,ext]);
 
 % Generate header file struct overrides
 fid = fopen(code_pars.struct_override_file,'w');
