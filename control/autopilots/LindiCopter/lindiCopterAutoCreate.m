@@ -367,14 +367,20 @@ ap.mtc = mtc_scaling_factor*mtc;
 
 % sensor filter (PT2)
 if ~isempty(filter_omega_des)
-    ap.sflt.omega = filter_omega_des;
+    ap.atc.flt.omega = filter_omega_des;
 else
-    ap.sflt.omega = filter_factor*2/ap.mtc;
+    ap.atc.flt.omega = filter_factor*2/ap.mtc;
 end
-ap.sflt.D = 1;
+ap.atc.flt.D = 1;
+
+% From experience, a stronger low-pass filter is needed for acceleration
+% (This value can be changed afterwards because it does not influence the
+% other parameters)
+ap.psc.flt.omega = ap.atc.flt.omega/2;
+ap.psc.flt.D = 1;
 
 % combined motor + sensor time constant
-T_h_1 = ap.mtc + 2/ap.sflt.omega;
+T_h_1 = ap.mtc + 2/ap.atc.flt.omega;
 
 % yaw reference model (PT1)
 yawratetc_force = ap.atc.rm.yawratemax / acc_yaw_max;
