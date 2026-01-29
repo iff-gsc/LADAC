@@ -10,14 +10,23 @@ function ap = lindiCopterAutoCreate( copter, varargin )
 %   copter          multicopter parameters struct, see copterLoadParams
 %   Name            name of Name-Value Arguments:
 %                       - 'AgilityAtti': define agility of attitude
-%                           controller with values between -1 ... 1
-%                           (-1: low, 0: medium, 1: high), default: 0
+%                           controller with values between 0.5 ... 2
+%                           (0.5: 50% agility, 1: 100% agility, 2: 200%
+%                           agility), default: 1
 %                       - 'AgilityPos': define agility of position
-%                           controller with values between -1 ... 1
-%                           (-1: low, 0: medium, 1: high), default: 0
-%                       - 'FilterStrength': define sensor low-pass filter
-%                           strength with values between -1 ... 1 (-1:
-%                           weak, 0: medium, 1: strong), default: 0
+%                           controller with values between 0.5 ... 2
+%                           (0.5: 50% agility, 1: 100% agility, 2: 200%
+%                           agility), default: 1
+%                       - 'GyroFilt': define gyro low-pass filter
+%                           Value: [omega,d], where omega is the cutoff
+%                           frequency (rad/s) and d is the damping ratio
+%                           (0...1), default: omega = 2/T_mot (T_mot is the
+%                           motor time constant), d = 1
+%                       - 'AccFilt': define acceleration low-pass filter
+%                           Value: [omega,d], where omega is the cutoff
+%                           frequency (rad/s) and d is the damping ratio
+%                           (0...1), default: omega = half the gyro
+%                           cutoff frequency, d = 1
 %                       - 'CntrlEffectScaling': define scaling of control
 %                           effectiveness with values between 0.75 ... 1
 %                           (0.75: reduce to 75%, 1: no scaling),
@@ -39,19 +48,21 @@ function ap = lindiCopterAutoCreate( copter, varargin )
 % Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
 % 
-%   Copyright (C) 2022 Yannic Beyer
+%   Copyright (C) 2022-2026 Yannic Beyer
 %   Copyright (C) 2024 Jonas Withelm
-%   Copyright (C) 2024 TU Braunschweig, Institute of Flight Guidance
+%   Copyright (C) 2024-2026 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
 % initialize default tuning parameters
 agility_atti                = 0;
 agility_pos                 = 0;
-filter_strength             = 0;
 cntrl_effect_scaling_factor = 1;
 lean_max_des                = [];
 is_flip_allowed             = false;
-filter_omega_des            = [];
+gyro_filt_omega             = [];
+gyro_filt_d                 = 1;
+acc_filt_omega              = [];
+acc_filt_d                  = 1;
 caWls_params                = 'caWls_params_default';
 mtc_scaling_factor          = 1;
 
@@ -62,16 +73,18 @@ for i = 1:length(varargin)
             agility_atti(:) = varargin{i+1};
         elseif isequal(varargin{i},'AgilityPos')
             agility_pos(:) = varargin{i+1};
-        elseif isequal(varargin{i},'FilterStrength')
-            filter_strength(:) = varargin{i+1};
         elseif isequal(varargin{i},'CntrlEffectScaling')
             cntrl_effect_scaling_factor(:) = varargin{i+1};
         elseif isequal(varargin{i}, 'LeanMax')
             lean_max_des = varargin{i+1};
         elseif isequal(varargin{i}, 'AllowFlip')
             is_flip_allowed = varargin{i+1};
-        elseif isequal(varargin{i}, 'FilterFreq')
-            filter_omega_des = varargin{i+1};
+        elseif isequal(varargin{i}, 'GyroFilt')
+            gyro_filt_omega = varargin{i+1}(1);
+            gyro_filt_d = varargin{i+1}(2);
+        elseif isequal(varargin{i}, 'AccFilt')
+            acc_filt_omega = varargin{i+1}(1);
+            acc_filt_d = varargin{i+1}(2);
         elseif isequal(varargin{i}, 'caWls_params')
             caWls_params = varargin{i+1};
         elseif isequal(varargin{i}, 'MtcScaling')
@@ -81,26 +94,15 @@ for i = 1:length(varargin)
 end
 
 % assure tuning parameter limits
-agility_atti(:) = max( min(agility_atti,1), -1 );
-filter_strength(:) = max( min(filter_strength,1), -1 );
+agility_atti(:) = max( min(agility_atti,2), 0.5 );
+agility_pos(:) = max( min(agility_pos,2), 0.5 );
 ce_scaling_max = 1;
 ce_scaling_min = 0.75;
 cntrl_effect_scaling_factor(:) = max( ...
     min(cntrl_effect_scaling_factor,ce_scaling_max), ce_scaling_min );
 
-% aggressiveness ( aggr_min ... 1 )
-aggr_min = 0.5;
-aggr_atti = 1 - 0.5*(1-aggr_min)*(1-agility_atti);
-aggr_pos = 1 - 0.5*(1-aggr_min)*(1-agility_pos);
-
-% filter cutoff factor ( 1/4 ... 4 )
-filter_factor = 4^(-filter_strength);
-
-% time scale separation factor (2-5)
-sep_factor_min = 2;
-sep_factor_max = 5;
-sep_factor_atti = sep_factor_min + (1-aggr_atti)/(1-aggr_min)*(sep_factor_max-sep_factor_min);
-sep_factor_pos = sep_factor_min + (1-aggr_pos)/(1-aggr_min)*(sep_factor_max-sep_factor_min);
+% aggressiveness ( 0.5 ... 1 )
+aggr_pos = 1 - 1/3*(2-agility_pos);
 
 % load control allocation parameters
 ap.ca = loadParams( caWls_params );
@@ -366,39 +368,41 @@ mtc = copter.motor.R*copter.prop.I/copter.motor.KT^2;
 ap.mtc = mtc_scaling_factor*mtc;
 
 % sensor filter (PT2)
-if ~isempty(filter_omega_des)
-    ap.atc.flt.omega = filter_omega_des;
+if ~isempty(gyro_filt_omega)
+    ap.atc.flt.omega = gyro_filt_omega;
 else
-    ap.atc.flt.omega = filter_factor*2/ap.mtc;
+    ap.atc.flt.omega = 2/ap.mtc;
 end
-ap.atc.flt.D = 1;
+ap.atc.flt.D = gyro_filt_d;
 
-% From experience, a stronger low-pass filter is needed for acceleration
-% (This value can be changed afterwards because it does not influence the
-% other parameters)
-ap.psc.flt.omega = ap.atc.flt.omega/2;
-ap.psc.flt.D = 1;
+if ~isempty(acc_filt_omega)
+    ap.psc.flt.omega = acc_filt_omega;
+else
+    ap.psc.flt.omega = 0.5 * ap.atc.flt.omega;
+end
+ap.psc.flt.D = acc_filt_d;
 
 % combined motor + sensor time constant
 T_h_1 = ap.mtc + 2/ap.atc.flt.omega;
 
 % yaw reference model (PT1)
 yawratetc_force = ap.atc.rm.yawratemax / acc_yaw_max;
-yawratetc_sep = sep_factor_atti * T_h_1;
+yawratetc_sep = T_h_1 / 4 * agility_atti;
 ap.atc.rm.yawratetc = max( yawratetc_force, yawratetc_sep );
 
 % attitude (lean) reference model (PT2)
 leanfreq_force = 2*pi*sqrt( 0.25*acc_roll_pitch_max / ap.atc.rm.leanmax );
-leanfreq_sep = 1/sep_factor_atti * 2/T_h_1;
+leanfreq_sep = 2/T_h_1 / 4 * agility_atti;
 ap.atc.rm.leanfreq = min( leanfreq_force, leanfreq_sep );
 ap.atc.rm.leandamp = 1;
 
 % combined motor + sensor + attitude (lean) time constant
 T_h_atti = T_h_1 + 2/ap.atc.rm.leanfreq;
+T_h_2 = T_h_atti - 2/ap.atc.flt.omega;
 
 % position reference model (PT1)
-posveltc_force = 1.25/aggr_pos * ap.psc.rm.velxymax / ap.psc.rm.accxymax;
-posveltc_sep = sep_factor_pos * T_h_atti;
+posveltc_force = 1.67/agility_pos * ap.psc.rm.velxymax / ap.psc.rm.accxymax;
+posveltc_sep = T_h_atti / 4 * agility_pos;
 ap.psc.rm.veltc = max( posveltc_force, posveltc_sep );
 
 
@@ -406,30 +410,25 @@ ap.psc.rm.veltc = max( posveltc_force, posveltc_sep );
 %% ------------------------- Controller Gains ------------------------- %%
 % yaw controller
 % max_yaw_atti_error = pi;
-% k = maxError2FeedbackGain( max_yaw_atti_error, acc_yaw_max, T_h, aggr );
 k = ndiFeedbackGainPlace(-1/ap.atc.rm.yawratetc*[1,1,1],T_h_1);
 ap.atc.k.yaw = k(1);
 ap.atc.k.yawrate = k(2);
-ap.atc.k.yawacc = k(3);
+ap.atc.k.yawacc = round(k(3),4);
 
 % attitude (lean) controller
 % max_roll_pitch_atti_error = 2;
-% k = maxError2FeedbackGain( max_roll_pitch_atti_error, acc_roll_pitch_max, T_h, aggr );
-k = ndiFeedbackGainPlace(-ap.atc.rm.leanfreq*[1,1,1],T_h_1);
+p = roots([1,6,15,15]) * 2/T_h_1 / 12 * agility_atti;
+k = ndiFeedbackGainPlace( p, T_h_1 );
 ap.atc.k.lean = k(1);
 ap.atc.k.leanrate = k(2);
-ap.atc.k.leanacc = k(3);
+ap.atc.k.leanacc = round(k(3),4);
 
 % position feedback controller
-% p = -0.5*[1+1i,1-1i,4] * aggr / T_h;
-% p = -0.5*[1,1,1] * aggr / T_h;
-p = -1.3/ap.psc.rm.veltc * [1.7,1+0.65i,1-0.65i];
-% p = -sep_factor*aggr*[ 1/T_h, 0.7/T_h*(1+0.65i), 0.7/T_h*(1-0.65i) ];
-% p = -aggr/sep_factor*[ 1, 1, 1 ]*2/T_h;
-k = ndiFeedbackGainPlace(p,T_h_atti);
+p = roots([1,6,15,15]) * 2/T_h_2 / 12 * agility_pos;
+k = ndiFeedbackGainPlace( p, T_h_2 );
 ap.psc.k.pos = k(1);
 ap.psc.k.vel = k(2);
-ap.psc.k.acc = k(3);
+ap.psc.k.acc = round(k(3),4);
 
 %% ------------------------ Waypoint Navigation ------------------------ %%
 
