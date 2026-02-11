@@ -398,7 +398,7 @@ ap.atc.rm.leandamp = 1;
 
 % combined motor + sensor + attitude (lean) time constant
 T_h_atti = T_h_1 + 2/ap.atc.rm.leanfreq;
-T_h_2 = T_h_atti - 2/ap.atc.flt.omega;
+T_h_2 = T_h_atti - 2/ap.atc.flt.omega + 2/ap.psc.flt.omega;
 
 % position reference model (PT1)
 posveltc_force = 1.67/agility_pos * ap.psc.rm.velxymax / ap.psc.rm.accxymax;
