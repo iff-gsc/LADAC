@@ -25,11 +25,11 @@ This is the main motivation and objective of LADAC:
 ## Installation
 
 - MATLAB:
-  1. You need MATLAB/Simulink 2018b (later is also possible). If you want to use older versions,
-        you will have to export the .slx file in older version format before.
+  1. You need MATLAB/Simulink 2023b (later is also possible).  
+     If you want to use older versions, you will have to export the .slx files to older version format before.
   2. You may also need some MATLAB toolboxes like Curve Fitting Toolbox,
-	   MATLAB Coder, Embedded Coder, Simulink Coder
-	   Simulink Control Design depending on what you want to do
+	   MATLAB Compiler, MATLAB Coder, Embedded Coder, and Simulink Coder
+	   depending on what you want to do.
 - Clone LADAC including its submodules (generally the main branch should be used).
   - If your project is a Git repository, you should add LADAC as a submodule:
     ```
