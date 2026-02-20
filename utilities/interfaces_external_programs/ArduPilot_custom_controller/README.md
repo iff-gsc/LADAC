@@ -16,18 +16,12 @@ Here, the implementation of your MATLAB/Simulink controller in ArduPilot is desc
 
 - You must install [LADAC](https://github.com/iff-gsc/LADAC#readme) (you need the MATLAB Coder and Simulink Embedded Coder).
 - You must install the [ArduPilot SITL](https://ardupilot.org/dev/docs/SITL-setup-landingpage.html).
-- Clone the following ArduPilot **fork** and check out one of the following branches:
-  - ArduCopter 4.6.0
+- Clone the following ArduPilot **fork** and check out one of the following branch based on ArduPilot 4.6.0:
     ```
-    git clone -b Copter-Matlab-4.6.0 https://github.com/ybeyer/ardupilot
+    git clone -b ArduPilot-Matlab-4.6.0 https://github.com/ybeyer/ardupilot
     cd ardupilot
     git submodule update --init --recursive
     ```
-  - ArduPlane 4.3.0
-    ```
-    git clone -b Plane-Matlab-4.3 https://github.com/ybeyer/ardupilot
-    cd ardupilot
-    git submodule update --init --recursive
 - These instructions assume that you have a basic understanding of ArduPilot and the ArduPilot SITL. Please also note the [ArduPilot SITL interface of LADAC](../ArduPilot_SITL#readme).
 
 
@@ -101,7 +95,7 @@ To get your MATLAB/Simulink controller to run in ArduPilot you need to generate 
     ```
     ardupilotCreateInputBuses
     ```
-2. Generate C++ code from the Simulink file (click top right button "Build Model"): https://de.mathworks.com/help/dsp/ug/generate-c-code-from-simulink-model.html  
+2. Generate C++ code from the Simulink file (click: APPS (top right button) &rarr; Embedded Coder, and then click: C++ CODE (top right button) &rarr; Generate Code): https://de.mathworks.com/help/dsp/ug/generate-c-code-from-simulink-model.html  
   Note that floating points should be 32-bit. This is assured in the Simulink template files because the following parameters were set: `set_param(gcs, 'DefaultUnderspecifiedDataType', 'single')` and `set_param(gcs, 'DataTypeOverride', 'Single','DataTypeOverrideAppliesTo','Floating-point')`
   Optionally, you can post-process the generated C++ code to [define tunable parameters as ArduPilot parameters](ArduPilot_parameter).
 3. You only need four files of the generated code: `MatlabController.cpp`, `MatlabController.h`, `MatlabController_data.cpp` and `rtwtypes.h`.
@@ -112,7 +106,7 @@ To get your MATLAB/Simulink controller to run in ArduPilot you need to generate 
      ```  
    **ArduPlane:**
      ```
-     cp -rf <your_source_folder>/. <path_to_ardupilot>/libraries/AP_Common/
+     cp -rf <your_source_folder>/. <path_to_ardupilot>/libraries/AP_MatlabController/
      ```
 4. You should now be able to compile the modified ArduPilot project and use flight mode 29 (ArduCopter) or mode 26 (ArduPlane).  
 Note that it is probably required to delete the `build` folder in your local ArduPilot repository or to perform a `./waf clean`.
@@ -130,7 +124,8 @@ In general, it is recommended to [learn the ArduPilot code](https://ardupilot.or
 
 Originally the interfaces were created based on `Copter 4.0.0` (tag `Copter-Matlab-4.0.0-dev` which is based on commit `f69be707`) and based on `Plane 4.1` (tag `Plane-Matlab-4.1.0` which is based on commit `6711c479`).
 However, this has not been further developed for a long time.
-Instead, the ArduPilot version was updated to `Copter 4.2.0` (branch `Copter-Matlab-4.2.0-dev` which is based on commit `999c2692`), `Copter 4.4.0 beta` (branch `Copter-Matlab-4.4.0-beta2` which is based on commit `07f11531`) and `Plane 4.3.0` (branch `Copter-Matlab-4.3` which is based on commit `033266f9`).
+The ArduPilot version was updated to `Copter 4.2.0` (branch `Copter-Matlab-4.2.0-dev` which is based on commit `999c2692`), `Copter 4.4.0 beta` (branch `Copter-Matlab-4.4.0-beta2` which is based on commit `07f11531`) and `Plane 4.3.0` (branch `Copter-Matlab-4.3` which is based on commit `033266f9`).
+Both the Copter and the Plane branch were merged to a single branch `ArduPilot-Matlab-4.6.0`.
 Several improvements have been implemented in these branches.
 For understanding it is very helpful to use a Git GUI which shows the history well.
 The basic functionality of the interface can be understood from the original history.  
