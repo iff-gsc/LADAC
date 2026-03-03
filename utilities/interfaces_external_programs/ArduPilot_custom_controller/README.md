@@ -97,8 +97,12 @@ To get your MATLAB/Simulink controller to run in ArduPilot you need to generate 
     ```
 2. Generate C++ code from the Simulink file (click: APPS (top right button) &rarr; Embedded Coder, and then click: C++ CODE (top right button) &rarr; Generate Code): https://de.mathworks.com/help/dsp/ug/generate-c-code-from-simulink-model.html  
   Note that floating points should be 32-bit. This is assured in the Simulink template files because the following parameters were set: `set_param(gcs, 'DefaultUnderspecifiedDataType', 'single')` and `set_param(gcs, 'DataTypeOverride', 'Single','DataTypeOverrideAppliesTo','Floating-point')`
-  Optionally, you can post-process the generated C++ code to [define tunable parameters as ArduPilot parameters](ArduPilot_parameter).
-3. You only need four files of the generated code: `MatlabController.cpp`, `MatlabController.h`, `MatlabController_data.cpp` and `rtwtypes.h`.
+3. Optionally, you can post-process the generated C++ code to [define tunable parameters as ArduPilot parameters](ArduPilot_parameter):
+    ```
+    apParProcessCodeExport( 'apPar_<copter/plane>_params_default' )
+    ```
+4. You only need four files of the generated code: `MatlabController.cpp`, `MatlabController.h`, `MatlabController_data.cpp` and `rtwtypes.h`.
+   If you have defined tunable parameters (step 3), you also need the generated files `MatlabControllerStructOverride.h` and `MatlabControllerParams.cpp`.
    Store these files in one folder and copy the content into your local ArduPilot repository.  
    **ArduCopter:**
      ```
