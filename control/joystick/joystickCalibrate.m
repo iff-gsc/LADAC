@@ -259,7 +259,7 @@ disp('Finished successfully.')
         down = 8595;
         thin_space = 8239;
         if contains(actionText,'all') && contains(actionText,'center')
-            fprintf( [actionText,'\n   ____|___ \n  |  ....  |\n  | %s   %s |\n  |________|\n'], center, center )
+            fprintf( [actionText,'\n   ____|___ \n  |  ....  |\n  | %s    %s |\n  |________|\n'], center, center )
         elseif contains(actionText,'Wiggle')
             fprintf( [actionText,'\n   ____|___ \n  |  ....  |\n  | +    + |\n  |________|\n'] )
         elseif contains(actionText,'left') && contains(actionText,'up')
