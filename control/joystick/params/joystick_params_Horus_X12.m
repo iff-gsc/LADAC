@@ -1,11 +1,11 @@
  % *** configuration script for the HORUS X12 joystick ***
- % Channel 8 (jystck.ch_idx(6)) not recognized on Ubuntu 24.04
- % Channel 5 and 6 (jystck.ch_idx(7:8)) are switched on Windows 11
+ % Channel 8 not recognized on Ubuntu 24.04
+ % Channel 5 and 6 are switched on Windows 11
 
  % values for all channels when the sticks are centered
 jystck.ch_trim = [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]';
  % index of all channels so that they are compatible with the Simulink block
-jystck.ch_idx = uint8([1 2 3 4 7 8 5 6]');
+jystck.ch_idx = uint8([1 2 3 4 5 6 7 8]');
  % logical array that is true if a channel is reversed
 jystck.ch_reversed = logical([0 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0]');
  % maximum channel values
