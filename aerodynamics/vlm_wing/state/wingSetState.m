@@ -109,7 +109,7 @@ for i = 1:length(varargin)
             wing.state.aero.unsteady.z2(:) = varargin{i+1};
         elseif isequal(varargin{i},'tau_v') && wing.config.is_unsteady
             wing.state.aero.unsteady.tau_v(:) = varargin{i+1};
-        elseif isequal(varargin{i},'alpha_ind') && wing.config.is_unsteady
+        elseif isequal(varargin{i},'alpha_ind')
             % feedback of last alpha_ind to speed up next iteration
             wing.state.aero.circulation.alpha_ind(:) = varargin{i+1};
         end
