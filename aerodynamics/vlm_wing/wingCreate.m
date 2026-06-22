@@ -38,6 +38,12 @@ function wing = wingCreate( params_file, n_panel, varargin )
 %                   sideslip angles (false). Default is false.
 %   is_elliptical  	boolean that defines if the wing geometry is
 %                  	elliptical (true) or not (false). Default is false.
+%   Mach            Mach number for computing the influence coefficients
+%                   (scalar)
+%   EtaEdges        Defines dimensionless span points, where panel edges
+%                   should be placed (1xE array), where the length of E
+%                   must be low enough for the specified number of panels
+%                   by n_panel
 % 
 % Outputs:
 %   wing          	wing struct as defined by this function
@@ -49,6 +55,8 @@ function wing = wingCreate( params_file, n_panel, varargin )
 %   wing = wingCreate( params_file, n_panel, 'flexible', structure )
 %   wing = wingCreate( params_file, n_panel, 'is_infl_recomputed', is_infl_recomputed )
 %   wing = wingCreate( params_file, n_panel, 'is_elliptical', is_elliptical )
+%   wing = wingCreate( params_file, n_panel, 'Mach', Mach )
+%   wing = wingCreate( params_file, n_panel, 'EtaEdges', eta_edges )
 % 
 % Example:
 %   wing = wingCreate( 'wing_params_default', 50 )
@@ -74,6 +82,7 @@ spacing = 'like_chord';
 is_infl_recomputed = 0;
 is_elliptical = false;
 Ma = 0;
+eta_edges = [];
 
 % set user parameters
 for i = 1:length(varargin)
@@ -136,6 +145,8 @@ for i = 1:length(varargin)
             end
         case 'Mach'
             Ma = varargin{i+1};
+        case 'EtaEdges'
+            eta_edges = varargin{i+1};
     end
 end
 
@@ -156,7 +167,8 @@ end
 
 wing.n_panel = n_panel;
 wing.geometry = wingSetGeometry( wing.params, wing.n_panel, ...
-    'is_elliptical', is_elliptical, 'spacing', spacing );
+    'is_elliptical', is_elliptical, 'spacing', spacing, ...
+    'EtaEdges', eta_edges );
 
 
 %% init state

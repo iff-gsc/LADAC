@@ -43,6 +43,7 @@ n_panel_x = 1;
 
 is_elliptical = false;
 spacing = 'constant';
+eta_edges = [];
 
 for i = 1:length(varargin)
     if ~ischar(varargin{i})
@@ -57,11 +58,13 @@ for i = 1:length(varargin)
             end
         case 'spacing'
             spacing = varargin{i+1};
+        case 'EtaEdges'
+            eta_edges = varargin{i+1};
     end
 end
 
 % create planform wing geometry
-geometry = geometryPlanform( params, n_panel, is_elliptical, n_panel_x, spacing );
+geometry = geometryPlanform( params, n_panel, is_elliptical, n_panel_x, spacing, eta_edges );
 
 if n_panel_x > 1
     geometry = geometryCamber( params, geometry );
@@ -91,14 +94,14 @@ end
 
 
 
-function [geometry] = geometryPlanform( params, n_panel, is_elliptical, n_panel_x, spacing )
+function [geometry] = geometryPlanform( params, n_panel, is_elliptical, n_panel_x, spacing, eta_edges )
 
     geometry = wingInitGeometry( n_panel );
 
     n_vortex = n_panel + 1;
     
     eta_partitions = unique( [ params.eta_segments_wing, ...
-        params.eta_segments_device ] );
+        params.eta_segments_device, eta_edges ] );
 
     % the number of panels for each partition is defined as follows:
     % - detect the panel of the whole wing with the highest y-length
@@ -110,7 +113,12 @@ function [geometry] = geometryPlanform( params, n_panel, is_elliptical, n_panel_
     else
         n_panel_side = n_panel;
     end
-    if ~strcmp(spacing,'constant')
+    n_panel_req = 2*(length(eta_partitions_ny)-1);
+    if n_panel_req/2 > n_panel_side
+        error(['Not enough panels. There are ',num2str(n_panel),...
+            ', but at least ',num2str(n_panel_req),' are required.'])
+    end
+    if strcmp(spacing,'like_chord')
         ny_vec = ones( 1, n_panel );
         while length(eta_partitions_ny) < n_panel_side + 1
             [max_diff,idx_max_diff] = max(diff(eta_partitions_ny));
@@ -118,8 +126,10 @@ function [geometry] = geometryPlanform( params, n_panel, is_elliptical, n_panel_
             ny_vec(idx_max_diff_ny) = ny_vec(idx_max_diff_ny) + 1;
             eta_partitions_ny = [eta_partitions_ny(1:idx_max_diff),mean(eta_partitions_ny(idx_max_diff:idx_max_diff+1)),eta_partitions_ny(idx_max_diff+1:end)];
         end
-    else
+    elseif strcmp(spacing,'constant')
         eta_partitions_ny = linspace(0,1,n_panel_side+1);
+    else
+        error('Unknown spacing option.')
     end
     
     if params.is_symmetrical
