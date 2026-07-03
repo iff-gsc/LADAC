@@ -1,4 +1,4 @@
-function [G10,G20,G30] = indiCeFlapFix( cef, ceb )
+function [G10,Gdw0,G30] = indiCeFlapFix( cef, ceb, eig )
 
 I_b = [ ...
         ceb.ixx,    -ceb.ixy,	-ceb.ixz; ...
@@ -21,11 +21,13 @@ G10 = [ ...
         c_XYZ / ceb.m ...
     ];
 
-if nargout > 1
-    G20 = [ ...
-            zeros(size(G10),class(G10)) ...
-        ];
-end
+% Flap effectiveness due to downwash on horizontal tailplane
+Gdw0 = zeros(size(G10));
+a_z_du_dw = eig.cla_h/cef.clu(end-1) * G10(6,end-1) * eig.dahdu(:)';
+q_dt_du_dw =  ceb.m/ceb.iyy*eig.x_h*a_z_du_dw;
+Gdw0(2,1:length(q_dt_du_dw)) = Gdw0(2,1:length(q_dt_du_dw)) + q_dt_du_dw;
+Gdw0(6,1:length(a_z_du_dw)) = Gdw0(6,1:length(a_z_du_dw)) + a_z_du_dw;
+
 
 if nargout > 2
     G30 = [ ...
