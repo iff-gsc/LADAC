@@ -95,13 +95,16 @@ and flexible-body equations of motion.
 - [**Flight parameters**](flight_parameters)  
 The flight parameters library allows the computation of flight parameters
 such as aerodynamic angles, flight path angles or time-derivatives of Euler angles.
+- [**Interfaces**](interfaces)  
+Interfaces external programs contains various interfaces to external programs
+e.g. for visualization of the flight state or for implementation of controllers in ArduPilot.
 - [**Propulsion**](propulsion)  
 The propulsion library contains sublibraries to model propellers, motors or batteries.
 - [**Sensors**](sensors)  
 The sensor library contains models that compute outputs for different sensors.
 - [**Utilities**](utilities)  
 The utilities library contains multiple sublibraries with miscellaneous functions
-such as axes transformation, interfaces to external programs and unit conversions
+such as axes transformation and unit conversions
 
 ### Modeling and control of systems
 - Use LADAC as Git submodule.

@@ -37,8 +37,8 @@ The parameters of the spiral can be adjusted by a parameter file.
 
 1. Open the MATLAB/Simulink test trajectory simulation
    1. Open MATLAB/Simulink.
-   2. Run the parameters file [ardupilot_sitl_example_init.m](/utilities/interfaces_external_programs/ArduPilot_SITL/ardupilot_sitl_example_init.m).
-   3. Open the Simulink file [ardupilot_sitl_example.slx](/utilities/interfaces_external_programs/ArduPilot_SITL/ardupilot_sitl_example.slx).
+   2. Run the parameters file [ardupilot_sitl_example_init.m](ardupilot_sitl_example_init.m).
+   3. Open the Simulink file [ardupilot_sitl_example.slx](ardupilot_sitl_example.slx).
    4. Run the Simulink model. The green switch should activate "apply zeros"
         in order to simulate a vehicle standing on the ground.
 
@@ -57,7 +57,7 @@ The parameters of the spiral can be adjusted by a parameter file.
         and establish a connection with the SITL.
 
 4. Activate the test trajectory simulation
-   1. In the running Simulink model [ardupilot_sitl_example.slx](/utilities/interfaces_external_programs/ArduPilot_SITL/ardupilot_sitl_example.slx) double-click the green switch
+   1. In the running Simulink model [ardupilot_sitl_example.slx](ardupilot_sitl_example.slx) double-click the green switch
         to activate "apply spiral".
    2. If you want to start a new test trajectory simulation, you have to stop the
         current simulation and repeat the whole procedure.
@@ -110,7 +110,7 @@ The following section describes the custom Debug Message to SIMULINK.
 
 This interface does not work with the original ArduPilot code because the automatic port detection does not work.
 That is why this interface must be used with the [modified ArduPilot code](../ArduPilot_custom_controller).
-The Simulink blocks `Receive from ArduPilot SITL (JSON)` and `Send to ArduPilot SITL (JSON)` can be found in [ardupilot_sitl_lib.slx](/utilities/interfaces_external_programs/ArduPilot_SITL/ardupilot_sitl_lib.slx).
+The Simulink blocks `Receive from ArduPilot SITL (JSON)` and `Send to ArduPilot SITL (JSON)` can be found in [ardupilot_sitl_lib.slx](ardupilot_sitl_lib.slx).
 
 This is how you start the patched ArduPilot SITL with the JSON interface in terminal:
 ```
