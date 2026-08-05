@@ -1,136 +1,141 @@
-# Library for Aircraft Dynamics And Control (LADAC)
+# LADAC
 
-This project is a library with functions for aircraft dynamics and control
-for Matlab/Simulink.
-Examples of how to use LADAC are available in [LADAC-Examples](https://github.com/iff-gsc/LADAC-Examples).
+**L**ibrary for **A**ircraft **D**ynamics **A**nd **C**ontrol
 
+LADAC is an open-source MATLAB/Simulink framework for aircraft modeling, flight dynamics, simulation, and flight-control development.
 
-## Motivation
+It provides modular models and development tools for applications ranging from small unmanned aircraft and multicopters to transport aircraft and flexible aeroelastic configurations. LADAC supports workflows from component-level modeling and controller development to complete nonlinear simulation, software-in-the-loop testing, code generation, and flight testing with ArduPilot.
 
-This is the main motivation and objective of LADAC:
+LADAC has been developed and used in research projects involving fixed-wing UAVs, multicopters, eVTOL aircraft, transport aircraft, aeroelastic flight-dynamics models, active gust-load alleviation, and advanced flight-control methods.
 
-- Functions in LADAC can be used in different projects. Functions
-    that are generally usable in multiple projects should be located in
-    LADAC instead of copied/developed in multiple projects.
-- LADAC is related to the Matlab Aerospace Blockset but also contains
-    several functions that are not available in the Aerospace Blockset.
-- The Simulink blocks are based on Matlab functions saved as m-files. This
-    improves the use of version control. Diffs can be made easier and
-    the data size of the repository is reduced.
-- It is possible to generate C/C++ code of the library functions.
-- All functions are carefully documented using comments in the code. This
-    includes literature references to make scientific use easier.
+> **Status:** LADAC is research software under active development. The maturity, validation status, software requirements, and supported configurations differ between individual components. Consult the corresponding module documentation before relying on a model or controller for a particular application.
 
+## Key features
 
-## Installation
+### Modular aircraft and subsystem modeling
 
-- MATLAB:
-  1. You need MATLAB/Simulink 2023b (later is also possible).  
-     If you want to use older versions, you will have to export the .slx files to older version format before.
-  2. You may also need some MATLAB toolboxes like Curve Fitting Toolbox,
-	   MATLAB Compiler, MATLAB Coder, Embedded Coder, and Simulink Coder
-	   depending on what you want to do.
-- Clone LADAC including its submodules (generally the main branch should be used).
-  - If your project is a Git repository, you should add LADAC as a submodule:
-    ```
-    git add submodule https://github.com/iff-gsc/ladac.git
-    ```
-  - Otherwise, just clone LADAC to the desired directory:
-    ```
-    git clone --recursive https://github.com/iff-gsc/ladac.git
-    ```
-- Add LADAC folder to the Matlab path (in Matlab Command Window):
-    ```
-    addpath(genpath('ladac'));
-    ```
+- Complete and subsystem-level models for fixed-wing aircraft, multicopters, and eVTOL configurations
+- Rigid-body and flexible-body equations of motion
+- Modular aerodynamic, propulsion, actuator, sensor, atmosphere, turbulence, gust, and ground-contact models
+- Parameter-based aircraft definitions for reusable and configurable simulation models
+- Support for suspended payloads and multi-body configurations
 
+### Aerodynamic modeling
 
-## Tests
+- Nonlinear finite-wing model intended for large angles of attack and sideslip
+- Vortex-lattice-based wing model with viscous airfoil coupling
+- Aerodynamic derivative, downwash, distributed-load, and bending-moment calculations
+- Steady and unsteady airfoil aerodynamics, dynamic stall, and flap-effect models
+- Rigid and aeroelastic wing configurations
+- Fuselage, propeller, rotorcraft, and induced-velocity models
 
-1. Check if LADAC functions work by calling the automatic test framework (in Matlab Command Window):
-    ```
-    check_ladac
-    ```
-2. Check if LADAC appears in the Simulink Library Browser:
-   - Open a Simulink file.
-   - Open the Simulink Library Browser.
-   - Look for "LADAC" at the highest level (you may have to refresh the Library Browser by right-clicking or pressing F5).
-     This will probably only work if you use the supported Matlab version.
-   - Check whether all sub-areas of LADAC appear and if you can add blocks to your Simulink file.
-     Alternatively, you can add blocks by opening `ladac_lib.slx` (you can click through the sub-areas and add blocks by copy and paste).
+### Flight dynamics and aeroelasticity
 
+- Quaternion-based rigid-body equations of motion
+- Flexible-body models based on structural modes
+- Structural model creation, reduction, load transfer, and visualization utilities
+- Coupling of aerodynamic and structural models
+- Atmospheric turbulence and discrete-gust models
 
-## How to use?
+### Guidance, control, and autopilots
 
-### Introduction
+- Nonlinear dynamic inversion (NDI) and incremental nonlinear dynamic inversion (INDI)
+- Control-effectiveness modeling and constrained control allocation
+- Reusable attitude, acceleration, altitude, position, and trajectory-control modules
+- Flight modes for attitude control, altitude hold, loiter, and trajectory following
+- Trajectory generation and waypoint navigation
+- Linear-systems, filtering, and controller-development utilities
 
-- Get to know the range of functions.
-LADAC is divided into several sections.
-These areas are partly subdivided again into subareas.
-Each area and subarea is located in a folder or subfolder (see [Contents](#Contents)).
-- Usually each folder or subfolder contains a separate README with specific information.
-- Most of the implementations are m-functions that are documented inside the code.
-- Each subdirectory contains a Simulink library file (.slx) with the same name as the subdirectory. These libraries contain blocks which call the m-functions. There are also more complex blocks, but they are always based on the m-functions.
+LADAC includes two configurable INDI-based autopilots:
 
-### Contents
+- **[LindiCopter](control/autopilots/LindiCopter/README.md)** — a modular multicopter autopilot with attitude, altitude, position, and flight-mode logic
+- **[LindiPlane](control/autopilots/LindiPlane/README.md)** — a modular fixed-wing autopilot currently focused on conventional aircraft configurations
 
-- [**Actuators**](actuators)  
-The actuators library contains typical models for actuator dynamics
-and other functions related to actuators.
-- [**Aerodynamics**](aerodynamics)  
-The aerodynamics library contains multiple models to compute aerodynamic forces and moments
-for wings, rotorcrafts, airfoils and fuselages based on different methods.
-- [**Aircraft**](aircraft)  
-The aircraft library contains complete aircraft models as well as subsystems
-of aircraft.
-- [**Control**](control)  
-The control library contains basic modules to control different types of aircraft
-with different control methods.
-- [**Environment**](environment)  
-The environment library contains modules to compute environmental
-parameters such as wind, atmospheric parameters and ground forces.
-- [**Equations of motion**](equations_of_motion)  
-The equations of motion library contains multiple implementations of rigid-body
-and flexible-body equations of motion.
-- [**Flight parameters**](flight_parameters)  
-The flight parameters library allows the computation of flight parameters
-such as aerodynamic angles, flight path angles or time-derivatives of Euler angles.
-- [**Interfaces**](interfaces)  
-Interfaces external programs contains various interfaces to external programs
-e.g. for visualization of the flight state or for implementation of controllers in ArduPilot.
-- [**Propulsion**](propulsion)  
-The propulsion library contains sublibraries to model propellers, motors or batteries.
-- [**Sensors**](sensors)  
-The sensor library contains models that compute outputs for different sensors.
-- [**Utilities**](utilities)  
-The utilities library contains multiple sublibraries with miscellaneous functions
-such as axes transformation and unit conversions
+Both autopilots provide functions that derive controller parameter structures from the corresponding aircraft-model parameters.
 
-### Modeling and control of systems
-- Use LADAC as Git submodule.
-- Build your models using the LADAC library blocks.
-- Make yourself familiar with working with libraries:
-  - Read the Matlab documentation, e.g. https://www.mathworks.com/help/simulink/ug/creating-and-working-with-linked-blocks.html
-  - **Hint:** display links of library blocks: Display &#8594; Library Links &#8594; All
+### Simulation, visualization, and external interfaces
 
-### Anything missing in LADAC?
-- Make sure you did not overlook the required function.
-- Consider modifying existing functions if it is about input data handling or consider contributing new functions (see Contribute section).
+- MATLAB/Simulink-based nonlinear simulation
+- [ArduPilot software-in-the-loop interface](interfaces/ArduPilot_SITL/README.md)
+- [Deployment of generated MATLAB/Simulink controllers to ArduPilot](interfaces/ArduPilot_custom_controller/README.md)
+- Processing of generated controller parameters as ArduPilot parameters
+- Logging of controller interface signals through ArduPilot
+- FlightGear and FlexiFlightVis visualization interfaces
+- CPACS/TiGL and Tornado interfaces
 
+## Getting started
 
-## Contribute
+For a first installation and simulation:
 
-Contributions are welcome and encouraged. You can contribute in many ways:
+1. Read the [installation guide](docs/Installation.md).
+2. Follow the [getting-started guide](docs/Getting_Started.md).
 
-- implement a new feature in the software  
-  &#8594; [read developers guide](docs/Development.md).
-- fix a bug  
-  &#8594; [read developers guide](docs/Development.md).
-- documentation updates and corrections  
-  &#8594; [read developers guide](docs/Development.md).
-- report a bug   
-  &#8594; [create an issue](https://github.com/iff-gsc/ladac/issues/new)
-- new feature ideas & suggestions  
-  &#8594; [create an issue](https://github.com/iff-gsc/ladac/issues/new)
+## Typical workflows
 
-Before creating new issues please check to see if there is an existing one.
+LADAC supports several complementary workflows:
+
+- **Aircraft simulation:** assemble nonlinear aircraft models from reusable subsystem blocks.
+- **Flight-control development:** design and assess controllers using the same aircraft parameterization as the simulation.
+- **Aeroelastic research:** couple unsteady aerodynamic and structural models for flexible-aircraft studies.
+- **ArduPilot SITL:** run ArduPilot against a LADAC aircraft-dynamics model.
+- **Controller deployment:** generate C++ code from a Simulink controller and run it in a custom ArduPilot flight mode.
+
+See [Architecture and workflows](docs/Architecture.md) for an overview.
+
+## Documentation
+
+| Topic | Documentation |
+|---|---|
+| First steps | [Getting started](docs/Getting_Started.md) |
+| Software requirements and setup | [Installation](docs/Installation.md) |
+| Framework structure and workflows | [Architecture](docs/Architecture.md) |
+| Building aircraft simulations | [Aircraft modeling](docs/Aircraft_Modeling.md) |
+| Control modules and autopilots | [Flight control](docs/Flight_Control.md) |
+| ArduPilot code-generation workflow | [ArduPilot integration](docs/ArduPilot_Integration.md) |
+| Tests and troubleshooting | [Testing](docs/Testing.md) |
+| Contributing code | [Development guide](docs/Development.md) |
+| Commit conventions | [Rules for commits](docs/Rules_for_commits.md) |
+
+Detailed documentation for individual components is located in the corresponding source directories.
+
+## Repository structure
+
+| Directory | Contents |
+|---|---|
+| [aircraft](aircraft) | Complete aircraft models and aircraft subsystem assemblies |
+| [actuators](actuators) | Actuator dynamics and command conversions |
+| [aerodynamics](aerodynamics) | Airfoil, wing, fuselage, rotorcraft, and downwash models |
+| [control](control) | Control methods, reusable controller modules, guidance, flight modes, and autopilots |
+| [environment](environment) | Atmosphere, turbulence, gust, and ground-contact models |
+| [equations_of_motion](equations_of_motion) | Rigid-body, flexible-body, and structural dynamics |
+| [flight_parameters](flight_parameters) | Derived flight-state and flight-path quantities |
+| [interfaces](interfaces) | Interfaces to ArduPilot, FlightGear, FlexiFlightVis, TiGL, Tornado, and other tools |
+| [propulsion](propulsion) | Propeller, motor, and battery models |
+| [sensors](sensors) | Sensor models |
+| [utilities](utilities) | Mathematical, coordinate-transformation, quaternion, and general helper functions |
+| [modules](modules) | Separately maintained dependencies included as Git submodules |
+| [external](external) | Third-party code distributed with LADAC |
+| [docs](docs) | User and developer documentation |
+
+## Examples
+
+Complete executable examples are maintained in the separate [LADAC-Examples](https://github.com/iff-gsc/LADAC-Examples) repository. It currently contains UAV examples for multicopters, fixed-wing aircraft, and eVTOL configurations using rigid-body flight-dynamics models and the LindiCopter or LindiPlane autopilots.
+
+Research-specific models and code associated with publications are generally maintained in separate repositories that include LADAC as a Git submodule.
+
+## Contributing
+
+Bug reports, documentation improvements, new models, and code contributions are welcome.
+
+Before contributing:
+
+1. Read the [development guide](docs/Development.md).
+2. Follow the [commit-message rules](docs/Rules_for_commits.md).
+3. Search the existing [issues](https://github.com/iff-gsc/LADAC/issues).
+4. Run the relevant tests and `check_ladac`.
+
+## License
+
+LADAC is licensed under the [GNU General Public License v3.0](LICENSE).
+
+Individual components in `modules` and `external` may use different licenses. Consult the license files and documentation shipped with each dependency.

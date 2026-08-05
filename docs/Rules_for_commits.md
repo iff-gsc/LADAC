@@ -1,71 +1,81 @@
 # Rules for commits
 
-## The 7 rules for commit messages 
+Good commits make scientific software easier to review, reproduce, maintain, and cite.
 
-1. Separate subject from body with a blank line
-2. Limit the subject line to 50 characters 
-3. Capitalize the subject line
-4. Do not end the subject line with a period
-5. Use the imperative mood in the subject line
-6. Wrap the body at 72 characters (if change is too simple to add a further context, leave out body)
-7. Use the body to explain what and why vs. how
+## Commit-message rules
 
+1. Separate the subject from the body with a blank line.
+2. Keep the subject concise; approximately 50 characters is a useful target.
+3. Capitalize the subject.
+4. Do not end the subject with a period.
+5. Use the imperative mood: `Add`, `Fix`, `Move`, `Document`, or `Refactor`.
+6. Wrap the body at approximately 72 characters where practical.
+7. Explain **what changed and why**. The diff should explain most implementation details.
 
-## Things to avoid when creating commits
+Example:
 
-- Mixing whitespace changes with functional code changes
-- Mixing two unrelated functional changes
-- Sending large new features in a single giant commit
-	
-Basic rule to follow:  
-If a code change can be split into a sequence of patches/commits, then it should be split. Less is not more. More is more.
+```text
+Move external interfaces to top level
 
+Expose external-program interfaces as a primary LADAC area rather
+than treating them as general utilities. This makes ArduPilot,
+FlightGear, and related integrations easier to discover.
 
-## Information in commit messages
+Update affected library links and documentation paths.
 
-- Describe why a change is being made.
-- How does it address the issue?
-- What effects does the patch have?
-- Do not assume the reviewer understands what the original problem was.
-- Do not assume the code is self-evident/self-documenting.
-- Read the commit message to see if it hints at improved code structure.
-- The first commit line is the most important.
-- Describe any limitations of the current code.
-- Do not include patch set-specific comments.
+Resolves: #123
+```
 
+## Keep commits focused
 
-## Example
+Avoid:
 
-Summarize changes in around 50 characters or less
+- mixing whitespace-only changes with functional changes,
+- mixing unrelated changes,
+- combining directory moves with large behavioral changes,
+- committing generated files accidentally,
+- one giant commit for a feature that can be reviewed in stages.
 
-More detailed explanatory text, if necessary. Wrap it to about 72  
-characters or so. In some contexts, the first line is treated as the  
-subject of the commit and the rest of the text as the body. The  
-blank line separating the summary from the body is critical (unless  
-you omit the body entirely); various tools like `log`, `shortlog`  
-and `rebase` can get confused if you run the two together.  
+A useful sequence for a structural change is:
 
-Explain the problem that this commit is solving. Focus on why you  
-are making this change as opposed to how (the code explains that).  
-Are there side effects or other unintuitive consequences of this  
-change? Here's the place to explain them.
+1. move or rename files without behavioral changes,
+2. repair links and paths,
+3. update documentation,
+4. make functional improvements in later commits.
 
-Further paragraphs come after blank lines.
+## Commit bodies
 
-- Bullet points are okay, too
-- Typically a hyphen or asterisk is used for the bullet, preceded  
-  by a single space, with blank lines in between, but conventions  
-  vary here  
+Include relevant context:
 
-If you use an issue tracker, put references to them at the bottom,  
-like this:
+- What problem does the change solve?
+- Why was this approach selected?
+- What behavior changes?
+- Are there compatibility consequences?
+- Are paths, interfaces, parameters, or generated files affected?
+- What tests were run?
+- What remains unsupported?
 
-Resolves: #123  
-See also: #456, #789
+Do not assume that future readers know the original issue.
+
+## Referencing issues
+
+Put issue references at the end:
+
+```text
+Resolves: #123
+See also: #456
+```
+
+## Submodules
+
+When updating a Git submodule:
+
+- state which dependency was updated,
+- record the old and new commits in the pull-request description,
+- summarize relevant upstream changes,
+- run affected tests,
+- avoid combining unrelated submodule updates.
 
 ## Sources
 
-
-[1]	Atlassian; https://at.projects.genivi.org/wiki/display/PROJ/Rules+for+Commit+Messages , [last viewed 17.05.2019]  
-[2] Beams, Chris; https://chris.beams.io/posts/git-commit/ , [last viewed 17.05.2019]  
-[3] Openstack; https://wiki.openstack.org/wiki/GitCommitMessages#Information_in_commit_messages , [last viewed 17.05.2019]  
+These conventions are based on established Git commit-message guidance, including Chris Beams' *How to Write a Git Commit Message*, OpenStack's Git commit-message guidance, and earlier GENIVI/Atlassian recommendations.

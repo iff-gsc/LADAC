@@ -1,109 +1,194 @@
-# Development
+# Development guide
 
-Please read carefully through this guide if you want to develop code in LADAC.
-
+Read this guide before contributing code to LADAC.
 
 ## General principles
 
-1. Name everything well.
-2. Make sure that nothing has the same name as existing Matlab functions.
-3. Make sure that no other files have "Test" or "test" in the name at the beginning or end than those for unit test (see [Testing section](#Testing)). 
-Useful alternatives: eval, probe, verify, check, try, analyse, trial
-4. Strike a balance between simplicity and not-repeating code.
-5. Know that there's always more than one way to do something and that code is never final - but it does have to work.
-6. This is scientific software. Provide the source for each line of code that implements a scientific method.
-7. Function names should be `lowerCamelCase`.
-8. Class names should be `UpperCamelCase`.
-9. Folder names should be `word` or `multiple_words`.
-10. Variable names should be `word` or `multiple_words` but you can also use typical math nomenclature (e.g. `M_bg` or `omega_Kb`). Booleans should start with `is_...`.
-11. Script names should always contain an `_`, e.g. `multiple_words` or `lowerCamelCase_word`.
-12. If you work on bigger projects, use structs.
-	You could also use [System objects](https://de.mathworks.com/help/matlab/matlab_prog/what-are-system-objects.html) (type of Matlab class) but no other classes since they are not supported by Simulink.
-	Note that there are [limitations](https://de.mathworks.com/help/simulink/ug/comparison-of-custom-block-functionality.html) for System objects such as no continuous states.
-	Cell arrays are usually also not supported by Simulink.
-13. Simulink library files should have the same name as the folder plus the extension `_lib`, e.g. `multiple_words_lib`.
-	Moreover, Simulink files should be saved in .slx format.
+1. Choose descriptive and unambiguous names.
+2. Avoid names that shadow MATLAB functions.
+3. Reserve names containing `Test` or `test` at the beginning or end for tests. Alternatives include `example`, `evaluation`, `verification`, `check`, `analysis`, and `trial`.
+4. Balance simplicity, reuse, and readability. Avoid both unnecessary duplication and premature abstraction.
+5. Code does not need to be final, but every committed state must work within its documented scope.
+6. LADAC is scientific software. Cite the source of implemented scientific methods and document assumptions and equations.
+7. Use `lowerCamelCase` for functions.
+8. Use `UpperCamelCase` for classes.
+9. Use `word` or `multiple_words` for directory names.
+10. Use descriptive variable names or established mathematical notation such as `M_bg` or `omega_Kb`. Boolean variables should normally start with `is_`.
+11. Script names should contain an underscore to distinguish them from functions, for example `myProject_example`.
+12. Use structures for parameter-rich models and interfaces.
+13. Design reusable numerical functions for MATLAB, Simulink, and code generation where practical.
+14. Keep aircraft-, experiment-, and publication-specific parameters outside LADAC.
 
-## Single function vs. project
+System objects may be appropriate for selected components, but consider their Simulink and code-generation limitations. Avoid unsupported language features and data structures in code-generation paths.
 
-If you only implement a single function, move it to an appropriate location and give it an appropriate name.
+## Repository organization
 
-If you are working on a (bigger) project that consists of multiple functions, move them to the same location.
-Make sure that the function names start with the same name (e.g. `myProjectNiceFunction`, `myProjectFancyStuff`).
-An example script should then be named `myProject_example` and a Simulink test file should be named `myProject_lib_example`.
+A single reusable function should be placed in the most appropriate existing area.
 
-## Function style
+A larger component should have its own directory. Related functions should share a clear prefix:
 
-- Use the template provided in _m-utils/templates_.
-- Make yourself familiar with code that is compatible with [code generation](https://www.mathworks.com/help/phased/ug/about-code-generation.html) and make sure to use the [%#codegen directive](https://www.mathworks.com/help/simulink/ug/adding-the-compilation-directive-codegen.html).
+```text
+myProjectCreate.m
+myProjectLoadParams.m
+myProjectGetForces.m
+myProjectSetGeometry.m
+myProject_example.m
+myProject_lib.slx
+README.md
+```
 
+Do not create a new top-level directory for a small implementation. Top-level directories represent major physical or functional domains.
 
-## Simulink block style
+Use:
 
-- Make yourself familiar with [creating library blocks](https://www.mathworks.com/help/simulink/ug/creating-block-libraries.html).
-- Consider the style used for existing blocks.
-- Usually, library blocks should only have one output. If there are multiple output signals, you should assign them to a Simulink bus.
-- Parameters should be passed by the Mask. If many parameters are required, you should think about replacing them by one parameter struct.
-- Documentation:
-  - If not much documentation is needed, it can be done by text in the Mask.
-  - If the documentation is relatively long, you should think about to use a Markdown file that is located in the same folder as the Simulink block.
-    - Provide the Link to the Markdown file in the Mask by adding a `Hyperlink` and specify the following under `Callback`: `web('Link_to_Markdown_file.md','-browser')`
-    - Put the same command under Mask --> Edit Mask --> Documentation --> Help (you will get to the file by right-click the block --> Help)
-  - The documentation should specify inputs, parameters and outputs.
-  - If the input parameter is a struct, you should only provide the struct definition in the documentation.
-	
-## Working with structs
+- `modules` for separately maintained dependencies included as Git submodules,
+- `external` for third-party code distributed as a copy or partial copy,
+- `interfaces` for integration with external software,
+- `utilities` for LADAC-owned general-purpose helper functions.
 
-If you use structs in (bigger) projects, you should use the following style:
-- provide a function that defines/initializes the struct called `myProjectInit`.
-- the description of all variables inside the struct should be done in the `myProjectInit` file.
-- provide a default parameters file called `myProject_params_default`.
-- provide a function that loads the parameters from the parameters file called `myProjectLoadParams`.
-- provide a function that creates the struct called `myProjectCreate` (inside this function the functions `myProjectInit` and `myProjectLoadParams` should be called).
-- all other functions that compute stuff based on the struct, should have the struct as an input, e.g. `stuff = myProjectGetStuff(my_struct)` (where `my_struct = myProjectInit()`).
-- all other functions that set variables inside the struct, should have the struct as an input and as an output, e.g. `my_struct = myProjectSetVariable(my_struct,...)`.
+Document third-party origin, version, license, and local modifications.
 
-## Testing
+## MATLAB function style
 
-You should use test-driven development (TDD).
-In the best case, a MATLAB unit test for TDD exists for each function which can be used to check the expected values for correct functioning.
-TDD in short: First write a test function with inputs and the corresponding outputs.
-Then write a function that satisfies all tests.  
-For more information, see [here](https://blogs.mathworks.com/loren/2013/10/15/function-is-as-functiontests/) and [here](https://de.mathworks.com/help/matlab/matlab_prog/write-function-based-unit-tests-.html).
+- Start from the function template in `modules/m-utils/templates`.
+- Include a concise help section that documents purpose, syntax, inputs, outputs, units, dimensions, coordinate frames, assumptions, and references.
+- Add the `%#codegen` directive where code generation is intended.
+- Prefer deterministic behavior and explicit data types in code-generation paths.
+- Avoid hidden dependencies on the base workspace.
+- Validate dimensions and configuration at initialization rather than in every simulation step where possible.
 
-To check if everything works, run `check_LADAC`.
+## Simulink library style
 
-The following style should be used:
-- There should be a function and/or Simulink file to test the function(s).
-- The function should end with `...UnitTest`, e.g. `myProjectUnitTest`.
-- If there are multiple files for testing, move them to a `test` subdirectory.
+- Follow MATLAB's guidance for linked [library blocks](https://www.mathworks.com/help/simulink/ug/creating-block-libraries.html).
+- Simulink library files should normally use the directory name followed by `_lib`, for example `multiple_words_lib.slx`.
+- Save maintained models in `.slx` format.
+- Follow the visual style of existing LADAC blocks.
+- Prefer one output port. Use a Simulink bus when a component has multiple related outputs.
+- Pass parameters through the mask. Use one parameter structure when many related parameters are required.
+- Keep sample times, data types, units, axes, and reset behavior explicit.
+- Avoid project-specific constants inside reusable library blocks.
+
+### Block documentation
+
+For short documentation, use mask text.
+
+For substantial documentation, create a Markdown file in the same directory and link it from the block mask and help callback:
+
+```matlab
+web('README.md','-browser')
+```
+
+Document:
+
+- purpose,
+- assumptions and validity range,
+- parameters,
+- inputs and outputs,
+- states and initialization,
+- units and dimensions,
+- examples,
+- tests and validation,
+- references,
+- known limitations.
+
+## Parameter structures
+
+For larger components, use a consistent lifecycle where applicable:
+
+- `myProjectInit` defines or initializes the structure.
+- `myProject_params_default` is a documented default parameter template.
+- `myProjectLoadParams` loads user-supplied parameters and derives dependent values.
+- `myProjectCreate` assembles the complete structure.
+- `myProjectGet...` functions calculate values from the structure.
+- `myProjectSet...` functions return a modified structure.
+
+Descriptions of structure fields should have one authoritative location, normally the initialization or creation function.
+
+Users should copy parameter templates into their application repositories rather than edit LADAC defaults.
+
+## Tests
+
+Use test-driven development where practical.
+
+Each component should provide appropriate tests at one or more levels:
+
+- MATLAB unit tests,
+- component examples,
+- Simulink regression examples,
+- verification against analytic or independent reference results,
+- validation against experimental data.
+
+Naming conventions:
+
+- unit-test functions end in `UnitTest`,
+- multiple test files belong in a `test` directory,
+- demonstrations should use `example`, not `test`, unless they assert expected behavior.
+
+Run the repository-level check:
+
+```matlab
+check_ladac
+```
+
+Also run the component-specific tests and any affected LADAC-Examples simulations.
 
 ## Documentation
 
-Each subfolder (except of `test` folders or similar) should contain a `README.md` that provides the necessary information: usually motivation, test and how it works.
+Each substantive source directory should contain a `README.md`, except for directories such as `private`, generated-code directories, or self-explanatory test-data directories.
 
-## Using Git and GitHub
+A component README should normally contain:
 
-Make yourself familiar with [Git](https://git-scm.com).  
-There is also a good [documentation on GitHub](https://docs.gitlab.com/ee/topics/git/).  
-You should know at least about the following concepts:
-- commit, commit message
-- branch, tag
-- push, pull, fetch, clone
-- submodule
-- merge
-- rebase
+1. purpose,
+2. motivation,
+3. method and assumptions,
+4. requirements,
+5. examples,
+6. usage and interfaces,
+7. tests and validation,
+8. known limitations,
+9. literature.
 
+Cross-cutting workflows belong in `docs/`. Avoid duplicating detailed component documentation there.
 
-This repository follows the [GitHub flow](https://guides.github.com/introduction/flow/index.html).
-Ensure that you understand it.
+## Generated files
 
-For your branches, please consider the following ([more information](https://docs.gitlab.com/ee/topics/gitlab_flow.html)):
-- Commit often and push frequently (see [Rules for commits](Rules_for_commits.md)).
-- Write good commit messages (see [Rules for commits](Rules_for_commits.md)).
-- Keep your feature branches short-lived.
-- If you add a feature, name your branch `feature/good_name`. If you add a bugfix, name your branch `bugfix/good_name`.
+Do not commit generated or temporary files unless they are intentionally distributed artifacts.
 
+Typical files to ignore include:
 
+```text
+slprj/
+*.slxc
+*.autosave
+*.asv
+*~
+```
 
+Before committing, review `git status` and verify that each file is intentional.
 
+## Git and GitHub
+
+Contributors should understand:
+
+- clone, fetch, pull, and push,
+- commits and commit messages,
+- branches and tags,
+- merges and rebases,
+- Git submodules,
+- pull requests and issue references.
+
+LADAC follows a short-lived feature-branch workflow:
+
+- `feature/descriptive_name`
+- `bugfix/descriptive_name`
+- `docs/descriptive_name`
+
+Commit often, keep changes focused, and follow [Rules for commits](Rules_for_commits.md).
+
+Before opening a pull request:
+
+1. update documentation,
+2. run relevant tests,
+3. inspect changes for generated files,
+4. verify library links,
+5. describe scope, motivation, limitations, and validation.
