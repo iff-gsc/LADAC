@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="66.633003mm"
+   height="19.348mm"
+   viewBox="0 0 66.633004 19.348"
+   version="1.1"
+   id="svg16736"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="ladac-logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview16738"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1.8173401"
+     inkscape:cx="-47.321908"
+     inkscape:cy="-48.697545"
+     inkscape:window-width="1920"
+     inkscape:window-height="1024"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs16733" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-96.800655,-152.80516)">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:100;font-stretch:normal;font-size:16.9333px;line-height:1.25;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Thin';fill:#1f1f93;fill-opacity:1;stroke-width:0.264583"
+       x="107.03889"
+       y="166.65234"
+       id="text7818-8-4-0-2-9-0-9-2-5-0"><tspan
+         sodipodi:role="line"
+         id="tspan7816-2-3-1-8-7-00-3-0-5-6"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16.9333px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans Bold';fill:#4673b4;fill-opacity:1;stroke-width:0.264583"
+         x="107.03889"
+         y="166.65234">LADAC</tspan></text>
+    <path
+       style="fill:none;fill-opacity:1;stroke:#4673b4;stroke-width:1.2492;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+       d="m 99.015761,165.5201 0.0327,-8.73397 5.910609,7.24345 z"
+       id="path33229-9-9-7-8-5-9-1-7-1"
+       sodipodi:nodetypes="cccc" />
+    <path
+       id="path34081-5-4-5"
+       style="fill:#4673b4;fill-opacity:0.55;fill-rule:nonzero;stroke:none;stroke-width:0.265;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+       d="m 102.98265,164.52558 -2.1265,0.5333 c 0.0989,0.26145 0.21363,0.52906 0.34418,0.79375 0.22268,0.45149 0.49864,0.91157 0.84077,1.34772 0.31707,0.40421 0.68505,0.78078 1.11828,1.11932 0.42312,0.33064 0.89097,0.61152 1.41284,0.85214 0.53294,0.24572 1.10846,0.4426 1.72547,0.6072 0.73034,0.19482 1.50959,0.34189 2.30839,0.46612 0.69695,0.10839 1.48816,0.20021 2.40192,0.27388 3.84986,0.31042 9.4711,0.2613 17.41702,0.0558 5.0921,-0.13169 12.78635,-0.37842 17.28732,-0.53434 4.6441,-0.16088 11.17922,-0.45769 15.82332,-0.61857 -3.27166,-0.0188 -9.12714,-0.1074 -15.83676,-0.0863 -4.48771,0.0141 -12.80321,0.0954 -17.29093,0.10956 -8.00799,0.0364 -13.47243,-0.0288 -17.26561,-0.41186 -0.8831,-0.0892 -1.63496,-0.19163 -2.2872,-0.30489 -0.75034,-0.1303 -1.44986,-0.30464 -2.07274,-0.52607 -0.52545,-0.1868 -0.97716,-0.39983 -1.36581,-0.6382 -0.37726,-0.23138 -0.68742,-0.48175 -0.95188,-0.74776 -0.27002,-0.27162 -0.49633,-0.56362 -0.6997,-0.87282 -0.22169,-0.33707 -0.41783,-0.69797 -0.60772,-1.07073 -0.059,-0.11576 -0.1172,-0.23161 -0.17466,-0.34727 z" />
+  </g>
+</svg>

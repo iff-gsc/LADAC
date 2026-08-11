@@ -1,4 +1,4 @@
-# LADAC
+![LADAC ArduPilot interface](docs/images/ladac-logo.svg)
 
 **L**ibrary for **A**ircraft **D**ynamics **A**nd **C**ontrol
 
