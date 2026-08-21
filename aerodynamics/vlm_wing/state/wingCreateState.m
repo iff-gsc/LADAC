@@ -40,10 +40,10 @@ state.actuators.segments.rate 	= zeros( 2, n_panel );
 % circulation variables
 n_panel_x = 1;
 n_trail = 1;
-state.aero.circulation.gamma        = zeros( 1, n_panel, n_panel_x );
-state.aero.circulation.gamma_last   = zeros( 1, n_panel, n_panel_x );
-state.aero.circulation.gamma_trail  = zeros( 1, n_panel, n_trail );
-state.aero.circulation.Gamma        = zeros( 1, n_panel );
+state.aero.circulation.gamma        = zeros( 1, n_panel );
+state.aero.circulation.gamma_last   = zeros( 1, n_panel );
+state.aero.circulation.Gamma_trail  = zeros( 1, n_panel, n_trail );
+state.aero.circulation.Gamma        = zeros( 1, n_panel, n_panel_x );
 state.aero.circulation.c_L          = zeros( 1, n_panel, n_panel_x );
 state.aero.circulation.c_L_flap     = zeros( 1, n_panel );
 state.aero.circulation.delta_qs     = zeros( 1, n_panel );

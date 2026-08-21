@@ -206,23 +206,23 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
         % normal airspeed component for VLM
         v_ni_VLM = - dot( v_inf, u_n_VLM, 1 );
         if wing.config.is_unsteady
-            v_ni_wake = (wing.interim_results.AIC_t * wing.state.aero.circulation.gamma_trail(:) )';
+            v_ni_wake = (wing.interim_results.AIC_t * (wing.state.aero.circulation.Gamma_trail(:)./V_norm(:)/span) )';
             v_ni_VLM = v_ni_VLM - v_ni_wake;
         end
         if n_trail == 1
-            wing.state.aero.circulation.gamma_trail(:) = wing.state.aero.circulation.gamma;
+            wing.state.aero.circulation.Gamma_trail(:) = wing.state.aero.circulation.Gamma;
         end
-        v_ni_wake = wing.interim_results.AIC_t * wing.state.aero.circulation.gamma_trail(:);
-        wing.state.aero.circulation.gamma(:) = wing.interim_results.AIC_b \ (v_ni_VLM(:)-v_ni_wake(:));
-        wing.state.aero.circulation.gamma(:,:,2:end) = wing.state.aero.circulation.gamma(:,:,2:end) - wing.state.aero.circulation.gamma(:,:,1:end-1);
+        v_ni_wake = wing.interim_results.AIC_t * (wing.state.aero.circulation.Gamma_trail(:)./V_norm(:)/span);
+        wing.state.aero.circulation.Gamma(:) = wing.interim_results.AIC_b \ ((v_ni_VLM(:)-v_ni_wake(:)).*V_norm(:)) * span;
+        wing.state.aero.circulation.Gamma(:,:,2:end) = wing.state.aero.circulation.Gamma(:,:,2:end) - wing.state.aero.circulation.Gamma(:,:,1:end-1);
         % lift coefficient of VLM
-        c_L_VLM(:) = 2*wing.state.aero.circulation.gamma * span./wing.state.geometry.ctrl_pt.c;
+        c_L_VLM(:) = 2*wing.state.aero.circulation.Gamma./V_norm./wing.state.geometry.ctrl_pt.c;
     else
         % VLM backwards (c_L_visc won't change)
         c_L_VLM(:) = c_L_visc;
-        wing.state.aero.circulation.gamma = 0.5*c_L_VLM / span .* wing.state.geometry.ctrl_pt.c;
-        v_ni_wake = (wing.interim_results.AIC_t * wing.state.aero.circulation.gamma(:) )';
-        v_ni_VLM = (wing.interim_results.AIC_b * wing.state.aero.circulation.gamma(:))' + v_ni_wake;
+        wing.state.aero.circulation.Gamma = 0.5*c_L_VLM .* V_norm .* wing.state.geometry.ctrl_pt.c;
+        v_ni_wake = (wing.interim_results.AIC_t * (wing.state.aero.circulation.Gamma(:)./V_norm(:)/span))';
+        v_ni_VLM = (wing.interim_results.AIC_b * (wing.state.aero.circulation.Gamma(:)./V_norm(:)/span))' + v_ni_wake;
         alpha_eff_VLM = -asinReal(v_ni_VLM);
         wing.state.aero.circulation.Delta_alpha = alpha_eff_VLM - alpha_inf;
     end
@@ -257,8 +257,8 @@ end
 
 wing.state.aero.circulation.v_i_unit = wing.state.aero.circulation.v_i ...
     ./repmat(vecnorm(wing.state.aero.circulation.v_i,2,1),3,1);
-wing.state.aero.circulation.Gamma(:) = sum(wing.state.aero.circulation.gamma,3) ...
-    .* abs_V_i * span;
+wing.state.aero.circulation.gamma(:) = sum(wing.state.aero.circulation.Gamma,3) ...
+    ./ abs_V_i / span;
 wing.state.aero.circulation.c_L(:) = c_L_VLM;
 wing.state.aero.circulation.alpha_inf(:) = alpha_inf;
 
