@@ -65,6 +65,7 @@ else
     v_inf = v_inf_75;
     alpha_inf = alpha_inf_75;
 end
+w_ind = zeros( 1, wing.n_panel );
 
 wing.state.aero.circulation.alpha_inf(:) = alpha_inf;
 % dimensionless pitch rate [1], Nomenclature and Eq. between (18) and (19)
@@ -98,8 +99,14 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
     alpha_eff_unswept = alpha_inf - wing.state.aero.circulation.alpha_ind;
     wing.state.aero.circulation.alpha_eff = alpha_eff_unswept;
     
-    % estimate induced velocity (own formula, no appropriate formula found in literature)
-    w_ind = -tan(wing.state.aero.circulation.alpha_ind);
+    switch wing.config.ind_drag_method
+        % estimate induced velocity (own formula, no appropriate formula found in literature)
+        case 'alpha_ind'
+            w_ind = -tan(wing.state.aero.circulation.alpha_ind);
+        case 'Trefftz'
+            w_ind = 0.5*(wing.interim_results.AIC_Trefftz/span * wing.state.aero.circulation.Gamma(:))' ...
+                ./ vecnorm(wing.state.aero.local_inflow.V_25,2);
+    end
     
     % local airspeed vector normalized by local free-stream velocity in
     % direction of local stream (to do: probably u_n should be rotated

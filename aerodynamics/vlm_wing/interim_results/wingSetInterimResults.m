@@ -41,7 +41,7 @@ interim_results.wing_x_rotation = mean(acos(dot_normal_lateral).*sign(dot_normal
 interim_results.M_rot_x = euler2Dcm([interim_results.wing_x_rotation;0;0])';
 
 n_trail = 1;
-interim_results.wake.pos_x      = linspace( 0, 3*wing.params.b, n_trail+1 );
+interim_results.wake.pos_x      = linspace( 0, 8*wing.params.b, n_trail+1 );
 interim_results.wake.dx         = interim_results.wake.pos_x(2)-interim_results.wake.pos_x(1);
 
 interim_results.wake.pos_start  = wing.geometry.vortex.pos(:,:,end);
@@ -54,7 +54,7 @@ interim_results.u_n = wingGetNormalVectorFromGeometry( wing.geometry );
 
 
 [AIC_b_beta,AIC_t_beta] = wingGetAicMach( wing, interim_results.wake, Ma, interim_results.beta_infl );
-[AIC_b,AIC_t] = wingGetAicMach( wing, interim_results.wake, Ma, 0 );
+[AIC_b,AIC_t,AIC_Trefftz] = wingGetAicMach( wing, interim_results.wake, Ma, 0 );
 
 Delta_AIC_b_pos = AIC_b_beta - AIC_b;
 Delta_AIC_t_pos = AIC_t_beta - AIC_t;
@@ -66,6 +66,7 @@ Delta_AIC_t_neg = AIC_t_beta - AIC_t;
 
 interim_results.AIC_b = AIC_b;
 interim_results.AIC_t = AIC_t;
+interim_results.AIC_Trefftz = AIC_Trefftz;
 interim_results.Delta_AIC_b_pos = Delta_AIC_b_pos;
 interim_results.Delta_AIC_t_pos = Delta_AIC_t_pos;
 interim_results.Delta_AIC_b_neg = Delta_AIC_b_neg;

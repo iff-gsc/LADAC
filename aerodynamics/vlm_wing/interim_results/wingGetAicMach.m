@@ -1,4 +1,4 @@
-function [aic_b,aic_t] = wingGetAicMach( wing, wake, Ma, beta_deg )
+function [aic_b,aic_t,aic_trefftz] = wingGetAicMach( wing, wake, Ma, beta_deg )
 
 u_n = wingGetNormalVectorFromGeometry( wing.geometry );
 spanwise_vector = wingGetDimLessSpanwiseLengthVector(wing.geometry.line_25);
@@ -19,6 +19,14 @@ V_inf_local = beta2localInflow( M_rot_x, beta_deg, wing.n_panel, n_panel_x );
 [ind_vel_b,ind_vel_t] = wingGetDimlessIndVel( ...
     V_inf_local, wing.state.geometry, wake, Ma, wing.config.is_unsteady );
 
+wing_mod = wing;
+wing_mod.state.geometry.ctrl_pt.pos(1,:) = wing_mod.state.geometry.ctrl_pt.pos(1,:) - 0.5*wake.pos_x(2);
+wing_mod.state.geometry.ctrl_pt.pos(3,:) = wing.geometry.vortex.pos(3,1:end-1,end) ...
+    + diff(wing.geometry.vortex.pos(3,:,end))/2;
+[ind_vel_b_trefftz,ind_vel_t_trefftz] = wingGetDimlessIndVel( ...
+    V_inf_local, wing_mod.state.geometry, wake, Ma, wing.config.is_unsteady );
+ind_vel_trefftz = ind_vel_b_trefftz + ind_vel_t_trefftz;
+
 if strcmp(wing.config.airfoil_method,'analytic')
     fcl = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcl, Ma );
     cla = rad2deg(fcl(2,:));
@@ -30,7 +38,7 @@ end
 
 aic_b = indVel2Aic( ind_vel_b, u_n );
 aic_t = indVel2Aic( ind_vel_t, u_n );
-
+aic_trefftz = indVel2Aic( ind_vel_trefftz, u_n );
 
 aic = aic_b;
 for i=1:n_trail
@@ -41,6 +49,7 @@ a = aicMachCorrection( aic, Ma, cla, wing.geometry.ctrl_pt.c, wing.params.b );
 
 aic_b = a*aic_b;
 aic_t = a*aic_t;
+aic_trefftz = a*aic_trefftz;
 
 end
 

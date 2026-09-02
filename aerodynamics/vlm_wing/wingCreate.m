@@ -44,6 +44,8 @@ function wing = wingCreate( params_file, n_panel, varargin )
 %                   should be placed (1xE array), where the length of E
 %                   must be low enough for the specified number of panels
 %                   by n_panel
+%   IndDragMethod   Method used to computed the spanwise induced drag.
+%                   Options: 'Trefftz' (default), 'alpha_ind'
 % 
 % Outputs:
 %   wing          	wing struct as defined by this function
@@ -83,6 +85,7 @@ is_infl_recomputed = 0;
 is_elliptical = false;
 Ma = 0;
 eta_edges = [];
+ind_drag_method = 'Trefftz';
 
 % set user parameters
 for i = 1:length(varargin)
@@ -147,6 +150,8 @@ for i = 1:length(varargin)
             Ma = varargin{i+1};
         case 'EtaEdges'
             eta_edges = varargin{i+1};
+        case 'IndDragMethod'
+            ind_drag_method = varargin{i+1};
     end
 end
 
@@ -225,6 +230,7 @@ else
 end
 wing.config.airfoil_method = airfoil_method;
 wing.config.actuator_2_type = actuator_2_type;
+wing.config.ind_drag_method = ind_drag_method;
 wing.config.is_infl_recomputed = is_infl_recomputed;
 
 %% set interim results
