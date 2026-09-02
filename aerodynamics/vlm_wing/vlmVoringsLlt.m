@@ -45,7 +45,7 @@ for j = 1:num_vor
     for i = 1:num_cntrl
         cntrl_pt = pc(:,i);
         uvw_ij = vlmVoring( vortex_p1, vortex_p2, vortex_p3, vortex_p4, ...
-                    cntrl_pt, Gamma );
+                    cntrl_pt, Gamma(j) );
         uvw_mat(:,i,j) = uvw_ij;
     end
 end
