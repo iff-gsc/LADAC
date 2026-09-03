@@ -90,10 +90,17 @@ function C_D = simpleWingGetCd( wing, alpha_M, beta_M, eta ) %#codegen
     beta_M_eff = beta_M + phi;
     
     % compute the drag coefficient depending on alpha_M for beta_M = 0
-    C_D_beta0 = interp1( alpha_M_vector, C_D_vsAlphaVec, alpha_M );
+    % (Add effective angle of attack due to flap deflection to the wing
+    % angle of attack. This is done to account for the induced drag.)
+    Delta_alpha_flap_all = wing.flap.dalpha_deta .* eta;
+    Delta_left = sum(Delta_alpha_flap_all(1:end/2));
+    Delta_right = sum(Delta_alpha_flap_all(end/2+1:end));
+    Delta_alpha_flap = [Delta_left,Delta_right];
+    C_D_beta0 = interp1( alpha_M_vector, C_D_vsAlphaVec, alpha_M + Delta_alpha_flap, ...
+        'linear','extrap' );
     
     % add the drag coefficient depending on a flap deflection angle eta
-    C_D_eta_all = C_D_dEta * eta;
+    C_D_eta_all = C_D_dEta * eta.^2;
     C_D_eta_left = sum(C_D_eta_all(1:end/2));
     C_D_eta_right = sum(C_D_eta_all(end/2+1:end));
     C_D_beta0_eta = C_D_beta0 + [C_D_eta_left,C_D_eta_right] .* cos(alpha_M).^2;
