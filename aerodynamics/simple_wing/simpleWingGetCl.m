@@ -94,22 +94,28 @@ function [ C_L, C_L_eta ] = simpleWingGetCl( wing, alpha_M, beta_M, eta ) %#code
     Delta_alpha_flap_all = wing.flap.dalpha_deta .* eta;
     Delta_left = sum(Delta_alpha_flap_all(1:end/2));
     Delta_right = sum(Delta_alpha_flap_all(end/2+1:end));
-    Delta_alpha_flap = [Delta_left,Delta_right] .* sin(alpha_M);
+    Delta_alpha_flap = [Delta_left,Delta_right];
     
     % The polar is only defined for +-90deg angle of attack. If the flow
-    % comes from behind, take the same polar (but sign must be reversed)
+    % comes from behind, take the same polar by mirroring it at +-90deg
     alpha_M_interp = alpha_M;
-    alpha_M_interp(abs(beta_M)>pi/2) = -alpha_M_interp(abs(beta_M)>pi/2);
+    alpha_M_interp = alpha_M_interp + Delta_alpha_flap.*sin(alpha_M).^2.*sign(pi/2-abs(beta_M));
+    s = ones(size(alpha_M_interp));
+    s(alpha_M_interp > pi/2 | alpha_M_interp < -pi/2) = -1;
+    alpha_M_interp(alpha_M_interp>pi/2) = pi - alpha_M_interp(alpha_M_interp>pi/2);
+    alpha_M_interp(alpha_M_interp<-pi/2) = -pi - alpha_M_interp(alpha_M_interp<-pi/2);
 
     % compute the lift coefficient depending on alpha_M for beta_M = 0
-    C_L_beta0 = interp1( alpha_M_vector, C_L_vsAlphaVec, alpha_M_interp + Delta_alpha_flap,'linear','extrap' ) ...
-        .* sign( -abs(beta_M) + pi/2 );
+    C_L_beta0 = s.*interp1( alpha_M_vector, C_L_vsAlphaVec, alpha_M_interp );
     
     C_L_eta_all = C_L_dEta.*eta;
-    C_L_eta = [ C_L_eta_all(1:end/2) * cos(alpha_M(1)) * cos(beta_M(1)), ...
-        C_L_eta_all(end/2+1:end) * cos(alpha_M(2)) * cos(beta_M(2)) ];
-    C_L_eta_left = sum(C_L_eta_all(1:end/2));
-    C_L_eta_right = sum(C_L_eta_all(end/2+1:end));
+    % Reduce flap lift with increasing angle of attack and sideslip angle
+    % and de-activate at reverse flow
+    C_L_eta = [ ...
+        C_L_eta_all(1:end/2) .* cos(alpha_M(:,1)).^2 .* cos(beta_M(:,1)) .* (abs(beta_M(:,1))<pi/2), ...
+        C_L_eta_all(end/2+1:end) .* cos(alpha_M(:,2)).^2 .* cos(beta_M(:,2)) .* (abs(beta_M(:,2))<pi/2) ];
+    C_L_eta_left = sum(C_L_eta(:,1:end/2),2);
+    C_L_eta_right = sum(C_L_eta(:,end/2+1:end),2);
     C_L_eta_2 = [C_L_eta_left,C_L_eta_right];
         
     % add the lift coefficient depending on a flap deflection angle eta

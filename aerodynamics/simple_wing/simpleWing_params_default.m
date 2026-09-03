@@ -13,7 +13,7 @@ wing.polar.params.alpha_linend = 10;
 % angle of attack for maximum C_L (stall), deg
 wing.polar.params.alpha_max = 15;
 % zero angle of attack lift coefficient, -
-wing.polar.params.C_L0 = 0;
+wing.polar.params.C_L0 = 0.1;
 % maximum lift coefficient (C_L), -
 wing.polar.params.C_Lmax = 0.80;
 % angle of attack for minimum C_L after stall, deg

@@ -87,7 +87,7 @@ function C_D = simpleWingGetCd( wing, alpha_M, beta_M, eta ) %#codegen
     end
     
     % compute the effective sideslip angle depending on the sweep angle
-    beta_M_eff = beta_M + phi;
+    beta_M_eff = beta_M + 0*phi; % consideration of phi causes steps
     
     % compute the drag coefficient depending on alpha_M for beta_M = 0
     % (Add effective angle of attack due to flap deflection to the wing
@@ -96,14 +96,31 @@ function C_D = simpleWingGetCd( wing, alpha_M, beta_M, eta ) %#codegen
     Delta_left = sum(Delta_alpha_flap_all(1:end/2));
     Delta_right = sum(Delta_alpha_flap_all(end/2+1:end));
     Delta_alpha_flap = [Delta_left,Delta_right];
-    C_D_beta0 = interp1( alpha_M_vector, C_D_vsAlphaVec, alpha_M + Delta_alpha_flap, ...
-        'linear','extrap' );
+
+    % Reduce flap induced drag to zero at reverse flow (there is no flap
+    % lift)
+    Delta_alpha_flap = Delta_alpha_flap ...
+        - Delta_alpha_flap .* (abs(beta_M)>pi/2) .* abs(cos(alpha_M));
+
+    % The polar is only defined for +-90deg angle of attack. If the flow
+    % comes from behind, take the same polar by mirroring it at +-90deg
+    alpha_M_interp = alpha_M;
+    alpha_M_interp = alpha_M_interp + Delta_alpha_flap.*sign(pi/2-abs(beta_M));
+    alpha_M_interp(alpha_M_interp>pi/2) = pi - alpha_M_interp(alpha_M_interp>pi/2);
+    alpha_M_interp(alpha_M_interp<-pi/2) = -pi - alpha_M_interp(alpha_M_interp<-pi/2);
+
+    C_D_beta0 = interp1( alpha_M_vector, C_D_vsAlphaVec, alpha_M_interp );
+
+    C_D_alpha = C_D_beta0 .* abs(cos(beta_M_eff));
     
     % add the drag coefficient depending on a flap deflection angle eta
     C_D_eta_all = C_D_dEta * eta.^2;
-    C_D_eta_left = sum(C_D_eta_all(1:end/2));
-    C_D_eta_right = sum(C_D_eta_all(end/2+1:end));
-    C_D_beta0_eta = C_D_beta0 + [C_D_eta_left,C_D_eta_right] .* cos(alpha_M).^2;
+
+    C_D_eta = [ C_D_eta_all(1:end/2) .* cos(alpha_M(:,1)).^2 .* abs(cos(beta_M(:,1))), ...
+        C_D_eta_all(end/2+1:end) .* cos(alpha_M(:,2)).^2 .* abs(cos(beta_M(:,2))) ];
+    C_D_eta_left = sum(C_D_eta(:,1:end/2),2);
+    C_D_eta_right = sum(C_D_eta(:,end/2+1:end),2);
+    C_D_eta_2 = [C_D_eta_left,C_D_eta_right];
     
     % compute the drag coefficient depending on alpha_M for beta_M = 90 deg
     C_D_beta90 = 0.5 * ( C_Dmax - C_D0 ) .* ...
@@ -111,7 +128,7 @@ function C_D = simpleWingGetCd( wing, alpha_M, beta_M, eta ) %#codegen
     
     % compute the final drag coefficient depending on alpha_M, beta_M and
     % eta
-    C_D(1:end,1:end) = C_D_beta0_eta .* cos(beta_M_eff).^2 ...
+    C_D(1:end,1:end) = C_D_alpha + C_D_eta_2 ...
         + C_D_beta90 .* sin(beta_M_eff).^2;
     
 end
