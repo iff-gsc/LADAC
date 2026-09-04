@@ -35,10 +35,10 @@ b = vlm_wing.params.b;
 
 wing_origin = vlm_wing.geometry.origin;
 AIC3 = vlmVoringsLlt( vlm_wing.geometry.vortex.pos(:,:,1) + wing_origin, ...
-    vlm_wing.geometry.ctrl_pt.pos + wing_origin, 1, 10*b );
+    vlm_wing.geometry.ctrl_pt.pos + wing_origin, ones(1,vlm_wing.n_panel), 10*b );
 AIC = squeeze(AIC3(3,:,:));
 
-uvw_downwash = vlmVoringsLlt( vlm_wing.geometry.vortex.pos(:,:,1) + wing_origin, pos, 1, 10*b );
+uvw_downwash = vlmVoringsLlt( vlm_wing.geometry.vortex.pos(:,:,1) + wing_origin, pos, ones(1,vlm_wing.n_panel), 10*b );
 AIC_downwash = squeeze(uvw_downwash(3,:,:));
 
 num_act = vlm_wing.params.num_actuators;
