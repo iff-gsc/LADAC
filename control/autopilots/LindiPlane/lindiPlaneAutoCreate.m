@@ -9,10 +9,17 @@ function [ap,ap_notune] = lindiPlaneAutoCreate( airplane, varargin )
 % Inputs:
 %   airplane        Airplane parameters struct, see conventionalAirplaneLoadParams
 %   Name            Name of Name-Value arguments:
-%                       - 'SensFilt': define sensor low-pass filter
+%                       - 'GyroFilt': define gyro low-pass filter (inner
+%                           control loop)
 %                           Value: [omega,d], where omega is the cutoff
 %                           frequency (rad/s) and d is the damping ratio
-%                           (0...1), default: omega = twice the servo
+%                           (0...1), default: omega = servo cutoff
+%                           frequency, d = 1
+%                       - 'AccFilt': define accelerometer low-pass filter
+%                           (outer control loop)
+%                           Value: [omega,d], where omega is the cutoff
+%                           frequency (rad/s) and d is the damping ratio
+%                           (0...1), default: omega = 2 * gyro filter 
 %                           cutoff frequency, d = 1
 %                       - 'AgilityAtti': define agility of attitude
 %                           controller with values between 0.5 ... 2
@@ -64,7 +71,8 @@ function [ap,ap_notune] = lindiPlaneAutoCreate( airplane, varargin )
 % *************************************************************************
 
 %% Input parsing
-sflt_default = [];
+gyro_flt_default            = [0,1];
+acc_flt_default             = [0,1];
 agility_atti                = 1;
 agility_pos                 = 1;
 servo_boost                 = 1;
@@ -73,17 +81,19 @@ uaero_config                = zeros(1,4);
 uaero_config_dlc            = zeros(1,4);
 
 p = inputParser;
-addOptional(p,'SensFilt',sflt_default,@(x) numel(x)==2);
-addOptional(p,'AgilityAtti',agility_atti);
-addOptional(p,'AgilityPos',agility_pos);
-addOptional(p,'ServoBoost',servo_boost);
-addOptional(p,'MlaUse',mla_use);
-addOptional(p,'Uaero',uaero_config);
-addOptional(p,'UaeroDlc',uaero_config_dlc);
+addParameter(p, 'GyroFilt',    gyro_flt_default,@(x) numel(x)==2);
+addParameter(p, 'AccFilt',     acc_flt_default,@(x) numel(x)==2);
+addParameter(p, 'AgilityAtti', agility_atti);
+addParameter(p, 'AgilityPos',  agility_pos);
+addParameter(p, 'ServoBoost',  servo_boost);
+addParameter(p, 'MlaUse',      mla_use);
+addParameter(p, 'Uaero',       uaero_config);
+addParameter(p, 'UaeroDlc',    uaero_config_dlc);
 
 parse(p,varargin{:});
 
-sflt = p.Results.SensFilt;
+gyro_flt = p.Results.GyroFilt;
+acc_flt = p.Results.AccFilt;
 agility_atti = p.Results.AgilityAtti;
 agility_pos = p.Results.AgilityPos;
 servo_boost = p.Results.ServoBoost;
@@ -179,16 +189,24 @@ ap.servo.boost  = servo_boost;
 
 
 %% Sensor filter
-if isempty(sflt)
-    ap.sflt.omega = 2 * ap.servo.omega * ap.servo.boost;
-    ap.sflt.d = 0.71;
+if gyro_flt(1) == 0
+    ap.atc.flt.omega = ap.servo.omega * ap.servo.boost;
+    ap.atc.flt.d = 1;
 else
-    ap.sflt.omega = sflt(1);
-    ap.sflt.d = sflt(2);
+    ap.atc.flt.omega = gyro_flt(1);
+    ap.atc.flt.d = gyro_flt(2);
 end
 % select if a single (1) or a duplicate (2) low-pass filter should be used
 % for the gyros
-ap.sflt.numGyrFlt = 2;
+ap.atc.flt.numGyrFlt = 2;
+
+if acc_flt(1) == 0
+    ap.psc.flt.omega = 0.5 * ap.atc.flt.omega;
+    ap.psc.flt.d = 1;
+else
+    ap.psc.flt.omega = acc_flt(1);
+    ap.psc.flt.d = acc_flt(2);
+end
 
 
 %% Airspeed
@@ -219,13 +237,14 @@ else
 end
 
 %% Attitude control
-T_h = 2/(ap.servo.omega*ap.servo.boost) + ap.servo.delay + 2/ap.sflt.omega + T_uaero;
+T_h = 2/(ap.servo.omega*ap.servo.boost) + ap.servo.delay + 2/ap.atc.flt.omega + T_uaero;
 % p = -1*[1,1,1] * 2/T_h / 6 * agility_atti;
 % p = -1*[1,0.9+0.7*1i,0.9-0.7*1i] * 2/T_h / 5.6 * agility_atti;
 p = roots([1,6,15,15]) * 2/T_h / 12 * agility_atti;
 k = ndiFeedbackGainPlace( p, T_h );
 
 p2 = -1*[1,1] * 2/T_h / 4;
+% p2 = roots([1,3,3]) * 2/T_h / 6 * agility_atti;
 k2 = ndiFeedbackGainPlace( p2, T_h );
 
 ap.atc.k.rang = k(1);
@@ -294,7 +313,7 @@ ap.eig.xnp0 = ( ap.eig.cla_h*ap.eig.s_h*x_np_htp + ap.eig.cla*ap.eig.s*x_np_main
 
 
 %% Position control
-T_h = T_h + 2/ap.atc.rm.rfreq;
+T_h = T_h + 2/ap.atc.rm.rfreq + 2/ap.psc.flt.omega - 2/ap.atc.flt.omega;
 % p = -1*[1,1,1] * 2/T_h / 5;
 % p = -1*[1,0.9+0.7*1i,0.9-0.7*1i] * 2/T_h / 5.6 * agility_pos;
 p = roots([1,6,15,15]) * 2/T_h / 12 * agility_pos;
@@ -343,9 +362,9 @@ ap.dlc.flapdecay = 4;
 % cutoff pitch angle error, in deg
 ap.dlc.maxptch = 20;
 % acceleration filter cutoff frequency, in rad/s
-ap.dlc.flt.omega = ap.sflt.omega;
+ap.dlc.flt.omega = ap.atc.flt.omega;
 % acceleration filter damping ratio
-ap.dlc.flt.d = ap.sflt.d;
+ap.dlc.flt.d = ap.atc.flt.d;
 % servo boost
 ap.dlc.srv.boost = ap.servo.boost;
 % unsteady flap aerodynamics
