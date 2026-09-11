@@ -323,6 +323,11 @@ ap.psc.k.pos = k(1);
 ap.psc.k.vel = k(2);
 ap.psc.k.acc = k(3);
 
+% Define position control (outer loop) inversion mode
+% 0: NDI
+% 1: INDI
+ap.psc.inv_mode = 0;
+
 %% Waypoint navigation
 % flight path smoothing (pre-filtering) time constant
 ap.wpnav.T = 3 * 2/ap.atc.rm.rfreq;
