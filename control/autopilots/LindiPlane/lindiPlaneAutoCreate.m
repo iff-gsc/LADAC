@@ -329,8 +329,8 @@ ap.psc.k.acc = k(3);
 ap.psc.inv_mode = 0;
 
 %% Waypoint navigation
-% flight path smoothing (pre-filtering) time constant
-ap.wpnav.T = 3 * 2/ap.atc.rm.rfreq;
+% spatial filter constant for flight path smoothing (pre-filtering), in m
+ap.wpnav.L_flt = 3 * ap.aspd.min * 2/ap.atc.rm.rfreq;
 % waypoint acceptance radius, in m
 ap.wpnav.wprad = 60;
 % maximum position error (switch to approach if above)
