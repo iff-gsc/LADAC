@@ -134,6 +134,8 @@ for i = 1:length(aero_names)
             cef.s(end+1:end+num_flaps) = wing.geometry.S;
             c(end+1:end+num_flaps) = wing.geometry.S/wing.geometry.b;
             fdepth(end+1:end+num_flaps) = wing.flap.lambda_K;
+            cl_max = wing.polar.params.C_Lmax;
+            cl_min = -wing.polar.params.C_Lmin;
         elseif contains(aero_names{i},'Htp')
             cla_h = wing.polar.params.C_Lalpha;
             dadf = mean(wing.flap.dalpha_deta);
@@ -211,7 +213,8 @@ end
 
 %% Airspeed
 ap.aspd.flttc = 0.1;
-ap.aspd.min = sqrt( airplane.body.m*9.81 / (0.5*1.225*airplane.aero.wingMain.polar.params.C_Lmax*airplane.aero.wingMain.geometry.S) );
+ap.aspd.stall = sqrt( airplane.body.m*9.81 / (0.5*1.225*cl_max*airplane.aero.wingMain.geometry.S) );
+ap.aspd.min = 1/3 * ap.aspd.stall;
 
 
 %% Unsteady aerodynamics
@@ -219,7 +222,7 @@ if length(uaero_config) < 4
     uaero_config = [uaero_config,zeros(1,4-length(uaero_config))];
 end
 if uaero_config(4) < 1
-    uaero_config(4) = 2 * ap.aspd.min;
+    uaero_config(4) = 2 * ap.aspd.stall;
 end
 ap.uaero.use = uaero_config(1);
 ap.uaero.opt1 = uaero_config(2);
@@ -323,14 +326,28 @@ ap.psc.k.pos = k(1);
 ap.psc.k.vel = k(2);
 ap.psc.k.acc = k(3);
 
-% Define position control (outer loop) inversion mode
-% 0: NDI
-% 1: INDI
-ap.psc.inv_mode = 0;
+
+%% Flight path inversion
+% Selects the inversion method used for flight-path control (0: NDI,
+% 1: INDI)
+ap.fpi.inv_mode = 0;
+% Enables limiting of the desired specific force based on the
+% maximum/minimum allowed lift coefficient
+ap.fpi.cl_lim_use = 1;
+% Maximum positive lift coefficient used to limit the desired specific lift
+% force
+ap.fpi.cl_max = 0.75*cl_max;
+% Minimum lift coefficient used to limit the desired specific lift force
+% during negative-lift operation
+ap.fpi.cl_min = 0.75*cl_min;
+% Minimum desired acceleration magnitude required to update the commanded
+% roll orientation (m/s^2). Below this value, the previous roll orientation
+% is retained.
+ap.fpi.rll_acc_min = 3.3;
 
 %% Waypoint navigation
 % spatial filter constant for flight path smoothing (pre-filtering), in m
-ap.wpnav.L_flt = 3 * ap.aspd.min * 2/ap.atc.rm.rfreq;
+ap.wpnav.L_flt = 3 * ap.aspd.stall * 2/ap.atc.rm.rfreq;
 % waypoint acceptance radius, in m
 ap.wpnav.wprad = 60;
 % maximum position error (switch to approach if above)
@@ -377,7 +394,7 @@ if length(uaero_config_dlc) < 4 || isequal(uaero_config_dlc,zeros(1,4))
     uaero_config_dlc = uaero_config;
 end
 if uaero_config_dlc(4) < 1
-    uaero_config_dlc(4) = 2 * ap.aspd.min;
+    uaero_config_dlc(4) = 2 * ap.aspd.stall;
 end
 ap.dlc.ua.use = uaero_config_dlc(1);
 ap.dlc.ua.opt1 = uaero_config_dlc(2);

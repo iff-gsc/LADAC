@@ -1,16 +1,14 @@
-function [ n_g_des, q_des, r_des, a_abs_des, a_abs ] = ...
-    ndiPlaneAcc2LeanQR( nu_a_Kb_yz, V, M_bg, a_Kg, n_g_des_last, Delta_Phi_comp )
+function [ n_g_des, q_des, r_des, nu_a_Kb_yz_lim, f_max, f_abs_des, f_abs_des_lim ] = ...
+    ndiPlaneAcc2LeanQR( nu_a_Kb_yz, V, M_bg, a_Kg, n_g_des_last, ...
+    Delta_Phi_comp, rho, par )
 % ndiPlaneAcc2LeanQR nonlinear dynamic inversion to convert desired
 % acceleration to a desired lean vector as well as pitch rate and yaw rate
 % 
 % Syntax:
-%   [ n_g_des, q_des, r_des, a_abs_des, a_abs ] = ...
-%       indiPlaneAcc2LeanQR( nu_a_Kb_yz, V, M_bg, a_Kg )
-%   [ n_g_des, q_des, r_des, a_abs_des, a_abs ] = ...
-%       indiPlaneAcc2LeanQR( nu_a_Kb_yz, V, M_bg, a_Kg, n_g_des_last )
-% 	[ n_g_des, q_des, r_des, a_abs_des, a_abs ] = ...
+%   [ n_g_des, q_des, r_des, nu_a_Kb_yz_lim, f_max, f_abs_des, ...
+%       f_abs_des_lim ] = ...
 %       indiPlaneAcc2LeanQR( nu_a_Kb_yz, V, M_bg, a_Kg, n_g_des_last, ...
-%                           Delta_Phi_comp )
+%       Delta_Phi_comp, rho, par )
 % 
 % Inputs:
 %   nu_a_Kb_yz          Desired acceleration (without gravity) in body
@@ -24,6 +22,20 @@ function [ n_g_des, q_des, r_des, a_abs_des, a_abs ] = ...
 %   n_g_des_last        Last value of function output n_g_des
 %   Delta_Phi_comp      To be compensated increment in roll angle,
 %                       in rad
+%   rho                 Air density (scalar), in kg/m^3
+%   par                 Structure containing the parameters with the
+%                       following fields:
+%       par.T_acc           Time constant for acceleration-based airspeed
+%                           prediction (needed to avoid oscillation during
+%                           stall prevention), in s
+%       par.rll_acc_min     Minimum absolute desired specific force for
+%                           activating roll control (below this threshold,
+%                           the previous roll angle is retained), in m/s^2
+%       par.cl_lim.use      Enable lift limitation (logical scalar)
+%       par.cl_lim.S        Wing reference area, in m^2
+%       par.cl_lim.m        Aircraft mass, in kg
+%       par.cl_lim.cl_max   Maximum positive lift coefficient
+%       par.cl_lim.cl_min   Minimum negative lift coefficient
 % 
 % Outputs:
 %   n_g_des             Desired lean vector (3x1 array), unit vector (see
@@ -32,8 +44,15 @@ function [ n_g_des, q_des, r_des, a_abs_des, a_abs ] = ...
 %                       rad/s
 %   r_des               Desired (non-incremental) yaw rate (scalar), in
 %                       rad/s
-%   a_des_abs           Desired absolute specific lift (scalar), in m/s^2
-%   a_abs               Measured absolute specific lift (scalar), in m/s^2
+%   nu_a_Kb_yz_lim      Lift-limited desired kinematic acceleration in body
+%                       frame in lateral (y_b) and vertical (z_b) direction
+%                       (2x1 array), in m/s^2
+%   f_max               Maximum available specific-lift magnitude for the
+%                       applicable lift direction (scalar), in m/s^2
+%   f_abs_des           Magnitude of the unconstrained desired
+%                       specific-lift vector (scalar), in m/s^2
+%   f_abs_des_lim       Magnitude of the lift-limited desired specific-lift
+%                       vector (scalar), in m/s^2
 
 % Disclaimer:
 %   SPDX-License-Identifier: GPL-3.0-only
@@ -42,42 +61,24 @@ function [ n_g_des, q_des, r_des, a_abs_des, a_abs ] = ...
 %   Copyright (C) 2026 TU Braunschweig, Institute of Flight Guidance
 % *************************************************************************
 
-if nargin < 6
-    Delta_Phi_comp = zeros(1,class(nu_a_Kb_yz));
-end
-if nargin < 5
-    n_g_des_last = zeros(3,1,class(M_bg));
-end
+% Init
 n_g_des = zeros(3,1,class(nu_a_Kb_yz));
 
-% Measured acceleration (without gravitation) in b frame
-a_Kb = M_bg*a_Kg;
-a_Kb_yz = a_Kb(2:3);
-
-% Gravitational acceleration vector
-% in g frame
-g_g = [0;0;9.81];
-% in b frame
-g_b = M_bg*g_g;
-g_b_yz = g_b(2:3);
-
-% Desired specific lift vector
-a_b_yz_des = nu_a_Kb_yz - g_b_yz;
-% Desired specific lift
-a_abs_des = norm(a_b_yz_des);
-a_abs = norm(a_Kb_yz-g_b_yz);
+% Stall prevention
+a_Kb = M_bg * a_Kg;
+V = V + a_Kb(1) * par.T_acc;
+[ nu_a_Kb_yz_lim, f_b_yz_des_lim, f_max, f_abs_des, f_abs_des_lim ] = ...
+    limitAccByLift( nu_a_Kb_yz, V, rho, M_bg, par.cl_lim );
 
 % Avoid roll flip (apply negative lift instead)
-n_b_des = divideFinite( [0;a_b_yz_des], a_abs_des );
+n_b_des = divideFinite( [0;f_b_yz_des_lim], f_abs_des_lim );
 if n_b_des(3) >= 0
     n_b_des(3) = -n_b_des(3);
     n_b_des(2) = -n_b_des(2);
 end
 
-if a_abs_des < 9.81/3
-    if nargin < 5
-        n_g_des_last(:) = dcm2LeanVector(M_bg);
-    end
+% Avoid roll flip (apply negative lift instead)
+if f_abs_des_lim < par.rll_acc_min
     n_g_des(:) = n_g_des_last;
 else
     n_g_des(:) = M_bg'*n_b_des;
@@ -87,7 +88,7 @@ end
 % increament in roll angle
 % --> The f frame is the future b frame.
 M_fb = [cos(Delta_Phi_comp),sin(Delta_Phi_comp);-sin(Delta_Phi_comp),cos(Delta_Phi_comp)];
-nu_a_Kf_yz = M_fb*nu_a_Kb_yz;
+nu_a_Kf_yz = M_fb*nu_a_Kb_yz_lim;
 
 % Desired angular velocity vector in f frame (2D)
 omega_des = divideFinite( nu_a_Kf_yz, V );
