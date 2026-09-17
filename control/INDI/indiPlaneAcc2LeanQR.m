@@ -1,6 +1,6 @@
-function [ n_g_des, Delta_q, Delta_r, q_des, r_des, nu_a_Kb_yz_lim, f_max, f_abs_des, f_abs_des_lim ] = ...
+function [ n_g_des, Delta_q, Delta_r, q_des, r_des, nu_a_Kb_yz_lim, f_max, f_abs_des, f_abs_des_lim, is_flipped ] = ...
     indiPlaneAcc2LeanQR( nu_a_Kb_yz, V, M_bg, a_Kg, n_g_des_last, ...
-    Delta_Phi_comp, rho, par )
+    Delta_Phi_comp, rho, t_flipped, par )
 % indiPlaneAcc2LeanQR incremental inversion to convert desired acceleration
 % to a desired lean vector as well as pitch rate and yaw rate
 % 
@@ -64,9 +64,9 @@ function [ n_g_des, Delta_q, Delta_r, q_des, r_des, nu_a_Kb_yz_lim, f_max, f_abs
 % *************************************************************************
 
 % Run NDI
-[ n_g_des, q_des, r_des, nu_a_Kb_yz_lim, f_abs_des, f_max, f_abs_des_lim ] = ...
+[ n_g_des, q_des, r_des, nu_a_Kb_yz_lim, f_abs_des, f_max, f_abs_des_lim, is_flipped ] = ...
     ndiPlaneAcc2LeanQR( nu_a_Kb_yz, V, M_bg, a_Kg, n_g_des_last, ...
-    Delta_Phi_comp, rho, par );
+    Delta_Phi_comp, rho, t_flipped, par );
 
 % Measured acceleration (without gravitation) in b frame
 a_Kb = M_bg*a_Kg;

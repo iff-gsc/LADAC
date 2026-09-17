@@ -344,6 +344,8 @@ ap.fpi.cl_min = 0.75*cl_min;
 % roll orientation (m/s^2). Below this value, the previous roll orientation
 % is retained.
 ap.fpi.rll_acc_min = 3.3;
+% Maximum duration during which negative lift is used, in s
+ap.fpi.t_flip = 2;
 
 %% Waypoint navigation
 % spatial filter constant for flight path smoothing (pre-filtering), in m

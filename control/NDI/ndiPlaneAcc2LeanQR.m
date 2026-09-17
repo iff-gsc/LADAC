@@ -1,6 +1,6 @@
-function [ n_g_des, q_des, r_des, nu_a_Kb_yz_lim, f_max, f_abs_des, f_abs_des_lim ] = ...
+function [ n_g_des, q_des, r_des, nu_a_Kb_yz_lim, f_max, f_abs_des, f_abs_des_lim, is_flipped ] = ...
     ndiPlaneAcc2LeanQR( nu_a_Kb_yz, V, M_bg, a_Kg, n_g_des_last, ...
-    Delta_Phi_comp, rho, par )
+    Delta_Phi_comp, rho, t_flipped, par )
 % ndiPlaneAcc2LeanQR nonlinear dynamic inversion to convert desired
 % acceleration to a desired lean vector as well as pitch rate and yaw rate
 % 
@@ -73,8 +73,13 @@ V = V + a_Kb(1) * par.T_acc;
 % Avoid roll flip (apply negative lift instead)
 n_b_des = divideFinite( [0;f_b_yz_des_lim], f_abs_des_lim );
 if n_b_des(3) >= 0
-    n_b_des(3) = -n_b_des(3);
-    n_b_des(2) = -n_b_des(2);
+    is_flipped = 1;
+    if t_flipped < par.t_flip
+        n_b_des(3) = -n_b_des(3);
+        n_b_des(2) = -n_b_des(2);
+    end
+else
+    is_flipped = 0;
 end
 
 % Avoid roll flip (apply negative lift instead)
