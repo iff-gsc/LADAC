@@ -189,6 +189,9 @@ ap.servo.d      = airplane.act.ailerons.dampingRatio;
 ap.servo.delay  = airplane.act.ailerons.delay;
 ap.servo.boost  = servo_boost;
 
+% Motor time constant, in s
+ap.mtc          = airplane.motor.R*airplane.prop.I/airplane.motor.KT^2;
+
 
 %% Sensor filter
 if gyro_flt(1) == 0
@@ -212,9 +215,33 @@ end
 
 
 %% Airspeed
-ap.aspd.flttc = 0.1;
+ap.aspd.flttc = 0.2;
 ap.aspd.stall = sqrt( airplane.body.m*9.81 / (0.5*1.225*cl_max*airplane.aero.wingMain.geometry.S) );
 ap.aspd.min = 1/3 * ap.aspd.stall;
+V = floor(ap.aspd.stall);
+RPM = 0.8 * airplane.bat.V * 60/(2*pi*airplane.motor.KT);
+T_pitch_30 = sind(30) * airplane.body.m * 9.81;
+while true
+    T = propMapFitGetZ( airplane.prop.map_fit, RPM, V, 'thrust');
+    if T > 1.2 * T_pitch_30
+        V = V + 1;
+    else
+        break;
+    end
+end
+if V <= ap.aspd.stall
+    warning('Propulsion may be too weak.');
+end
+ap.aspd.max = max( ap.aspd.stall*2, V );
+T_max = propMapFitGetZ( airplane.prop.map_fit, 0.7/0.8*RPM, 0, 'thrust' );
+% Maximum thrust (needed for propeller control effectiveness)
+ap.aspd.Tmax = T_max;
+% Airspeed control mode (selects direct throttle control or airspeed
+% control using an airspeed command from the throttle input or mission)
+% 0: Direct throttle
+% 1: Throttle airspeed
+% 2: Mission airspeed (not supported yet)
+ap.aspd.mode = 0;
 
 
 %% Unsteady aerodynamics
