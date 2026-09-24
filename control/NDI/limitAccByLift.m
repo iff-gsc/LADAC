@@ -60,10 +60,11 @@ end
 
 f_max = rho/2 * V^2 * cl_lim.S/cl_lim.m * cl_max;
 
+scale = zeros(1,1,class(nu_a_Kb_yz));
 if cl_lim.use
-    scale = min(1, divideFinite(f_max, f_des_abs));
+    scale(:) = min(1, divideFinite(f_max, f_des_abs));
 else
-    scale = 1;
+    scale(:) = 1;
 end
 
 f_b_yz_des_lim  = scale * f_b_yz_des;
