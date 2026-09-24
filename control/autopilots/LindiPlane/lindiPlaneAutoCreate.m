@@ -90,6 +90,9 @@ addParameter(p, 'MlaUse',      mla_use);
 addParameter(p, 'Uaero',       uaero_config);
 addParameter(p, 'UaeroDlc',    uaero_config_dlc);
 
+% Add compatibility for old name 'SensFilt'
+varargin(strcmpi(varargin, 'SensFilt')) = {'GyroFilt'};
+
 parse(p,varargin{:});
 
 gyro_flt = p.Results.GyroFilt;
