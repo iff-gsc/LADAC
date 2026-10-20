@@ -38,8 +38,6 @@ n_trail = 1;
 c_L_visc    = zeros( 1, wing.n_panel, n_panel_x );
 c_L_VLM     = zeros( 1, wing.n_panel, n_panel_x );
 
-abs_V_i = zeros( 1, wing.n_panel );
-
 % compute u_n ([5], nomenclatrue, Fig. 3) in aircraft frame
 u_n = wingGetNormalVectorFromGeometry( wing.state.geometry );
 u_n_VLM = zeros( 3, wing.n_panel, n_panel_x );
@@ -66,6 +64,12 @@ else
     alpha_inf = alpha_inf_75;
 end
 w_ind = zeros( 1, wing.n_panel );
+
+if wing.config.is_unsteady
+    V_norm = vecnorm(wing.state.aero.local_inflow.V_25,2,1);
+else
+    V_norm = vecnorm(wing.state.aero.local_inflow.V_75,2,1);
+end
 
 wing.state.aero.circulation.alpha_inf(:) = alpha_inf;
 % dimensionless pitch rate [1], Nomenclature and Eq. between (18) and (19)
@@ -95,37 +99,6 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
     
     % effective angles of attack of each strip
     alpha_eff_unswept = alpha_inf - wing.state.aero.circulation.alpha_ind;
-    wing.state.aero.circulation.alpha_eff = alpha_eff_unswept;
-    
-    switch wing.config.ind_drag_method
-        % estimate induced velocity (own formula, no appropriate formula found in literature)
-        case 'alpha_ind'
-            w_ind = -tan(wing.state.aero.circulation.alpha_ind);
-        case 'Trefftz'
-            w_ind = 0.5*(wing.interim_results.AIC_Trefftz/span * wing.state.aero.circulation.Gamma(:))' ...
-                ./ vecnorm(wing.state.aero.local_inflow.V_25,2);
-    end
-    
-    % local airspeed vector normalized by local free-stream velocity in
-    % direction of local stream (to do: probably u_n should be rotated
-    % about alpha_inf because the downwash is probably perpendicular to
-    % V_inf (aerodynamic axis system); but the difference should be very
-    % small for small angles of attack)
-    for i = 1:3
-        wing.state.aero.circulation.v_i(i,:,:) = v_inf(i,:,:) + u_n(i,:,:) .* w_ind;
-    end
-    
-    V_i = wing.state.aero.circulation.v_i;
-    if wing.config.is_unsteady
-        V_norm = vecnorm(wing.state.aero.local_inflow.V_25,2,1);
-    else
-        V_norm = vecnorm(wing.state.aero.local_inflow.V_75,2,1);
-    end
-    for i = 1:3
-        V_i(i,:) = V_i(i,:) .* V_norm;
-    end
-    % absolute local airspeed vector
-    abs_V_i(:) = mean( vecnorm( V_i, 2 ), 3 );
     
     % Reynolds number and Mach number
     V_A_i = vecnorm( wing.state.aero.local_inflow.V_75, 2, 1 );
@@ -141,7 +114,7 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
     % quasi-steady flap deflection with sweep compensation
     F = airfoilFlapEffectiveness(wing.geometry.segments.flap_depth);
     wing.state.aero.circulation.delta_qs = airfoilFlapDeltaQs( F.F_10, F.F_11,...
-        abs_V_i, sum(wing.state.geometry.ctrl_pt.c,3), deg2rad(wing.state.actuators.segments.pos(1,:)), ...
+        V_norm, sum(wing.state.geometry.ctrl_pt.c,3), deg2rad(wing.state.actuators.segments.pos(1,:)), ...
         deg2rad(wing.state.actuators.segments.rate(1,:)) ) .* cos(wing.geometry.segments.flap_sweep);
     if ~wing.config.is_unsteady
         % static lift coefficient
@@ -239,33 +212,54 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
     
     err_rel = err/max(abs(c_L_visc(:)));
     
-    % VLM lift without any downwash
-    c_L_inf = cla0.*(alpha_inf+wing.state.aero.circulation.Delta_alpha);
-    
-    % induced angle of attack from VLM (add successive increments to avoid
-    % instability)
-    if wing.config.is_unsteady
-        alpha_ind = (c_L_inf-c_L_VLM)./(cla0);
-    else
-        alpha_ind = (c_L_inf-c_L_VLM)./(cla0);
-    end
-    alpha_ind_dt = 1.0 * (alpha_ind - wing.state.aero.circulation.alpha_ind);
-    wing.state.aero.circulation.alpha_ind = wing.state.aero.circulation.alpha_ind + alpha_ind_dt*1;
-    
     % If the error is below a certain tolerance err_max, take the
     % lift coefficient as the converged value for each panel; otherwise,
     % repeat.
+    % converged = true;
     if  (err_rel < err_rel_max || err < err_abs_max)
         converged = true;
     else
         wing.state.aero.circulation.num_iter = wing.state.aero.circulation.num_iter + 1;
+
+        % VLM lift without any downwash
+        c_L_inf = cla0.*(alpha_inf+wing.state.aero.circulation.Delta_alpha);
+        
+        % induced angle of attack from VLM (add successive increments to avoid
+        % instability)
+        if wing.config.is_unsteady
+            alpha_ind = (c_L_inf-c_L_VLM)./(cla0);
+        else
+            alpha_ind = (c_L_inf-c_L_VLM)./(cla0);
+        end
+        alpha_ind_dt = 1.0 * (alpha_ind - wing.state.aero.circulation.alpha_ind);
+        wing.state.aero.circulation.alpha_ind = wing.state.aero.circulation.alpha_ind + alpha_ind_dt*1;
+
     end
+
+end
+
+switch wing.config.ind_drag_method
+    % estimate induced velocity (own formula, no appropriate formula found in literature)
+    case 'alpha_ind'
+        w_ind = -tan(wing.state.aero.circulation.alpha_ind);
+    case 'Trefftz'
+        w_ind = 0.5*(wing.interim_results.AIC_Trefftz/span * wing.state.aero.circulation.Gamma(:))' ...
+            ./ V_norm;
+end
+
+% local airspeed vector normalized by local free-stream velocity in
+% direction of local stream (to do: probably u_n should be rotated
+% about alpha_inf because the downwash is probably perpendicular to
+% V_inf (aerodynamic axis system); but the difference should be very
+% small for small angles of attack)
+for i = 1:3
+    wing.state.aero.circulation.v_i(i,:,:) = v_inf(i,:,:) + u_n(i,:,:) .* w_ind;
 end
 
 wing.state.aero.circulation.v_i_unit = wing.state.aero.circulation.v_i ...
     ./repmat(vecnorm(wing.state.aero.circulation.v_i,2,1),3,1);
 wing.state.aero.circulation.gamma(:) = sum(wing.state.aero.circulation.Gamma,3) ...
-    ./ abs_V_i / span;
+    ./ V_norm / span;
 wing.state.aero.circulation.c_L(:) = c_L_VLM;
 wing.state.aero.circulation.alpha_inf(:) = alpha_inf;
 
