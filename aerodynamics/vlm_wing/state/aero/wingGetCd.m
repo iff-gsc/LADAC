@@ -34,8 +34,7 @@ M_ba = dcmBaFromAeroAngles( wing.state.body.alpha, wing.state.body.beta );
 u_Da = [ -1; 0; 0 ];
 u_Db = M_ba * u_Da;
 
-V_rel = vecnorm( wing.state.aero.local_inflow.V_25 .* ...
-    wing.state.aero.circulation.v_i, 2 )/wing.state.body.V;
+V_rel = vecnorm( wing.state.aero.local_inflow.V_25, 2 )/wing.state.body.V;
 V_rel_2 = powerFast(V_rel,2);
 
 segment_span    = wingGetSegmentSpan(wing.state.geometry.line_25);

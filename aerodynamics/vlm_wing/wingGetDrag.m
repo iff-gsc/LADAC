@@ -24,8 +24,7 @@ function [ Drag, Drag_i, drags, drags_i ] = wingGetDrag( wing )
 
 b_i = wingGetSegmentSpan( wing.geometry.line_25 );
 % Absolute local airspeed
-abs_V_loc = vecnorm( wing.state.aero.local_inflow.V_25 ...
-    .* wing.state.aero.circulation.v_i, 2 );
+abs_V_loc = vecnorm( wing.state.aero.local_inflow.V_25 );
 
 % Compute factor for the aerodynamic force coefficients to get the force
 Factor =  wing.state.body.V^2 * 0.5 * ...

@@ -22,7 +22,7 @@ c = wing.params.S/wing.params.b;
 % segment span
 b_i = wingGetSegmentSpan( wing.geometry.line_25 );
 % absolute local airspeed
-abs_V_loc = vecnorm( wing.state.aero.local_inflow.V_25 .* wing.state.aero.circulation.v_i, 2 );
+abs_V_loc = vecnorm( wing.state.aero.local_inflow.V_25 );
 
 % Compute factor for the aerodynamic force coefficients to get the forces.
 % Note that the local airspeed is multiplied because the local
