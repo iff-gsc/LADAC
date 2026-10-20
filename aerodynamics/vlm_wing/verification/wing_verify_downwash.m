@@ -63,14 +63,12 @@ end
 w_A_local = V_A_local(3,:);
 
 infl_coeff = wingGetDimlessIndVel( -wing.state.aero.local_inflow.V_75, wing.geometry, wing.interim_results.wake, Ma, false );
-A = wing.interim_results.AIC_b(3,:,1:n_panel*n_panel_x);
-A(:,:,end-n_panel+1:end) = A(:,:,end-n_panel+1:end) + wing.interim_results.AIC_t(3,:,:);
-Gamma = squeeze(A) \ w_A_local';
+A = wing.interim_results.AIC_b + wing.interim_results.AIC_t;
+Gamma = squeeze(A) \ -w_A_local';
 Gamma = reshape(Gamma,1,n_panel,[]);
 Gamma(1,:,2:end) = Gamma(1,:,2:end) - Gamma(1,:,1:end-1);
 Gamma = Gamma/n_panel_x;
 l = wingGetSpatialVectorAlongBoundSegment( wing.geometry.vortex );
-l = l(:,:,1:end-1);
 
 c_L_alpha = 2*pi;
 
