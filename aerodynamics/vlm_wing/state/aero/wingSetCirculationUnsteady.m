@@ -213,13 +213,15 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
         if wing.config.is_unsteady
             v_ni_wake = (wing.interim_results.AIC_t * (wing.state.aero.circulation.Gamma_trail(:)./V_norm(:)/span) )';
             v_ni_VLM = v_ni_VLM - v_ni_wake;
+            if n_trail == 1
+                wing.state.aero.circulation.Gamma_trail(:) = wing.state.aero.circulation.Gamma;
+            end
+            v_ni_wake = wing.interim_results.AIC_t * (wing.state.aero.circulation.Gamma_trail(:)./V_norm(:)/span);
+            wing.state.aero.circulation.Gamma(:) = wing.interim_results.AIC_b \ ((v_ni_VLM(:)-v_ni_wake(:)).*V_norm(:)) * span;
+            wing.state.aero.circulation.Gamma(:,:,2:end) = wing.state.aero.circulation.Gamma(:,:,2:end) - wing.state.aero.circulation.Gamma(:,:,1:end-1);
+        else
+            wing.state.aero.circulation.Gamma(:) = (wing.interim_results.AIC_b+wing.interim_results.AIC_t) \ (v_ni_VLM(:).*V_norm(:)) * span;
         end
-        if n_trail == 1
-            wing.state.aero.circulation.Gamma_trail(:) = wing.state.aero.circulation.Gamma;
-        end
-        v_ni_wake = wing.interim_results.AIC_t * (wing.state.aero.circulation.Gamma_trail(:)./V_norm(:)/span);
-        wing.state.aero.circulation.Gamma(:) = wing.interim_results.AIC_b \ ((v_ni_VLM(:)-v_ni_wake(:)).*V_norm(:)) * span;
-        wing.state.aero.circulation.Gamma(:,:,2:end) = wing.state.aero.circulation.Gamma(:,:,2:end) - wing.state.aero.circulation.Gamma(:,:,1:end-1);
         % lift coefficient of VLM
         c_L_VLM(:) = 2*wing.state.aero.circulation.Gamma./V_norm./wing.state.geometry.ctrl_pt.c;
     else
@@ -247,7 +249,7 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
     else
         alpha_ind = (c_L_inf-c_L_VLM)./(cla0);
     end
-    alpha_ind_dt = 0.5 * (alpha_ind - wing.state.aero.circulation.alpha_ind);
+    alpha_ind_dt = 1.0 * (alpha_ind - wing.state.aero.circulation.alpha_ind);
     wing.state.aero.circulation.alpha_ind = wing.state.aero.circulation.alpha_ind + alpha_ind_dt*1;
     
     % If the error is below a certain tolerance err_max, take the
