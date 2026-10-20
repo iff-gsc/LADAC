@@ -75,8 +75,6 @@ wing.state.aero.circulation.q(:) = 2 * (alpha_inf_75 - alpha_inf_25);
 wing.state.aero.circulation.rot_axis(:) = crossFast( -v_inf(:,:), u_n(:,:) );
 
 
-cla0 = 2*pi;
-
 span = sum(wingGetSegmentSpan(wing.state.geometry.line_25));
 
 % ** use overworked version of algorithm presented in [3], page 3 **
@@ -136,9 +134,9 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
     Ma_flap = Ma_unswept .* cos(wing.interim_results.sweep_flap);
     % limit Mach number (to do: hard coded)
     wing.state.aero.circulation.Ma(wing.state.aero.circulation.Ma>0.7459)=0.7459;
-    beta_Ma = 1./sqrtReal(1-wing.state.aero.circulation.Ma.^2);
-    beta = diag(beta_Ma);
-    beta_Ma_flap = 1./sqrtReal(1-Ma_flap.^2);
+    beta_Ma = sqrtReal(1-wing.state.aero.circulation.Ma.^2);
+    beta_Ma_flap = sqrtReal(1-Ma_flap.^2);
+    cla0 = 2*pi./beta_Ma;
 
     % quasi-steady flap deflection with sweep compensation
     F = airfoilFlapEffectiveness(wing.geometry.segments.flap_depth);
@@ -181,7 +179,7 @@ while ~converged && wing.state.aero.circulation.num_iter < num_iter_max
                 end
         end
         % flap lift
-        wing.state.aero.circulation.c_L_flap(:) = 2*pi.*beta_Ma_flap ...
+        wing.state.aero.circulation.c_L_flap(:) = 2*pi./beta_Ma_flap ...
             .*wing.state.aero.circulation.delta_qs;
         % 2nd actuator lift
         c_L_act2 = zeros(size(c_L_visc));

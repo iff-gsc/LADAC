@@ -27,15 +27,6 @@ wing_mod.state.geometry.ctrl_pt.pos(3,:) = wing.geometry.vortex.pos(3,1:end-1,en
     V_inf_local, wing_mod.state.geometry, wake, Ma, wing.config.is_unsteady );
 ind_vel_trefftz = ind_vel_b_trefftz + ind_vel_t_trefftz;
 
-if strcmp(wing.config.airfoil_method,'analytic')
-    fcl = airfoilAnalytic0515Ma( wing.airfoil.analytic.wcl, Ma );
-    cla = rad2deg(fcl(2,:));
-elseif strcmp(wing.config.airfoil_method,'simple')
-    cla = repmat(wing.airfoil.simple.c_L_alpha,1,wing.n_panel);
-else
-    error('Airfoil method not supported.')
-end
-
 aic_b = indVel2Aic( ind_vel_b, u_n );
 aic_t = indVel2Aic( ind_vel_t, u_n );
 aic_trefftz = indVel2Aic( ind_vel_trefftz, u_n );
@@ -44,12 +35,6 @@ aic = aic_b;
 for i=1:n_trail
     aic = aic + aic_t(:,wing.n_panel*(i-1)+1:wing.n_panel*i);
 end
-
-a = aicMachCorrection( aic, Ma, cla, wing.geometry.ctrl_pt.c, wing.params.b );
-
-aic_b = a*aic_b;
-aic_t = a*aic_t;
-aic_trefftz = a*aic_trefftz;
 
 end
 
@@ -71,19 +56,5 @@ aic = zeros(size(ind_vel,2),size(ind_vel,3));
 for i = 1:size(ind_vel,3)
     aic(:,i) = dot( ind_vel(:,:,i), u_n, 1 );
 end
-
-end
-
-function a = aicMachCorrection( AIC, Ma, cla, c_i, b )
-
-beta_Ma = 1./sqrtReal(1-Ma.^2);
-beta = diag(beta_Ma);
-n_panel = length(c_i);
-cla2d = diag(cla);
-cla2pi = diag(2*pi*ones(1,n_panel));
-c = diag(c_i);
-
-% influence matrix Mach number correction
-a = (beta*(-AIC*cla2d*cla2pi*c+2*b*(cla2pi-cla2d))-2*b*(cla2pi-beta*cla2d))/(-AIC*beta*cla2d*cla2pi*c);
 
 end
